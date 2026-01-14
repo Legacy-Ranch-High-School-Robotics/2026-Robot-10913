@@ -4,8 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -44,6 +47,9 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
+  private SimDouble m_simGyroAngle;
+  private double m_simAngle = 0.0;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -59,19 +65,54 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+
+    if (RobotBase.isSimulation()) {
+      m_simGyroAngle = new SimDeviceSim("ADIS16470_IMU").getDouble("GyroAngleZ");
+    }
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
+    Rotation2d gyroAngle = RobotBase.isSimulation() ? 
+        Rotation2d.fromDegrees(m_simAngle) : 
+        Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ));
+
     m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
+        gyroAngle,
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    double dt = 0.02; // Standard loop time
+    m_frontLeft.simulationPeriodic(dt);
+    m_frontRight.simulationPeriodic(dt);
+    m_rearLeft.simulationPeriodic(dt);
+    m_rearRight.simulationPeriodic(dt);
+
+    var moduleStates = new SwerveModuleState[] {
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState()
+    };
+
+    var chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(moduleStates);
+
+    // Update the simulated Gyro
+    // We integrate the angular velocity (omega) to get the angle
+    double change = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond * dt);
+    m_simAngle += change;
+
+    if (m_simGyroAngle != null) {
+      m_simGyroAngle.set(m_simAngle);
+    }
   }
 
   /**
@@ -163,6 +204,7 @@ public class DriveSubsystem extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+    m_simAngle = 0.0;
   }
 
   /**
@@ -171,6 +213,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
+    if (RobotBase.isSimulation()) {
+      return Rotation2d.fromDegrees(m_simAngle).getDegrees();
+    }
     return Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)).getDegrees();
   }
 

@@ -20,3 +20,13 @@ To get started, make sure you have calibrated the zero offsets for the absolute 
 It is possible that this project will not work for your robot right out of the box. Various things like the CAN IDs, PIDF gains, chassis configuration, etc. must be determined for your own robot!
 
 These values can be adjusted in the `Configs.java` and `Constants.java` files.
+
+## Simulation
+
+To run this project in simulation:
+
+1. Open the Command Palette in VS Code (`Ctrl+Shift+P` or `F1`).
+2. Type and select **"WPILib: Simulate Robot Code"**.
+3. When prompted, ensure **"HALSim Gui"** is selected.
+4. The Simulation GUI will launch, allowing you to test robot logic and autonomous routines.
+5. To view the Field widget, navigate to **NetworkTables** -> **SmartDashboard** -> **Field** in the menu bar.

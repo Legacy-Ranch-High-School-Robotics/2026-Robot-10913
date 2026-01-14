@@ -17,6 +17,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Configs;
 
 public class MAXSwerveModule {
@@ -31,6 +32,9 @@ public class MAXSwerveModule {
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+  private double m_simDrivePosition = 0.0;
+  private double m_simTurnAngle = 0.0;
 
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -67,6 +71,9 @@ public class MAXSwerveModule {
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
+    if (RobotBase.isSimulation()) {
+      return new SwerveModuleState(m_desiredState.speedMetersPerSecond, new Rotation2d(m_simTurnAngle));
+    }
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModuleState(m_drivingEncoder.getVelocity(),
@@ -79,6 +86,9 @@ public class MAXSwerveModule {
    * @return The current position of the module.
    */
   public SwerveModulePosition getPosition() {
+    if (RobotBase.isSimulation()) {
+      return new SwerveModulePosition(m_simDrivePosition, new Rotation2d(m_simTurnAngle));
+    }
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModulePosition(
@@ -105,6 +115,20 @@ public class MAXSwerveModule {
     m_turningClosedLoopController.setSetpoint(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
     m_desiredState = desiredState;
+  }
+
+  /**
+   * Updates the simulation state of the module.
+   * 
+   * @param dtSeconds Time step in seconds.
+   */
+  public void simulationPeriodic(double dtSeconds) {
+    if (m_desiredState != null) {
+      // Update drive position based on desired speed (simple integration)
+      m_simDrivePosition += m_desiredState.speedMetersPerSecond * dtSeconds;
+      // Update turn angle (instantaneous for simplicity in sim)
+      m_simTurnAngle = m_desiredState.angle.getRadians();
+    }
   }
 
   /** Zeroes all the SwerveModule encoders. */
