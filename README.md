@@ -50,8 +50,16 @@ We use **WPILib Simulation** to test logic without needing the physical robot.
 
 1. **Open Project:** Open this folder in the WPILib version of VS Code.
 2. **Build Code:** Press `Ctrl+Shift+P` and type **Build Robot Code**.
-3. **Run Simulation:** Select **Simulate Robot Code on Desktop**.
-* *Use this to test your swerve drive logic and autonomous routines before touching the hardware.*
+
+To run this project in simulation:
+
+1. Open the Command Palette in VS Code (`Ctrl+Shift+P` or `F1`).
+2. Type and select **"WPILib: Simulate Robot Code"**.
+3. When prompted, ensure **"Sim Gui"** is selected.
+4. The Simulation GUI will launch, allowing you to test robot logic and autonomous routines.
+5. To view the Field widget, navigate to **NetworkTables** -> **SmartDashboard** -> **Field** in the menu bar.
+6. To setup controls: drag and drop from **System Joysticks** to **Joysticks**
+7. To enable controls you need to change **Robot State** to **Teleoperated**.
 
 ---
 
@@ -62,3 +70,6 @@ We use **WPILib Simulation** to test logic without needing the physical robot.
 1. Confirm the RoboRIO is powered and the DS (Driver Station) shows "Communications."
 2. In VS Code, click the **WPILib Icon** (W) and select **Deploy Robot Code**.
 3. Check the **RioLog** for any runtime errors.
+These values can be adjusted in the `Configs.java` and `Constants.java` files.
+
+
