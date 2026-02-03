@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -67,6 +68,9 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  // Independent odometry tracker for comparison
+  private final SwerveDriveOdometry pureOdometry =
+      new SwerveDriveOdometry(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
   public Drive(
       GyroIO gyroIO,
@@ -172,6 +176,7 @@ public class Drive extends SubsystemBase {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      pureOdometry.update(rawGyroRotation, modulePositions);
     }
 
     // Update gyro alert
@@ -186,6 +191,7 @@ public class Drive extends SubsystemBase {
 
     // AdvantageKit: This makes it show up in Glass/SmartDashboard
     Logger.recordOutput("Odometry/RobotPose", getPose());
+    Logger.recordOutput("Odometry/PurePose", getOdometryPose());
 
     // AdvantageKit: This is what you'd use for the 3D view in AdvantageScope
     Logger.recordOutput("Odometry/RobotPose3d", new Pose3d(getPose()));
@@ -306,9 +312,16 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   }
 
+  /** Returns the pure odometry pose (no vision correction). */
+  @AutoLogOutput(key = "Odometry/PurePose")
+  public Pose2d getOdometryPose() {
+    return pureOdometry.getPoseMeters();
+  }
+
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    pureOdometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /** Adds a new timestamped vision measurement. */

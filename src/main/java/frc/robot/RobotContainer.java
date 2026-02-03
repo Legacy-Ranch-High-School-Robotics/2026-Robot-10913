@@ -8,6 +8,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -30,11 +33,19 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.vision.ObjectDetectionIO;
+import frc.robot.subsystems.vision.ObjectDetectionIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.photonvision.simulation.VisionSystemSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,7 +56,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   private SwerveDriveSimulation driveSimulation = null;
+  private VisionSystemSim visionSim = null;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -60,6 +73,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    VisionIO frontTag = new VisionIO() {};
+    VisionIO backTag = new VisionIO() {};
+    ObjectDetectionIO frontML = new ObjectDetectionIO() {};
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -70,6 +87,13 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+
+        frontTag =
+            new VisionIOPhoton(
+                VisionConstants.frontTagCamName, VisionConstants.frontTagCamTransform);
+        backTag =
+            new VisionIOPhoton(VisionConstants.backTagCamName, VisionConstants.backTagCamTransform);
+        // frontML = new ObjectDetectionIO() {}; // Placeholder for real ML
         break;
 
       case SIM:
@@ -89,6 +113,28 @@ public class RobotContainer {
                 new ModuleIOSim(driveSimulation.getModules()[1]),
                 new ModuleIOSim(driveSimulation.getModules()[2]),
                 new ModuleIOSim(driveSimulation.getModules()[3]));
+
+        // Vision Sim Setup
+        AprilTagFieldLayout layout =
+            AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+        layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+
+        visionSim = new VisionSystemSim("main");
+        visionSim.addAprilTags(layout);
+
+        frontTag =
+            new VisionIOSim(
+                layout,
+                VisionConstants.frontTagCamTransform,
+                VisionConstants.frontTagCamName,
+                visionSim);
+        backTag =
+            new VisionIOSim(
+                layout,
+                VisionConstants.backTagCamTransform,
+                VisionConstants.backTagCamName,
+                visionSim);
+        frontML = new ObjectDetectionIOSim(VisionConstants.frontMLCamTransform);
         break;
 
       default:
@@ -102,6 +148,8 @@ public class RobotContainer {
                 new ModuleIO() {});
         break;
     }
+
+    vision = new Vision(frontTag, backTag, frontML, drive);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -237,6 +285,13 @@ public class RobotContainer {
     }
 
     SimulatedArena.getInstance().simulationPeriodic();
+
+    // Update Vision Simulation
+    if (visionSim != null) {
+      visionSim.update(driveSimulation.getSimulatedDriveTrainPose());
+    }
+    vision.updateSimPose(driveSimulation.getSimulatedDriveTrainPose());
+
     Logger.recordOutput("FieldSimulation/RobotPose", driveSimulation.getSimulatedDriveTrainPose());
     Logger.recordOutput(
         "FieldSimulation/RobotPose3d", new Pose3d(driveSimulation.getSimulatedDriveTrainPose()));
