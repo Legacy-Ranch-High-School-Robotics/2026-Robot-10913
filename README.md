@@ -48,10 +48,28 @@ To keep our code stable, we follow a **Feature Branch** workflow. **We don't pus
 
 We use **WPILib Simulation** to test logic without needing the physical robot.
 
+We can see the robot in Glass (2D) or in AdvantageScope (3D).
+
 1. **Open Project:** Open this folder in the WPILib version of VS Code.
 2. **Build Code:** Press `Ctrl+Shift+P` and type **Build Robot Code**.
 3. **Run Simulation:** Select **Simulate Robot Code on Desktop**.
-* *Use this to test your swerve drive logic and autonomous routines before touching the hardware.*
+
+### Glass
+
+1. To enable field visualization, from top menu select **Network Tables** -> **SmartDashboard** -> **Field**
+2. To enable controls: drag the desired control device from **System Joysticks** widget and drop it to **Joysticks**. For example "Keyboard 0" will allow you to control robot with WASD keys on your keyboard.
+2. Your robot starts in **Disconnected** state, to control it you need to switch **Robot State** to **Teleoperated**.
+
+### AdvantageScope
+
+1. Without quitting **Robot Simulation** (Glass), start the **AdvantageScope** application.
+2. Choose field view type in the right panel (e.g. **3D Field**), and in the **Field** panel select **FRC Fields/2026 Field** to see this year's competition field.
+3. Connect to the simulation by selecting **File** -> **Connect to Simulator** -> **NetworkTables 4 (AdvantageKit)**.
+4. In the left panel search for **RealOutputs/Odometry/RobotPose3d**, **RealOutputs/FieldSimulation/RobotPose3d** and **RealOutputs/FieldSimulation/Fuel** and drop those into the **Poses** in the right panel.
+5. Right-click on the **Poses** and select **2026 Kitbot** for **FieldSimulation/RobotPose3d** (this is the actual robot position in the simulation), **Ghost** for **Odometry/RobotPose3d** (this is where robot "think" it is), and **Fuel** for **Odometry/Fuel** (this will visualize the Fuel pieces).
+6. If you use keyboard to steer, you will need to keep focus in the **Robot Simulation** window, actions will be visible in the **AdvantageScope** field view.
+
+![AdvantageScope Settings View](doc/adv-scope-view.png)
 
 ---
 
