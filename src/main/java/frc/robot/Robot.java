@@ -100,7 +100,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    robotContainer.stopIntake();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -115,6 +117,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
     }
+
+    robotContainer.startIntake();
   }
 
   /** This function is called periodically during autonomous. */
@@ -131,6 +135,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    robotContainer.startIntake();
+    System.out.println("Intake Init call...");
   }
 
   /** This function is called periodically during operator control. */
@@ -151,7 +157,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    // Obtains the default instance of the simulation world, which is a Crescendo Arena.
+    // Obtains the default instance of the simulation world, which is a Rebuilt Arena.
     // SimulatedArena.getInstance();
     SimulatedArena.getInstance().resetFieldForAuto();
   }

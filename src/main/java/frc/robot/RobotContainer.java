@@ -33,6 +33,9 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.vision.ObjectDetectionIO;
 import frc.robot.subsystems.vision.ObjectDetectionIOSim;
 import frc.robot.subsystems.vision.Vision;
@@ -57,6 +60,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Intake intake;
   private SwerveDriveSimulation driveSimulation = null;
   private VisionSystemSim visionSim = null;
 
@@ -76,6 +80,7 @@ public class RobotContainer {
     VisionIO frontTag = new VisionIO() {};
     VisionIO backTag = new VisionIO() {};
     ObjectDetectionIO frontML = new ObjectDetectionIO() {};
+    IntakeIO intakeIO = new IntakeIO() {};
 
     switch (Constants.currentMode) {
       case REAL:
@@ -94,6 +99,7 @@ public class RobotContainer {
         backTag =
             new VisionIOPhoton(VisionConstants.backTagCamName, VisionConstants.backTagCamTransform);
         // frontML = new ObjectDetectionIO() {}; // Placeholder for real ML
+        intakeIO = new IntakeIO() {}; // Placeholder for real intake
         break;
 
       case SIM:
@@ -135,6 +141,7 @@ public class RobotContainer {
                 VisionConstants.backTagCamName,
                 visionSim);
         frontML = new ObjectDetectionIOSim(VisionConstants.frontMLCamTransform);
+        intakeIO = new IntakeIOSim(driveSimulation);
         break;
 
       default:
@@ -150,6 +157,7 @@ public class RobotContainer {
     }
 
     vision = new Vision(frontTag, backTag, frontML, drive);
+    intake = new Intake(intakeIO);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -215,7 +223,11 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // Intake controls
+    controller.x().onTrue(Commands.runOnce(intake::runIntake, intake));
+    controller.y().onTrue(Commands.runOnce(intake::stop, intake));
 
     // Reset gyro / odometry
     final Runnable resetGyro =
@@ -296,6 +308,15 @@ public class RobotContainer {
     Logger.recordOutput(
         "FieldSimulation/RobotPose3d", new Pose3d(driveSimulation.getSimulatedDriveTrainPose()));
     Logger.recordOutput(
-        "FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+        "FieldSimulation/Fuel",
+        SimulatedArena.getInstance().getGamePiecesArrayByType(Constants.REBUILT_GAME_PIECE));
+  }
+
+  public void stopIntake() {
+    intake.stop();
+  }
+
+  public void startIntake() {
+    intake.runIntake();
   }
 }
