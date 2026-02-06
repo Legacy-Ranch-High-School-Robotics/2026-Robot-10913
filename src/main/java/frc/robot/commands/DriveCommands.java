@@ -66,6 +66,18 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+    return joystickDrive(drive, xSupplier, ySupplier, omegaSupplier, true);
+  }
+
+  /**
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   */
+  public static Command joystickDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      boolean fieldRelative) {
     return Commands.run(
         () -> {
           // Get linear velocity
@@ -87,12 +99,17 @@ public class DriveCommands {
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          
+          if (fieldRelative) {
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    speeds,
+                    isFlipped
+                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                        : drive.getRotation()));
+          } else {
+            drive.runVelocity(speeds);
+          }
         },
         drive);
   }
