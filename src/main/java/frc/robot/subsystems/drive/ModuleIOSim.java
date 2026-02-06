@@ -74,11 +74,13 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnCurrentAmps = Math.abs(moduleSimulation.getSteerMotorStatorCurrent().in(Amps));
 
     // Update odometry inputs
-    inputs.odometryTimestamps = frc.robot.util.SparkUtil.getSimulationOdometryTimeStamps();
     inputs.odometryDrivePositionsRad =
         java.util.Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositions())
             .mapToDouble(angle -> angle.in(Radians))
             .toArray();
+    inputs.odometryTimestamps =
+        frc.robot.util.SparkUtil.getSimulationOdometryTimeStamps(
+            inputs.odometryDrivePositionsRad.length);
     inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
   }
 

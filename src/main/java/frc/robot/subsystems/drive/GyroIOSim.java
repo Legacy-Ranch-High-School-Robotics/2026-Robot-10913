@@ -20,7 +20,8 @@ public class GyroIOSim implements GyroIO {
     inputs.yawVelocityRadPerSec =
         Units.degreesToRadians(gyroSimulation.getMeasuredAngularVelocity().in(RadiansPerSecond));
 
-    inputs.odometryYawTimestamps = SparkUtil.getSimulationOdometryTimeStamps();
     inputs.odometryYawPositions = gyroSimulation.getCachedGyroReadings();
+    inputs.odometryYawTimestamps =
+        SparkUtil.getSimulationOdometryTimeStamps(inputs.odometryYawPositions.length);
   }
 }
