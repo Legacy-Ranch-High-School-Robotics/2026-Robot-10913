@@ -55,9 +55,9 @@ public class SparkUtil {
     }
   }
 
-  public static double[] getSimulationOdometryTimeStamps() {
-    final double[] odometryTimeStamps = new double[SimulatedArena.getSimulationSubTicksIn1Period()];
-    for (int i = 0; i < odometryTimeStamps.length; i++) {
+  public static double[] getSimulationOdometryTimeStamps(int count) {
+    final double[] odometryTimeStamps = new double[count];
+    for (int i = 0; i < count; i++) {
       odometryTimeStamps[i] =
           edu.wpi.first.wpilibj.Timer.getFPGATimestamp()
               - 0.02
@@ -65,5 +65,9 @@ public class SparkUtil {
     }
 
     return odometryTimeStamps;
+  }
+
+  public static double[] getSimulationOdometryTimeStamps() {
+    return getSimulationOdometryTimeStamps(SimulatedArena.getSimulationSubTicksIn1Period());
   }
 }
