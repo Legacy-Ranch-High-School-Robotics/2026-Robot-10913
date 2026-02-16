@@ -154,8 +154,8 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getHID().getRawAxis(2),
-            false));
+            () -> -controller.getRightX(),
+            true));
 
     // Lock to 0° when A button is held
     controller

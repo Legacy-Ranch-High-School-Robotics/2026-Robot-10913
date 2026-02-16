@@ -34,10 +34,10 @@ public class DriveConstants {
       };
 
   // Zeroed rotation values for each module, see setup instructions
-  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(-Math.PI / 2);
   public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.0);
-  public static final Rotation2d backLeftZeroRotation = new Rotation2d(0.0);
-  public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d backLeftZeroRotation = new Rotation2d(Math.PI);
+  public static final Rotation2d backRightZeroRotation = new Rotation2d(Math.PI / 2);
 
   public static final Map<Constants.StartingPosition, Pose2d> kBlueStartingPoses =
       Map.of(
@@ -47,16 +47,17 @@ public class DriveConstants {
 
   // Device CAN IDs
   public static final int pigeonCanId = 9;
+  public static final int powerDistributionHubId = 10;
 
-  public static final int frontLeftDriveCanId = 1;
-  public static final int backLeftDriveCanId = 3;
-  public static final int frontRightDriveCanId = 5;
-  public static final int backRightDriveCanId = 7;
+  public static final int frontLeftDriveCanId = 5;
+  public static final int backLeftDriveCanId = 7;
+  public static final int frontRightDriveCanId = 3;
+  public static final int backRightDriveCanId = 1;
 
-  public static final int frontLeftTurnCanId = 2;
-  public static final int backLeftTurnCanId = 4;
-  public static final int frontRightTurnCanId = 6;
-  public static final int backRightTurnCanId = 8;
+  public static final int frontLeftTurnCanId = 6;
+  public static final int backLeftTurnCanId = 8;
+  public static final int frontRightTurnCanId = 4;
+  public static final int backRightTurnCanId = 2;
 
   // Drive motor configuration
   public static final int gearRatioLevel = 1;
@@ -97,7 +98,7 @@ public class DriveConstants {
   public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
   // Turn PID configuration
-  public static final double turnKp = 2.0;
+  public static final double turnKp = 1.0;
   public static final double turnKd = 0.0;
   public static final double turnSimP = 8.0;
   public static final double turnSimD = 0.0;
