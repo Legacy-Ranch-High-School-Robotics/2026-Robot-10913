@@ -30,6 +30,10 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.fuel.Fuel;
+import frc.robot.subsystems.fuel.FuelIO;
+import frc.robot.subsystems.fuel.FuelIOHardware;
+import frc.robot.subsystems.fuel.FuelIOSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
@@ -46,6 +50,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private SwerveDriveSimulation driveSimulation = null;
+
+  private final Fuel fuel;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -70,6 +76,8 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+
+        fuel = new Fuel(new FuelIOHardware());
         break;
 
       case SIM:
@@ -89,6 +97,9 @@ public class RobotContainer {
                 new ModuleIOSim(driveSimulation.getModules()[1]),
                 new ModuleIOSim(driveSimulation.getModules()[2]),
                 new ModuleIOSim(driveSimulation.getModules()[3]));
+
+        fuel = new Fuel(new FuelIOSim());
+
         break;
 
       default:
@@ -100,6 +111,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        fuel = new Fuel(new FuelIO() {});
         break;
     }
 
@@ -169,6 +182,8 @@ public class RobotContainer {
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // TODO: Bind commands for intaking, and shooting with controller buttons
 
     // Reset gyro / odometry
     final Runnable resetGyro =

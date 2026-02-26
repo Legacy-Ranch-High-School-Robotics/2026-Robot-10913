@@ -28,8 +28,11 @@ public interface FuelIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(FuelIOInputs inputs) {}
 
-  // Set the voltage of the intake/launcher roller
-  public default void setIntakeLauncherRoller(double power) {}
+  // Set the voltage of the left intake/launcher roller
+  public default void setLeftIntakeLauncherRoller(double power) {}
+
+  // Set the voltage of the right intake/launcher roller
+  public default void setRightIntakeLauncherRoller(double power) {}
 
   // Set the voltage of the feeder roller
   public default void setFeederRoller(double power) {}

@@ -89,7 +89,13 @@ public class FuelIOHardware implements FuelIO {
 
   @Override
   // Set the voltage of the intake/launcher roller
-  public void setIntakeLauncherRoller(double power) {
+  public void setLeftIntakeLauncherRoller(double power) {
+    // TODO: Implement this method
+  }
+
+  @Override
+  // Set the voltage of the intake/launcher roller
+  public void setRightIntakeLauncherRoller(double power) {
     // TODO: Implement this method
   }
 
