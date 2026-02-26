@@ -14,6 +14,6 @@ public class ShooterSequence extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         new ShootCommand(fuelSubsystem).withTimeout(FuelConstants.SPIN_UP_SECONDS),
-        new Launch(fuelSubsystem));
+        new LaunchCommand(fuelSubsystem));
   }
 }

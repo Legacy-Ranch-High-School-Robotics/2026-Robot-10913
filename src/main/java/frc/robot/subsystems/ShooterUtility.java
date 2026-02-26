@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-//import static frc.robot.Constants.FuelConstants.*;
+import static frc.robot.subsystems.ShooterConstants.*;
+import static frc.robot.subsystems.ShooterMotorConstants.*;
 
 public class ShooterUtility extends SubsystemBase {
   private final SparkMax LeftIntakeLauncher;

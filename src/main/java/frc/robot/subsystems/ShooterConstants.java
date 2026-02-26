@@ -7,7 +7,5 @@ public class ShooterConstants {
         // Motor controller IDs for Fuel Mechanism motors
         public static final int leftLauncherCanID = 5;
         public static final int rightLauncherCanID = 6;
-    }
-
-    
+    }   
 }

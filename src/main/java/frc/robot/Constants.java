@@ -100,8 +100,7 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
 
   }
-
-  // Shooter Constants
+// Shooter Constants
   public static final class FuelConstants {
     // Motor controller IDs for Fuel Mechanism motors
     public static final int leftLauncherCanID = 5;
