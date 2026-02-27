@@ -5,7 +5,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(40);
-    intakeRollerMotor.configure(rollerConfig, null, null);
+   // intakeRollerMotor.configure(rollerConfig, null, null);
     intakeRollerEncoder = intakeRollerMotor.getEncoder();
 
     // Configure intake pivot motor
@@ -50,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .outputRange(-1, 1)
         .positionWrappingEnabled(false);
 
-    intakePivotMotor.configure(pivotConfig, null, null);
+   /// intakePivotMotor.configure(pivotConfig, null, null);
     intakePivotEncoder = intakePivotMotor.getEncoder();
     intakePivotClosedLoopController = intakePivotMotor.getClosedLoopController();
   }

@@ -33,9 +33,9 @@ public class IntakeSuperStructure extends SubsystemBase {
   /**
    * Command to set the intake pivot angle.
    */
-  public Command setIntakePivotAngle(Angle angle) {
+  /*public Command setIntakePivotAngle(Angle angle) {
     return intake.setPivotAngle(angle).withName("IntakeSuperStructure.setIntakePivotAngle");
-  }
+  }*/
 
   /**
    * Command to deploy intake and run wheels.
