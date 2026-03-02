@@ -1,0 +1,14 @@
+{
+    
+    "fileName": "PhotonVision.json",
+    "name": "PhotonVision",
+    "version": "1.0.0",
+    "dependencies": {
+        "photonvision": {
+        "groupId": "org.photonvision",
+        "artifactId": "photonvision",
+        "version": "1.0.0"
+        }
+        
+    }
+}
