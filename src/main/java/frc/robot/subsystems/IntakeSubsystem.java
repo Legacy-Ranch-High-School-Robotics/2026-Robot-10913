@@ -5,7 +5,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,7 +18,7 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
 
   private static final double INTAKE_SPEED = 0.8;
-  private static final double INTAKE_MAX_RPM = 6000;
+  private static final double INTAKE_MAX_RPM = 1000;
 
   // Intake roller motor
   private SparkMax intakeRollerMotor;
@@ -25,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private RelativeEncoder intakePivotEncoder;
   private SparkClosedLoopController intakePivotClosedLoopController;
 
+  @SuppressWarnings("removal")
   public IntakeSubsystem() {
     // Configure intake roller motor
     intakeRollerMotor = new SparkMax(Constants.IntakeConstants.kRollerMotorId, MotorType.kBrushless);
@@ -33,7 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .inverted(true)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(40);
-    intakeRollerMotor.configure(rollerConfig, null, null);
+  intakeRollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakeRollerEncoder = intakeRollerMotor.getEncoder();
 
     // Configure intake pivot motor
@@ -50,7 +55,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .outputRange(-1, 1)
         .positionWrappingEnabled(false);
 
-    intakePivotMotor.configure(pivotConfig, null, null);
+  intakePivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakePivotEncoder = intakePivotMotor.getEncoder();
     intakePivotClosedLoopController = intakePivotMotor.getClosedLoopController();
   }
@@ -73,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .withName("Intake.Eject");
   }
 
-  public Command setPivotAngle(double angle) {
+  public Command setPivotAngle(Angle angle) {
     return Commands.runOnce(() -> intakePivotClosedLoopController.setReference(angle, 
         com.revrobotics.spark.SparkBase.ControlType.kPosition), this)
         .withName("IntakePivot.SetAngle");
@@ -108,21 +113,25 @@ public class IntakeSubsystem extends SubsystemBase {
     }).withName("Intake.BackFeedAndRoll");
   }
 
+  @SuppressWarnings("removal")
   private void setIntakeStow() {
     intakePivotClosedLoopController.setReference(0, 
         com.revrobotics.spark.SparkBase.ControlType.kPosition);
   }
 
+  @SuppressWarnings("removal")
   private void setIntakeFeed() {
     intakePivotClosedLoopController.setReference(59, 
         com.revrobotics.spark.SparkBase.ControlType.kPosition);
   }
 
+  @SuppressWarnings("removal")
   private void setIntakeHold() {
     intakePivotClosedLoopController.setReference(115, 
         com.revrobotics.spark.SparkBase.ControlType.kPosition);
   }
 
+  @SuppressWarnings("removal")
   private void setIntakeDeployed() {
     intakePivotClosedLoopController.setReference(148, 
         com.revrobotics.spark.SparkBase.ControlType.kPosition);

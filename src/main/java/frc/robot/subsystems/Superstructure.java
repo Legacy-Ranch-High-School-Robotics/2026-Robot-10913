@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /**
  * Superstructure coordinates the intake subsystem for unified control.
  */
+@SuppressWarnings("unused")
 public class Superstructure extends SubsystemBase {
 
   public final IntakeSubsystem intake;

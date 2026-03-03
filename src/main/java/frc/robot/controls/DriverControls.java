@@ -17,11 +17,13 @@ public class DriverControls {
                 .withName("DriverControls.IntakeDeployAndRoll")
         );
 
-    // Left bumper: feed all (includes intake backfeeding)
+    // Left bumper: back-feed intake while held
+    // Use the existing Superstructure.backFeedIntakeCommand which already
+    // stops the intake when released (via its finallyDo in the IntakeSubsystem).
     controller.leftBumper()
         .whileTrue(
-            superstructure.feedAllCommand()
-                .finallyDo(() -> superstructure.stopFeedingAllCommand().schedule())
+            superstructure.backFeedIntakeCommand()
+                .withName("DriverControls.FeedAll")
         );
   }
 }
