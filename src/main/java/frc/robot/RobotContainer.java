@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -125,12 +126,11 @@ public class RobotContainer {
 
     // Feed button (right bumper)
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(new RunCommand(
-            () -> m_intake.feed(),
-            m_intake))
-        .onFalse(new InstantCommand(
-            () -> m_intake.stop(),
-            m_intake));
+    .whileTrue(
+        new WaitUntilCommand(m_shooter::atTargetVelocity)
+            .andThen(new RunCommand(m_intake::feed, m_intake))
+    )
+    .onFalse(new InstantCommand(m_intake::stop, m_intake));
   }
 
   /**

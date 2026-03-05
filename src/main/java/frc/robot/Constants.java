@@ -4,11 +4,11 @@
 
 package frc.robot;
 
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -100,4 +100,10 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
+
+  public static class IntakeConstants {
+       public static final double feedVoltage = 10.0;
+  }
+  
+
 }

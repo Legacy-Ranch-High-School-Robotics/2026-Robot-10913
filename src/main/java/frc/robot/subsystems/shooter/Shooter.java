@@ -25,6 +25,7 @@ public class Shooter extends SubsystemBase {
 
   private double targetVelocityRPM = 0.0;
 
+  @SuppressWarnings("removal")
   public Shooter() {
     topMotor = new SparkFlex(topMotorCanId, MotorType.kBrushless);
     bottomMotor = new SparkMax(bottomMotorCanId, MotorType.kBrushless);

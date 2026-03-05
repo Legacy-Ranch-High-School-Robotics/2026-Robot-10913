@@ -9,7 +9,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.shooter.Shooter;
 
+@SuppressWarnings("unused")
 public class Intake extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
@@ -46,11 +49,15 @@ public class Intake extends SubsystemBase {
   }
 
   public void feed() {
-    motor.setVoltage(feedVoltage);
+    motor.setVoltage(Constants.IntakeConstants.feedVoltage);
   }
 
   public void stop() {
     motor.stopMotor();
+  }
+
+  public void setVoltage(double voltage) {
+    motor.setVoltage(voltage);
   }
 
   public boolean hasGamePiece() {
