@@ -1,9 +1,8 @@
 package frc.robot.subsystems.intake;
 
 public class IntakeConstants {
-
-  //Black Roller Is 11
   public static final int intakeMotorCanId = 11;
+  public static final int beamBreakDIOChannel = 10;
 
   public static final boolean intakeMotorInverted = false;
 
