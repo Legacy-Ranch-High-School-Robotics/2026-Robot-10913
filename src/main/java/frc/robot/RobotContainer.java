@@ -23,9 +23,11 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.intake.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 
@@ -109,7 +111,7 @@ public class RobotContainer {
     // Intake controls
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whileTrue(new RunCommand(
-            () -> m_intake.intake(),
+            () -> m_intake.outtake(),
             m_intake))
         .onFalse(new InstantCommand(
             () -> m_intake.stop(),
@@ -123,11 +125,17 @@ public class RobotContainer {
             () -> m_intake.stop(),
             m_intake));
 
-    // Feed button (right bumper)
+    // Feed button (right bumper) - waits for shooter to reach target RPM before feeding
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(new RunCommand(
-            () -> m_intake.feed(),
-            m_intake))
+        .whileTrue(
+            new RumCommand(
+                // start spinning the shooter
+                () -> m_shooter.setVelocity(), m_shooter))
+            .andThen(
+                // wait for shooter to be at right speed
+              new WaitUntilCommand(m_shooter::atTargetVelocity)
+              // start the conveyer
+                .andThen(new RunCommand(() -> m_intake.feed(), m_intake)))
         .onFalse(new InstantCommand(
             () -> m_intake.stop(),
             m_intake));
