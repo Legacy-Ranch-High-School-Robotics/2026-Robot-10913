@@ -1,7 +1,9 @@
 package frc.robot.subsystems.shooter;
 
 public class ShooterConstants {
+  //Orange Wheels
   public static final int topMotorCanId = 13;
+  //Grey Wheels
   public static final int bottomMotorCanId = 12;
 
   public static final boolean topMotorInverted = false;
@@ -18,5 +20,5 @@ public class ShooterConstants {
   public static final double shooterSpeakerRPM = 5000.0;
   public static final double shooterAmpRPM = 2500.0;
 
-  public static final double shooterToleranceRPM = 100.0;
+  public static final double shooterToleranceRPM = 3000.0;
 }

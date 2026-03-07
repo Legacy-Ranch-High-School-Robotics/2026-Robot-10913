@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
   private final SparkClosedLoopController topController;
   private final SparkClosedLoopController bottomController;
 
-  private double targetVelocityRPM = 0.0;
+  private double targetVelocityRPM = 90.0;
 
   public Shooter() {
     topMotor = new SparkFlex(topMotorCanId, MotorType.kBrushless);
@@ -74,6 +74,16 @@ public class Shooter extends SubsystemBase {
     bottomController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
+    public void setTopVelocity(double velocityRPM) {
+    targetVelocityRPM = velocityRPM;
+    topController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+  }
+
+    public void setBottomVelocity(double velocityRPM) {
+    targetVelocityRPM = velocityRPM;
+    bottomController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+  }
+
   public void setVoltage(double volts) {
     topMotor.setVoltage(volts);
     bottomMotor.setVoltage(volts);
@@ -86,8 +96,13 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM
-        && Math.abs(bottomEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+    System.out.println(topEncoder.getVelocity());
+    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+        //&& Math.abs(bottomEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+  }
+
+  public boolean atTestingVelocity() {
+    return false;
   }
 
   public double getAverageVelocityRPM() {

@@ -7,19 +7,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
-  private final DigitalInput beamBreak;
 
   public Intake() {
     motor = new SparkMax(intakeMotorCanId, MotorType.kBrushless);
     encoder = motor.getEncoder();
-    beamBreak = new DigitalInput(beamBreakDIOChannel);
-
     var config = new SparkMaxConfig();
     config
         .inverted(intakeMotorInverted)
@@ -51,10 +47,6 @@ public class Intake extends SubsystemBase {
 
   public void stop() {
     motor.stopMotor();
-  }
-
-  public boolean hasGamePiece() {
-    return !beamBreak.get();
   }
 
   public double getVelocityRPM() {
