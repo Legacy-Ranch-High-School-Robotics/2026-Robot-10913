@@ -128,7 +128,7 @@ public class RobotContainer {
         .whileTrue(
             // start spinning the shooter
             new RunCommand(
-                () -> m_shooter.setVelocity(ShooterConstants.shooterSpeakerRPM), m_shooter)
+                () -> m_shooter.setTopVelocity(ShooterConstants.shooterSpeakerRPM), m_shooter)
                 .until(m_shooter::atTargetVelocity)
                 // once at speed, start the conveyer
                 .andThen(new RunCommand(() -> m_intake.feed(), m_intake)))
