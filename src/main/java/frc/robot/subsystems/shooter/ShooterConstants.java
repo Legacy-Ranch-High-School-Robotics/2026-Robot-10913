@@ -17,7 +17,7 @@ public class ShooterConstants {
   public static final double shooterKv = 0.000175;
 
   public static final double shooterIdleRPM = 1500.0;
-  public static final double shooterSpeakerRPM = 5000.0;
+  public static final double shooterSpeakerRPM = 5650.0;
   public static final double shooterAmpRPM = 2500.0;
 
   public static final double shooterToleranceRPM = 3000.0;

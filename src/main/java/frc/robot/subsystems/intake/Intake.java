@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   private final SparkMax motor;
+  private final SparkMax secondaryMotor;
   private final RelativeEncoder encoder;
 
   public Intake() {
     motor = new SparkMax(intakeMotorCanId, MotorType.kBrushless);
+    secondaryMotor = new SparkMax(secondaryMotorCanId, MotorType.kBrushless);
     encoder = motor.getEncoder();
     var config = new SparkMaxConfig();
     config
@@ -26,6 +28,18 @@ public class Intake extends SubsystemBase {
 
     motor.configure(
         config,
+        com.revrobotics.ResetMode.kResetSafeParameters,
+        com.revrobotics.PersistMode.kPersistParameters);
+
+    var secondaryConfig = new SparkMaxConfig();
+    secondaryConfig
+        .inverted(secondaryMotorInverted)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(secondaryCurrentLimit)
+        .voltageCompensation(12.0);
+
+    secondaryMotor.configure(
+        secondaryConfig,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
   }
@@ -47,6 +61,18 @@ public class Intake extends SubsystemBase {
 
   public void stop() {
     motor.stopMotor();
+  }
+
+  public void moveSecondaryUp() {
+    secondaryMotor.setVoltage(secondaryUpVoltage);
+  }
+
+  public void moveSecondaryDown() {
+    secondaryMotor.setVoltage(secondaryDownVoltage);
+  }
+
+  public void stopSecondary() {
+    secondaryMotor.stopMotor();
   }
 
   public double getVelocityRPM() {

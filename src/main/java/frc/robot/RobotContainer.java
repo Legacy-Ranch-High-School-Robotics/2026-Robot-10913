@@ -45,6 +45,11 @@ public class RobotContainer {
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   // The operator's controller
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  
+  // Toggle state for B button (motor CAN ID 10)
+  private boolean secondaryMotorToggleState = false;
+  // Toggle state for A button (intake rollers)
+  private boolean intakeToggleState = false;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -89,22 +94,33 @@ public class RobotContainer {
             m_robotDrive));
 
     // ========== OPERATOR CONTROLS ==========
-    // Shooter controls
+    // Intake roller toggle with A button
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(new RunCommand(
-            () -> m_shooter.setVelocity(ShooterConstants.shooterSpeakerRPM),
-            m_shooter))
-        .onFalse(new InstantCommand(
-            () -> m_shooter.stop(),
-            m_shooter));
+        .onTrue(new InstantCommand(
+            () -> {
+              if (intakeToggleState) {
+                m_intake.stop();
+              } else {
+                m_intake.intake();
+              }
+              intakeToggleState = !intakeToggleState;
+            },
+            m_intake));
 
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whileTrue(new RunCommand(
-            () -> m_shooter.setVelocity(ShooterConstants.shooterAmpRPM),
-            m_shooter))
+        .onTrue(new InstantCommand(
+            () -> {
+              if (secondaryMotorToggleState) {
+                m_intake.moveSecondaryUp();
+              } else {
+                m_intake.moveSecondaryDown();
+              }
+              secondaryMotorToggleState = !secondaryMotorToggleState;
+            },
+            m_intake))
         .onFalse(new InstantCommand(
-            () -> m_shooter.stop(),
-            m_shooter));
+            () -> m_intake.stopSecondary(),
+            m_intake));
 
     // Intake controls
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
@@ -123,18 +139,21 @@ public class RobotContainer {
             () -> m_intake.stop(),
             m_intake));
 
-    // Feed button (right bumper) - waits for shooter to reach target RPM before feeding
+    // Right bumper - sets shooter RPM and feeds when at speed
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(
             // start spinning the shooter
             new RunCommand(
-                () -> m_shooter.setTopVelocity(ShooterConstants.shooterSpeakerRPM), m_shooter)
+                () -> m_shooter.setVelocity(ShooterConstants.shooterSpeakerRPM), m_shooter)
                 .until(m_shooter::atTargetVelocity)
                 // once at speed, start the conveyer
                 .andThen(new RunCommand(() -> m_intake.feed(), m_intake)))
         .onFalse(new InstantCommand(
-            () -> m_intake.stop(),
-            m_intake));
+            () -> {
+              m_shooter.stop();
+              m_intake.stop();
+            },
+            m_shooter, m_intake));
   }
 
   /**
