@@ -17,10 +17,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.sim.DriveSim;
 
 public class DriveSubsystem extends SubsystemBase {
+  private DriveSim m_driveSim;
 
   // Create MAXSwerveModules
 
@@ -71,9 +74,23 @@ public class DriveSubsystem extends SubsystemBase {
     // Usage reporting for MAXSwerve template
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+
+    if (RobotBase.isSimulation()) {
+      m_driveSim = new DriveSim(m_frontLeft, m_frontRight, m_rearLeft, m_rearRight, m_gyro);
+    }
+  }
+
+  /**
+   * Returns the simulation wrapper for the drivetrain.
+   *
+   * @return The DriveSim instance, or null if not in simulation.
+   */
+  public DriveSim getDriveSim() {
+    return m_driveSim;
   }
 
   @Override
+
   public void periodic() {
 
     // Update the odometry in the periodic block

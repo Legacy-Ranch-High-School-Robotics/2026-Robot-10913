@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.sim.RobotSim;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +20,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private RobotSim m_robotSim;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,6 +31,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    if (RobotBase.isSimulation()) {
+      m_robotSim = new RobotSim(m_robotContainer.getDriveSubsystem());
+    }
   }
 
   /**
@@ -44,6 +51,16 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+  }
+
+  /**
+   * This function is called every 20 ms, no matter the mode, but only when the robot is in simulation.
+   */
+  @Override
+  public void simulationPeriodic() {
+    if (m_robotSim != null) {
+      m_robotSim.simulatorPeriodic();
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
