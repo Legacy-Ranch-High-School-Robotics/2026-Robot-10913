@@ -123,6 +123,14 @@ public class RobotContainer {
             () -> m_intake.stop(),
             m_intake));
 
+new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileTrue(new RunCommand(
+            () -> m_intake.liftDeploy(),
+            m_intake).until(m_intake::isLiftDeployed))
+        .onFalse(new InstantCommand(
+            () -> m_intake.stop(),
+            m_intake));
+
     // Feed button (right bumper) - waits for shooter to reach target RPM before feeding
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(

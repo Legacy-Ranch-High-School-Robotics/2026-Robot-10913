@@ -12,10 +12,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
+  //lift motor and encoder
+  private final SparkMax liftMotor;
+  private final RelativeEncoder liftEncoder;
 
   public Intake() {
     motor = new SparkMax(intakeMotorCanId, MotorType.kBrushless);
     encoder = motor.getEncoder();
+
+    liftMotor = new SparkMax(intakeLiftCanID, MotorType.kBrushless);
+    liftEncoder = liftMotor.getEncoder();
+
     var config = new SparkMaxConfig();
     config
         .inverted(intakeMotorInverted)
@@ -28,6 +35,11 @@ public class Intake extends SubsystemBase {
         config,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
+
+    liftMotor.configure(
+        config,
+        com.revrobotics.ResetMode.kResetSafeParameters,
+        com.revrobotics.PersistMode.kPersistParameters);
   }
 
   @Override
@@ -35,6 +47,18 @@ public class Intake extends SubsystemBase {
 
   public void intake() {
     motor.setVoltage(intakeVoltage);
+  }
+
+  public void intakeFeed(){
+    motor.setVoltage(liftVoltage);
+  }
+
+  public void liftRetract(){
+    motor.setVoltage(liftVoltage * -1);
+  }
+
+  public void liftDeploy(){
+    motor.setVoltage(liftVoltage);
   }
 
   public void outtake() {
@@ -51,5 +75,17 @@ public class Intake extends SubsystemBase {
 
   public double getVelocityRPM() {
     return encoder.getVelocity();
+  }
+
+  public double getLiftPosition() {
+    return liftEncoder.getPosition();
+  }
+
+  public boolean isLiftDeployed() {
+    return getLiftPosition() == deployedPosition;
+  }
+
+  public boolean isLiftRetracted() {
+    return getLiftPosition() == retractedPosition;
   }
 }
