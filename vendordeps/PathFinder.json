@@ -1,0 +1,14 @@
+
+{
+    "fileName": "PathplannerLib.json",
+    "name": "PathplannerLib",
+    "version": "1.0.0",
+    "dependencies": {
+        "pathplannerlib": {
+        "groupId": "com.pathplanner.lib",
+        "artifactId": "pathplannerlib",
+        "version": "1.0.0"
+        }
+        
+    }
+}
