@@ -21,6 +21,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,6 +41,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_shooter = new Shooter();
+  private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
 
   // The driver's controller
@@ -89,18 +92,26 @@ public class RobotContainer {
             m_robotDrive));
 
     // ========== OPERATOR CONTROLS ==========
-    // Shooter controls
+    // Eject button (A) - runs intake, hopper, and shooter backwards
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whileTrue(new RunCommand(
-            () -> m_shooter.setVelocity(ShooterConstants.shooterSpeakerRPM),
-            m_shooter))
+            () -> {
+              m_intake.eject();
+              m_hopper.eject();
+              m_shooter.eject();
+            },
+            m_intake, m_hopper, m_shooter))
         .onFalse(new InstantCommand(
-            () -> m_shooter.stop(),
-            m_shooter));
+            () -> {
+              m_intake.stop();
+              m_hopper.stop();
+              m_shooter.stop();
+            },
+            m_intake, m_hopper, m_shooter));
 
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .whileTrue(new RunCommand(
-            () -> m_shooter.setVelocity(ShooterConstants.shooterAmpRPM),
+            () -> m_shooter.setVelocity(ShooterConstants.shooterRPM),
             m_shooter))
         .onFalse(new InstantCommand(
             () -> m_shooter.stop(),
@@ -123,12 +134,21 @@ public class RobotContainer {
             () -> m_intake.stop(),
             m_intake));
 
+    // Intake lift controls (left bumper)
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileTrue(new RunCommand(
+            () -> m_intake.liftUp(),
+            m_intake))
+        .onFalse(new InstantCommand(
+            () -> m_intake.stopLift(),
+            m_intake));
+
     // Feed button (right bumper) - waits for shooter to reach target RPM before feeding
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(
             // start spinning the shooter
             new RunCommand(
-                () -> m_shooter.setTopVelocity(ShooterConstants.shooterSpeakerRPM), m_shooter)
+                () -> m_shooter.setTopVelocity(ShooterConstants.shooterRPM), m_shooter)
                 .until(m_shooter::atTargetVelocity)
                 // once at speed, start the conveyer
                 .andThen(new RunCommand(() -> m_intake.feed(), m_intake)))
