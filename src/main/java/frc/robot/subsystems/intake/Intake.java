@@ -54,11 +54,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftRetract(){
-    motor.setVoltage(liftVoltage * -1);
+    liftMotor.setVoltage(liftVoltage * -1);
   }
 
   public void liftDeploy(){
-    motor.setVoltage(liftVoltage);
+    liftMotor.setVoltage(liftVoltage);
   }
 
   public void outtake() {
@@ -71,6 +71,10 @@ public class Intake extends SubsystemBase {
 
   public void stop() {
     motor.stopMotor();
+  }
+
+  public void liftStop() {
+    liftMotor.stopMotor();
   }
 
   public double getVelocityRPM() {

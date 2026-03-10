@@ -128,7 +128,7 @@ new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value
             () -> m_intake.liftDeploy(),
             m_intake).until(m_intake::isLiftDeployed))
         .onFalse(new InstantCommand(
-            () -> m_intake.stop(),
+            () -> m_intake.liftStop(),
             m_intake));
 
     // Feed button (right bumper) - waits for shooter to reach target RPM before feeding

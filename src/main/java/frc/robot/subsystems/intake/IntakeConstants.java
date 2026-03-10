@@ -11,8 +11,8 @@ public class IntakeConstants {
 
   public static final double intakeVoltage = 10.0;
   public static final double outtakeVoltage = -8.0;
-  public static final double liftVoltage = 2.0;
+  public static final double liftVoltage = 0.75;
   public static final double feedVoltage = 6.0;
-  public static final double deployedPosition = 10;
-  public static final double retractedPosition = -10;
+  public static final double deployedPosition = -0.023;
+  public static final double retractedPosition = -3.476;
 }
