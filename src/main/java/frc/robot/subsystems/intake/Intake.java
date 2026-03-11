@@ -61,6 +61,10 @@ public class Intake extends SubsystemBase {
     liftMotor.setVoltage(liftVoltage);
   }
 
+  public void inverseLift(){
+    liftMotor.setVoltage(liftVoltage * -1);
+  }
+
   public void outtake() {
     motor.setVoltage(outtakeVoltage);
   }
