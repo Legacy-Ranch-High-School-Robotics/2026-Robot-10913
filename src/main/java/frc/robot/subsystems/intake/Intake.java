@@ -13,12 +13,18 @@ public class Intake extends SubsystemBase {
   private final SparkMax motor;
   private final SparkMax liftMotor;
   private final RelativeEncoder encoder;
+  //lift motor and encoder
+  private final SparkMax liftMotor;
+  private final RelativeEncoder liftEncoder;
 
   public Intake() {
     motor = new SparkMax(intakeMotorCanId, MotorType.kBrushless);
     liftMotor = new SparkMax(intakeLiftMotorCanId, MotorType.kBrushless);
     encoder = motor.getEncoder();
-    
+
+    liftMotor = new SparkMax(intakeLiftCanID, MotorType.kBrushless);
+    liftEncoder = liftMotor.getEncoder();
+
     var config = new SparkMaxConfig();
     config
         .inverted(intakeMotorInverted)
@@ -38,8 +44,9 @@ public class Intake extends SubsystemBase {
         config,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
+
     liftMotor.configure(
-        liftConfig,
+        config,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
   }
@@ -49,6 +56,18 @@ public class Intake extends SubsystemBase {
 
   public void intake() {
     motor.setVoltage(intakeVoltage);
+  }
+
+  public void intakeFeed(){
+    motor.setVoltage(liftVoltage);
+  }
+
+  public void liftRetract(){
+    liftMotor.setVoltage(liftVoltage * -1);
+  }
+
+  public void liftDeploy(){
+    liftMotor.setVoltage(liftVoltage);
   }
 
   public void outtake() {
@@ -63,23 +82,23 @@ public class Intake extends SubsystemBase {
     motor.stopMotor();
   }
 
-  public void liftUp() {
-    liftMotor.setVoltage(liftUpVoltage);
-  }
-
-  public void liftDown() {
-    liftMotor.setVoltage(liftDownVoltage);
-  }
-
-  public void stopLift() {
+  public void liftStop() {
     liftMotor.stopMotor();
-  }
-
-  public void eject() {
-    motor.setVoltage(-intakeVoltage);
   }
 
   public double getVelocityRPM() {
     return encoder.getVelocity();
+  }
+
+  public double getLiftPosition() {
+    return liftEncoder.getPosition();
+  }
+
+  public boolean isLiftDeployed() {
+    return getLiftPosition() == deployedPosition;
+  }
+
+  public boolean isLiftRetracted() {
+    return getLiftPosition() == retractedPosition;
   }
 }
