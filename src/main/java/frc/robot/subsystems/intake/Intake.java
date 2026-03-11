@@ -63,11 +63,19 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftRetract(){
-    liftMotor.setVoltage(liftVoltage * -1);
+    if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
+      liftMotor.setVoltage(liftVoltage * -1);
+    } else {
+      liftStop();
+    }
   }
 
   public void liftDeploy(){
-    liftMotor.setVoltage(liftVoltage);
+    if (getLiftPosition() < deployedPosition + liftPositionTolerance) {
+      liftMotor.setVoltage(liftVoltage);
+    } else {
+      liftStop();
+    }
   }
 
   public void outtake() {
@@ -95,10 +103,10 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean isLiftDeployed() {
-    return getLiftPosition() == deployedPosition;
+    return Math.abs(getLiftPosition() - deployedPosition) < liftPositionTolerance;
   }
 
   public boolean isLiftRetracted() {
-    return getLiftPosition() == retractedPosition;
+    return Math.abs(getLiftPosition() - retractedPosition) < liftPositionTolerance;
   }
 }
