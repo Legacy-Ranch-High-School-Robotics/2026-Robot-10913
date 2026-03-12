@@ -93,7 +93,7 @@ public class RobotContainer {
 
     // ========== OPERATOR CONTROLS ==========
     // Eject button (A) - runs intake, hopper, and shooter backwards
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+    new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .whileTrue(new RunCommand(
             () -> {
               m_intake.outtake();
@@ -109,13 +109,17 @@ public class RobotContainer {
             },
             m_intake, m_hopper, m_shooter));
 
-    new JoystickButton(m_operatorController, XboxController.Button.kB.value)
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whileTrue(new RunCommand(
             () -> m_shooter.setVelocity(ShooterConstants.shooterRPM),
             m_shooter))
         .onFalse(new InstantCommand(
             () -> m_shooter.stop(),
             m_shooter));
+        .whileTrue(new RunCommand(
+            () -> {
+              m_intake.feed();
+            }));
 
     // Intake controls
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
