@@ -182,4 +182,64 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return m_gyro.getAngularVelocityZWorld().getValueAsDouble() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
+
+  /**
+   * Returns the current robot-relative chassis speeds.
+   * Required for PathPlanner.
+   *
+   * @return The current robot-relative chassis speeds
+   */
+  public ChassisSpeeds getChassisSpeeds() {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState());
+  }
+
+  /**
+   * Drives the robot using robot-relative chassis speeds.
+   * Required for PathPlanner.
+   *
+   * @param chassisSpeeds The desired robot-relative chassis speeds
+   */
+  public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    setModuleStates(swerveModuleStates);
+  }
+
+  /**
+   * Returns the current rotation of the robot.
+   * Required for PathPlanner.
+   *
+   * @return The current rotation of the robot
+   */
+  public Rotation2d getRotation() {
+    return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble() * (DriveConstants.kGyroReversed ? -1.0 : 1.0));
+  }
+
+  /**
+   * Returns the positions of all swerve modules.
+   * Required for PathPlanner.
+   *
+   * @return Array of swerve module positions
+   */
+  public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+    };
+  }
+
+  /**
+   * Resets the robot's pose.
+   * Alias for resetOdometry, required for PathPlanner.
+   *
+   * @param pose The pose to reset to
+   */
+  public void resetPose(Pose2d pose) {
+    resetOdometry(pose);
+  }
 }
