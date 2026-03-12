@@ -116,6 +116,13 @@ public class RobotContainer {
         .onFalse(new InstantCommand(
             () -> m_shooter.stop(),
             m_shooter));
+      new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(new RunCommand(
+            () -> m_hopper.setVelocity(ShooterConstants.shooterRPM),
+            m_shooter))
+        .onFalse(new InstantCommand(
+            () -> m_hopper.stop(),
+            m_shooter));
       
     
     // Intake controls
