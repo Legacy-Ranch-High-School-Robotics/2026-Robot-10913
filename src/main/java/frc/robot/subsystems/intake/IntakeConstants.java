@@ -4,7 +4,7 @@ public class IntakeConstants {
 
   //Black Roller Is 11
   public static final int intakeMotorCanId = 11;
-  public static final int intakeLiftCanID = 10;  public static final int intakeLiftMotorCanId = 10;
+  public static final int intakeLiftMotorCanId = 10;
 
   public static final boolean intakeMotorInverted = false;
   public static final boolean intakeLiftMotorInverted = false;
