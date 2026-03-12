@@ -43,7 +43,6 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
-
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   // The operator's controller
@@ -134,7 +133,7 @@ public class RobotContainer {
             () -> m_intake.stop(),
             m_intake));
 
-new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(
             () -> m_intake.liftDeploy(),
             m_intake).until(m_intake::isLiftDeployed))

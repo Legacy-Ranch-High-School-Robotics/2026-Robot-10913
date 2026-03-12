@@ -17,5 +17,5 @@ public class IntakeConstants {
   public static final double feedVoltage = 6.0;
   public static final double deployedPosition = -0.023;
   public static final double retractedPosition = -3.476;
-  public static final double liftPositionTolerance = 0.1;
+  public static final double liftPositionTolerance = 0.5;
 }
