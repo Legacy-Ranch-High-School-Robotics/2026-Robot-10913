@@ -127,7 +127,7 @@ public class RobotContainer {
 
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whileTrue(new RunCommand(
-            () -> m_intake.outtake(),
+            () -> m_intake.intake(),
             m_intake))
         .onFalse(new InstantCommand(
             () -> m_intake.stop(),
