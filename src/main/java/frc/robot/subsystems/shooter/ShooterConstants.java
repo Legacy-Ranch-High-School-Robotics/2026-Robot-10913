@@ -13,8 +13,8 @@ public class ShooterConstants {
   public static final double shooterKd = 0.0;
   public static final double shooterKv = 0.000175;
 
-  public static final double shooterRPM = 5000.0;
-  public static final double shooterRPMInverted = -5000.0;
+  public static final double shooterRPM = 5600.0;
+  public static final double shooterRPMInverted = -2000.0;
 
 
   public static final double shooterToleranceRPM = 3000.0;
