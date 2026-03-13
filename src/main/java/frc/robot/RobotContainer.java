@@ -24,6 +24,7 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeLift;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -43,6 +44,7 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
+  private final IntakeLift m_intakeLift = new IntakeLift();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -145,11 +147,11 @@ public class RobotContainer {
 
 new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(
-            () -> m_intake.liftDeploy(),
-            m_intake).until(m_intake::isLiftDeployed))
+            () -> m_intakeLift.deploy(),
+            m_intakeLift).until(m_intakeLift::isDeployed))
         .onFalse(new InstantCommand(
-            () -> m_intake.liftStop(),
-            m_intake));
+            () -> m_intakeLift.stop(),
+            m_intakeLift));
 
     // Feed button (right bumper) - waits for shooter to reach target RPM before feeding
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
