@@ -1,0 +1,12 @@
+Driver Control:
+Left Joystick - XY movement
+Right Joystick - Rotate in place
+
+Operator Control:
+Eject All(Intake, Hopper, Shooter in reverse): B
+Launch Balls(Shooter+Hopper): A 
+Intake: X 
+Outtake: Y 
+Deploy Intake: leftBumper 
+Retract intake: leftBumper
+Shooter only : rightBumper
