@@ -112,8 +112,28 @@ public class MAXSwerveModule {
     m_desiredState = desiredState;
   }
 
+  /**
+   * Returns the last desired state set on this module.
+   *
+   * @return The desired state.
+   */
+  public SwerveModuleState getDesiredState() {
+    return m_desiredState;
+  }
+
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
+
+  /** Gets the applied voltage of the drive motor. */
+  public double getDriveMotorVoltage() {
+      return m_drivingSpark.getAppliedOutput() * m_drivingSpark.getBusVoltage();
+  }
+
+  /** Gets the applied voltage of the turning motor. */
+  public double getSteerMotorVoltage() {
+      return m_turningSpark.getAppliedOutput() * m_turningSpark.getBusVoltage();
+  }
 }
+

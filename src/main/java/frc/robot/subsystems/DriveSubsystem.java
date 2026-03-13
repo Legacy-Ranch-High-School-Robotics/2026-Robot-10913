@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.sim.DriveSim;
@@ -68,6 +70,9 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
           });
 
+  // Field2d for visualizing robot pose in Glass/AdvantageScope
+  private final Field2d m_field = new Field2d();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
@@ -75,8 +80,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
+    // Publish the field to SmartDashboard so Glass can show it
+    SmartDashboard.putData("Field", m_field);
+
     if (RobotBase.isSimulation()) {
       m_driveSim = new DriveSim(m_frontLeft, m_frontRight, m_rearLeft, m_rearRight, m_gyro);
+      // Sync odometry with the sim starting pose so robot doesn't start at (0,0)
+      resetOdometry(frc.robot.sim.SimConstants.kStartingPose);
     }
   }
 
@@ -90,7 +100,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   @Override
-
   public void periodic() {
 
     // Update the odometry in the periodic block
@@ -103,6 +112,9 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+
+    // Publish odometry pose to the field widget
+    m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   /**
