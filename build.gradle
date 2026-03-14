@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
+    id "com.diffplug.spotless" version "6.25.0"
 }
 
 java {
@@ -104,4 +105,48 @@ wpi.java.configureTestTasks(test)
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
+    dependsOn 'spotlessApply'
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/bin/**'
+        }
+        ratchetFrom 'origin/main'
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+// Automatically install a pre-commit hook to run spotlessApply
+tasks.register("installGitHooks") {
+    doLast {
+        def hookFile = new File(project.rootDir, ".git/hooks/pre-commit")
+        if (!hookFile.exists()) {
+            hookFile.parentFile.mkdirs()
+            hookFile.text = """#!/bin/sh
+echo "Running spotlessApply on staged files..."
+files=\$(git diff --cached --name-only --diff-filter=ACM | grep '.java\$')
+if [ -z "\$files" ]; then
+    exit 0
+fi
+
+# Pass the specific files to spotlessApply
+./gradlew spotlessApply -PspotlessIdeHook="\$(echo \$files | tr '\\n' ',')"
+
+git add \$files
+"""
+            hookFile.setExecutable(true)
+            println "Installed git pre-commit hook for spotlessApply."
+        }
+    }
+}
+
+tasks.named("build") {
+    dependsOn installGitHooks
 }
