@@ -128,12 +128,11 @@ public class MAXSwerveModule {
 
   /** Gets the applied voltage of the drive motor. */
   public double getDriveMotorVoltage() {
-      return m_drivingSpark.getAppliedOutput() * m_drivingSpark.getBusVoltage();
+    return m_drivingSpark.getAppliedOutput() * m_drivingSpark.getBusVoltage();
   }
 
   /** Gets the applied voltage of the turning motor. */
   public double getSteerMotorVoltage() {
-      return m_turningSpark.getAppliedOutput() * m_turningSpark.getBusVoltage();
+    return m_turningSpark.getAppliedOutput() * m_turningSpark.getBusVoltage();
   }
 }
-

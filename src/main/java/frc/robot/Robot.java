@@ -55,7 +55,8 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode, but only when the robot is in simulation.
+   * This function is called every 20 ms, no matter the mode, but only when the robot is in
+   * simulation.
    */
   @Override
   public void simulationPeriodic() {
