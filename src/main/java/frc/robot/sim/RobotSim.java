@@ -1,7 +1,5 @@
 package frc.robot.sim;
 
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -14,14 +12,9 @@ public class RobotSim {
   private final DriveSubsystem m_driveSubsystem;
   private final VisionSim m_visionSim;
 
-  // For visualizing the ground truth pose
-  private final Field2d m_field = new Field2d();
-
   public RobotSim(DriveSubsystem driveSubsystem) {
     m_driveSubsystem = driveSubsystem;
     m_visionSim = new VisionSim();
-
-    SmartDashboard.putData("ActualRobot", m_field);
   }
 
   /** Call this in robotPeriodic() or simulationPeriodic(). */
@@ -36,7 +29,7 @@ public class RobotSim {
       m_visionSim.update(driveSim.getActualPose());
 
       // 3) Publish the ground truth pose for visual comparison
-      m_field.setRobotPose(driveSim.getActualPose());
+      m_driveSubsystem.getField().getObject("Actual Robot").setPose(driveSim.getActualPose());
     }
   }
 }

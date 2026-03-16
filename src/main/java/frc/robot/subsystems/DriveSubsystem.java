@@ -118,6 +118,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
+   * Returns the Field2d object for visualizing the robot pose.
+   *
+   * @return The Field2d instance.
+   */
+  public Field2d getField() {
+    return m_field;
+  }
+
+  /**
    * Returns the currently-estimated pose of the robot.
    *
    * @return The pose.
