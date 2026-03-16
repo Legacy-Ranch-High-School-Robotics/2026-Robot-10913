@@ -185,15 +185,19 @@ public class RobotContainer {
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics);
 
+    // Determine starting pose based on DriverStation alliance and station
+    Pose2d startPose = frc.robot.sim.SimConstants.getStartingPose();
+    double dir = startPose.getRotation().getDegrees() == 180 ? -1 : 1;
+    double x = startPose.getX();
+    double y = startPose.getY();
+    Rotation2d rot = startPose.getRotation();
+
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
+            startPose,
+            List.of(new Translation2d(x + 1 * dir, y + 1), new Translation2d(x + 2 * dir, y - 1)),
+            new Pose2d(x + 3 * dir, y, rot),
             config);
 
     var thetaController =

@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sim.RobotSim;
+import frc.robot.sim.SimConstants;
 import org.ironmaple.simulation.SimulatedArena;
 
 /**
@@ -22,6 +25,10 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private RobotSim m_robotSim;
+
+  // Track last-seen alliance/station so we can detect changes while disabled
+  private DriverStation.Alliance m_lastAlliance = null;
+  private int m_lastStation = -1;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -70,7 +77,21 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // Poll for alliance/station changes and reposition the simulated robot
+    if (RobotBase.isSimulation()) {
+      var allianceOpt = DriverStation.getAlliance();
+      int station = DriverStation.getLocation().orElse(1);
+      DriverStation.Alliance alliance = allianceOpt.orElse(null);
+
+      if (alliance != m_lastAlliance || station != m_lastStation) {
+        m_lastAlliance = alliance;
+        m_lastStation = station;
+        Pose2d newPose = SimConstants.getStartingPose();
+        m_robotContainer.getDriveSubsystem().resetOdometry(newPose);
+      }
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

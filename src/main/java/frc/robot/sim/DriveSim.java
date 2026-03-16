@@ -97,4 +97,10 @@ public class DriveSim {
   public Pose2d getOdometryPose() {
     return m_simDrive.getOdometryEstimatedPose();
   }
+
+  /** Instantly teleports the simulated robot to a new pose on the field. */
+  public void setSimulationWorldPose(Pose2d pose) {
+    // Depending on maple-sim version, we either set it on the wrapper or the underlying sim
+    m_simDrive.setSimulationWorldPose(pose);
+  }
 }

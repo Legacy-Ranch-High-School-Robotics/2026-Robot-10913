@@ -126,23 +126,17 @@ public class DriveSubsystem extends SubsystemBase {
     return m_field;
   }
 
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
   public Pose2d getPose() {
-
+    if (RobotBase.isSimulation() && m_driveSim != null) {
+      return m_driveSim.getOdometryPose();
+    }
     return m_odometry.getPoseMeters();
   }
 
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
   public void resetOdometry(Pose2d pose) {
-
+    if (RobotBase.isSimulation() && m_driveSim != null) {
+      m_driveSim.setSimulationWorldPose(pose);
+    }
     m_odometry.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
         new SwerveModulePosition[] {

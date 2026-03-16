@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.wpilibj.DriverStation;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
@@ -23,9 +24,35 @@ public final class SimConstants {
   public static final Distance kTrackLength = Meters.of(0.673); // 26.5 inches
   public static final Distance kTrackWidth = Meters.of(0.673); // 26.5 inches
 
-  // Starting pose for simulation (open area on blue alliance side, facing right)
-  // FRC field: 16.54m x 8.21m. Avoiding the cage/hanger in the center.
-  public static final Pose2d kStartingPose = new Pose2d(1.5, 6.5, new Rotation2d());
+  // FRC field dimensions (meters)
+  public static final double kFieldLengthX = 16.54;
+  public static final double kFieldWidth = 9.14;
+
+  // Default starting pose (used before DriverStation data is available)
+  public static final Pose2d kStartingPose = new Pose2d(2.0, 6.5, new Rotation2d());
+
+  /**
+   * Computes a starting pose based on the current DriverStation alliance and station number. Places
+   * the robot 1.5m from the alliance wall, spaced 1m apart per station (y = 4.5, 5.5, 6.5). Falls
+   * back to {@link #kStartingPose} if alliance data is not yet available.
+   */
+  public static Pose2d getStartingPose() {
+    var alliance = DriverStation.getAlliance();
+    int station = DriverStation.getLocation().orElse(1);
+
+    double distance = 1.5;
+
+    double x = kStartingPose.getX();
+    double y = (kFieldWidth / 2) + (station - 2) * distance;
+    Rotation2d rot = new Rotation2d(0);
+
+    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+      x = kFieldLengthX - kStartingPose.getX();
+      rot = Rotation2d.fromDegrees(180);
+    }
+
+    return new Pose2d(x, y, rot);
+  }
 
   /**
    * Creates a fully configured DriveTrainSimulationConfig for our robot. Uses NEO motors (same as
