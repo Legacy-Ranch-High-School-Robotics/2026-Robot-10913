@@ -114,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     // Publish odometry pose to the field widget
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(getPose());
   }
 
   /**
