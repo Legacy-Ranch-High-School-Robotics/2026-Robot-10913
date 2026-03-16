@@ -41,7 +41,7 @@ public class DriveSim {
     m_gyro = gyro;
 
     // Set the arena to the 2026 REBUILT field
-    SimulatedArena.overrideInstance(new Arena2026Rebuilt());
+    SimulatedArena.overrideInstance(new Arena2026Rebuilt(false));
 
     // Create the underlying physics simulation
     SwerveDriveSimulation swerveSim =
