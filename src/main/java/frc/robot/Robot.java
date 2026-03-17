@@ -4,9 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.sim.RobotSim;
+import frc.robot.sim.SimConstants;
+import org.ironmaple.simulation.SimulatedArena;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +24,11 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private RobotSim m_robotSim;
+
+  // Track last-seen alliance/station so we can detect changes while disabled
+  private DriverStation.Alliance m_lastAlliance = null;
+  private int m_lastStation = -1;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,6 +39,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    if (RobotBase.isSimulation()) {
+      m_robotSim = new RobotSim(m_robotContainer.getDriveSubsystem());
+    }
   }
 
   /**
@@ -46,16 +61,46 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
+  /**
+   * This function is called every 20 ms, no matter the mode, but only when the robot is in
+   * simulation.
+   */
+  @Override
+  public void simulationPeriodic() {
+    if (m_robotSim != null) {
+      m_robotSim.simulatorPeriodic();
+    }
+  }
+
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // Poll for alliance/station changes and reposition the simulated robot
+    if (RobotBase.isSimulation()) {
+      var allianceOpt = DriverStation.getAlliance();
+      int station = DriverStation.getLocation().orElse(1);
+      DriverStation.Alliance alliance = allianceOpt.orElse(null);
+
+      if (alliance != m_lastAlliance || station != m_lastStation) {
+        m_lastAlliance = alliance;
+        m_lastStation = station;
+        Pose2d newPose = SimConstants.getStartingPose();
+        m_robotContainer.getDriveSubsystem().resetOdometry(newPose);
+      }
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // Reset the simulated field (game pieces, etc.) for autonomous
+    if (RobotBase.isSimulation()) {
+      SimulatedArena.getInstance().resetFieldForAuto();
+    }
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     /*

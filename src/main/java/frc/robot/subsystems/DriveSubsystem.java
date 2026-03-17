@@ -17,10 +17,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.sim.DriveSim;
 
 public class DriveSubsystem extends SubsystemBase {
+  private DriveSim m_driveSim;
 
   // Create MAXSwerveModules
 
@@ -65,12 +70,33 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
           });
 
+  // Field2d for visualizing robot pose in Glass/AdvantageScope
+  private final Field2d m_field = new Field2d();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
     // Usage reporting for MAXSwerve template
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+
+    // Publish the field to SmartDashboard so Glass can show it
+    SmartDashboard.putData("Field", m_field);
+
+    if (RobotBase.isSimulation()) {
+      m_driveSim = new DriveSim(m_frontLeft, m_frontRight, m_rearLeft, m_rearRight, m_gyro);
+      // Sync odometry with the sim starting pose so robot doesn't start at (0,0)
+      resetOdometry(frc.robot.sim.SimConstants.kStartingPose);
+    }
+  }
+
+  /**
+   * Returns the simulation wrapper for the drivetrain.
+   *
+   * @return The DriveSim instance, or null if not in simulation.
+   */
+  public DriveSim getDriveSim() {
+    return m_driveSim;
   }
 
   @Override
@@ -86,25 +112,31 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+
+    // Publish odometry pose to the field widget
+    m_field.setRobotPose(getPose());
   }
 
   /**
-   * Returns the currently-estimated pose of the robot.
+   * Returns the Field2d object for visualizing the robot pose.
    *
-   * @return The pose.
+   * @return The Field2d instance.
    */
-  public Pose2d getPose() {
+  public Field2d getField() {
+    return m_field;
+  }
 
+  public Pose2d getPose() {
+    if (RobotBase.isSimulation() && m_driveSim != null) {
+      return m_driveSim.getOdometryPose();
+    }
     return m_odometry.getPoseMeters();
   }
 
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
   public void resetOdometry(Pose2d pose) {
-
+    if (RobotBase.isSimulation() && m_driveSim != null) {
+      m_driveSim.setSimulationWorldPose(pose);
+    }
     m_odometry.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
         new SwerveModulePosition[] {
