@@ -10,6 +10,11 @@ public class IntakeLiftConstants {
 
   public static double liftVoltage = 0.75;
 
+  // Homing constants
+  public static final double homingRetractVoltage = -1.5;
+  public static final double homingDeployVoltage = 1.5;
+  public static final double homingCurrentThreshold = 15.0;
+
   public static final double deployedPosition = -0.023;
 
   public static final double retractedPosition = -3.476;

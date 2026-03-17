@@ -74,6 +74,9 @@ public class RobotContainer {
                         m_driverController.getRightX(), OIConstants.kDriveDeadband),
                     true),
             m_robotDrive));
+
+    edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.putData(
+        "Commands/HomeLift", new frc.robot.commands.HomeLift(m_intakeLift));
   }
 
   /**
