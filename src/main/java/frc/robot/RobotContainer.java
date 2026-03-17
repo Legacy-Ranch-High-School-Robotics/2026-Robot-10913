@@ -28,6 +28,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intakeLift.IntakeLift;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import java.util.List;
@@ -45,6 +46,7 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
+  private final IntakeLift m_intakeLift = new IntakeLift();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -147,13 +149,13 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .onTrue(
             new ConditionalCommand(
-                new RunCommand(() -> m_intake.liftRetract(), m_intake)
-                    .until(m_intake::isLiftRetracted)
-                    .andThen(new InstantCommand(() -> m_intake.liftStop(), m_intake)),
-                new RunCommand(() -> m_intake.liftDeploy(), m_intake)
-                    .until(m_intake::isLiftDeployed)
-                    .andThen(new InstantCommand(() -> m_intake.liftStop(), m_intake)),
-                m_intake::isLiftDeployed));
+                new RunCommand(() -> m_intakeLift.liftRetract(), m_intakeLift)
+                    .until(m_intakeLift::isLiftRetracted)
+                    .andThen(new InstantCommand(() -> m_intakeLift.liftStop(), m_intakeLift)),
+                new RunCommand(() -> m_intakeLift.liftDeploy(), m_intakeLift)
+                    .until(m_intakeLift::isLiftDeployed)
+                    .andThen(new InstantCommand(() -> m_intakeLift.liftStop(), m_intakeLift)),
+                m_intakeLift::isLiftDeployed));
 
     // Shooter only (right bumper)
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)

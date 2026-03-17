@@ -13,23 +13,15 @@ public class Intake extends SubsystemBase {
 
   private final SparkMax motor;
 
-  private final SparkMax liftMotor;
-
   private final RelativeEncoder encoder;
 
   // lift motor and encoder
-
-  private final RelativeEncoder liftEncoder;
 
   public Intake() {
 
     motor = new SparkMax(intakeMotorCanId, MotorType.kBrushless);
 
-    liftMotor = new SparkMax(intakeLiftMotorCanId, MotorType.kBrushless);
-
     encoder = motor.getEncoder();
-
-    liftEncoder = liftMotor.getEncoder();
 
     var config = new SparkMaxConfig();
 
@@ -41,20 +33,7 @@ public class Intake extends SubsystemBase {
 
     config.encoder.velocityConversionFactor(1.0);
 
-    var liftConfig = new SparkMaxConfig();
-
-    liftConfig
-        .inverted(intakeLiftMotorInverted)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(intakeCurrentLimit)
-        .voltageCompensation(12.0);
-
     motor.configure(
-        config,
-        com.revrobotics.ResetMode.kResetSafeParameters,
-        com.revrobotics.PersistMode.kPersistParameters);
-
-    liftMotor.configure(
         config,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
@@ -66,35 +45,6 @@ public class Intake extends SubsystemBase {
   public void intake() {
 
     motor.setVoltage(intakeVoltage);
-  }
-
-  public void intakeFeed() {
-
-    motor.setVoltage(liftVoltage);
-  }
-
-  public void liftRetract() {
-
-    if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
-
-      liftMotor.setVoltage(liftVoltage * -1);
-
-    } else {
-
-      liftStop();
-    }
-  }
-
-  public void liftDeploy() {
-
-    if (getLiftPosition() < deployedPosition + liftPositionTolerance) {
-
-      liftMotor.setVoltage(liftVoltage);
-
-    } else {
-
-      liftStop();
-    }
   }
 
   public void outtake() {
@@ -112,28 +62,8 @@ public class Intake extends SubsystemBase {
     motor.stopMotor();
   }
 
-  public void liftStop() {
-
-    liftMotor.stopMotor();
-  }
-
   public double getVelocityRPM() {
 
     return encoder.getVelocity();
-  }
-
-  public double getLiftPosition() {
-
-    return liftEncoder.getPosition();
-  }
-
-  public boolean isLiftDeployed() {
-
-    return Math.abs(getLiftPosition() - deployedPosition) < liftPositionTolerance;
-  }
-
-  public boolean isLiftRetracted() {
-
-    return Math.abs(getLiftPosition() - retractedPosition) < liftPositionTolerance;
   }
 }
