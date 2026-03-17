@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intakeLift;
+package frc.robot.subsystems.intakelift;
 
 public class IntakeLiftConstants {
 

@@ -28,7 +28,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intakeLift.IntakeLift;
+import frc.robot.subsystems.intakelift.IntakeLift;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import java.util.List;

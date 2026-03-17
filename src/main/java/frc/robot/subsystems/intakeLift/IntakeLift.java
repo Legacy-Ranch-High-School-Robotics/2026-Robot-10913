@@ -1,6 +1,6 @@
-package frc.robot.subsystems.intakeLift;
+package frc.robot.subsystems.intakelift;
 
-import static frc.robot.subsystems.intakeLift.IntakeLiftConstants.*;
+import static frc.robot.subsystems.intakelift.IntakeLiftConstants.*;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
