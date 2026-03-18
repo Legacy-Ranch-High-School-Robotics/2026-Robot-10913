@@ -2,11 +2,14 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.intake.IntakeConstants.*;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -17,9 +20,9 @@ public class Intake extends SubsystemBase {
 
   private final RelativeEncoder encoder;
 
-  // lift motor and encoder
+  // lift motor and absolute encoder
 
-  private final RelativeEncoder liftEncoder;
+  private final AbsoluteEncoder liftEncoder;
 
   public Intake() {
 
@@ -29,7 +32,7 @@ public class Intake extends SubsystemBase {
 
     encoder = motor.getEncoder();
 
-    liftEncoder = liftMotor.getEncoder();
+    liftEncoder = liftMotor.getAbsoluteEncoder();
 
     var config = new SparkMaxConfig();
 
@@ -47,7 +50,11 @@ public class Intake extends SubsystemBase {
         .inverted(intakeLiftMotorInverted)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(intakeCurrentLimit)
-        .voltageCompensation(12.0);
+        .voltageCompensation(12.0)
+        .absoluteEncoder
+        .inverted(intakeLiftEncoderInverted)
+        // Adjust the preset to V1 if using the older Through Bore Encoder version.
+        .apply(AbsoluteEncoderConfig.Presets.REV_ThroughBoreEncoderV2);
 
     motor.configure(
         config,
@@ -55,13 +62,15 @@ public class Intake extends SubsystemBase {
         com.revrobotics.PersistMode.kPersistParameters);
 
     liftMotor.configure(
-        config,
+        liftConfig,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    SmartDashboard.putNumber("Lift Position", getLiftPosition());
+  }
 
   public void intake() {
 

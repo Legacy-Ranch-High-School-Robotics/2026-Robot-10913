@@ -13,6 +13,9 @@ public class IntakeConstants {
 
   public static final boolean intakeLiftMotorInverted = false;
 
+  // Change to true if the absolute encoder's reading needs to be reversed
+  public static final boolean intakeLiftEncoderInverted = false;
+
   public static final int intakeCurrentLimit = 40;
 
   public static final double intakeVoltage = 10.0;
