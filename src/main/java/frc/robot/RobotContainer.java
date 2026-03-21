@@ -30,6 +30,7 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.utils.GamePhaseMonitor;
 import java.util.List;
 
 /**
@@ -45,6 +46,9 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
+
+  @SuppressWarnings("unused")
+  private final GamePhaseMonitor m_gamePhaseMonitor = new GamePhaseMonitor();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);

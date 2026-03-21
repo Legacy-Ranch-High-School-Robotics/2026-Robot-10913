@@ -69,7 +69,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Lift Position", getLiftPosition());
+    SmartDashboard.putNumber("Motors/Lift Position", getLiftPosition());
+    SmartDashboard.putNumber("Motors/Intake RPM", getVelocityRPM());
   }
 
   public void intake() {
