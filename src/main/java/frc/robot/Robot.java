@@ -41,7 +41,11 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     if (RobotBase.isSimulation()) {
-      m_robotSim = new RobotSim(m_robotContainer.getDriveSubsystem());
+      m_robotSim =
+          new RobotSim(
+              m_robotContainer.getDriveSubsystem(),
+              m_robotContainer.getFieldLayout(),
+              m_robotContainer.getVision());
     }
   }
 
