@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -32,6 +35,7 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.shooterRPM;
 
+import frc.robot.subsystems.vision.Vision;
 import java.util.List;
 
 /**
@@ -43,7 +47,9 @@ import java.util.List;
 public class RobotContainer {
 
   // The robot's subsystems
+  private final AprilTagFieldLayout m_fieldLayout;
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Vision m_vision;
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
@@ -56,6 +62,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    m_fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+
+    m_vision = new Vision(m_robotDrive, m_fieldLayout);
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -83,6 +94,14 @@ public class RobotContainer {
    */
   public DriveSubsystem getDriveSubsystem() {
     return m_robotDrive;
+  }
+
+  public AprilTagFieldLayout getFieldLayout() {
+    return m_fieldLayout;
+  }
+
+  public Vision getVision() {
+    return m_vision;
   }
 
   /**

@@ -1,6 +1,8 @@
 package frc.robot.sim;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.vision.Vision;
 
 /**
  * The coordinator master class for Simulation. Ensures the strict execution order: 1)
@@ -12,9 +14,10 @@ public class RobotSim {
   private final DriveSubsystem m_driveSubsystem;
   private final VisionSim m_visionSim;
 
-  public RobotSim(DriveSubsystem driveSubsystem) {
+  public RobotSim(DriveSubsystem driveSubsystem, AprilTagFieldLayout fieldLayout, Vision vision) {
     m_driveSubsystem = driveSubsystem;
-    m_visionSim = new VisionSim();
+    m_visionSim =
+        new VisionSim(fieldLayout, vision.getCamera1(), vision.getCamera2(), vision.getCamera3());
   }
 
   /** Call this in robotPeriodic() or simulationPeriodic(). */

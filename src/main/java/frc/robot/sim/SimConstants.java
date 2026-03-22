@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.photonvision.simulation.SimCameraProperties;
 
 /**
  * Constants specific to the simulation environment. All physical properties used by maple-sim are
@@ -72,5 +73,16 @@ public final class SimConstants {
             COTS.WHEELS.COLSONS.cof, // Colson wheels COF
             3 // MAXSwerve Base Kit L3 = 14T pinion
             ));
+  }
+
+  /** Gets the global simulation properties for the cameras. */
+  public static SimCameraProperties createCameraProperties() {
+    SimCameraProperties properties = new SimCameraProperties();
+    properties.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+    properties.setCalibError(0.35, 0.10);
+    properties.setFPS(15);
+    properties.setAvgLatencyMs(50);
+    properties.setLatencyStdDevMs(15);
+    return properties;
   }
 }
