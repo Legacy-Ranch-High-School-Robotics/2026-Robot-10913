@@ -58,6 +58,14 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
   }
 
+  public static final class FieldConstants {
+    public static final double kFieldLength = 16.54;
+    public static final double kFieldWidth = 8.07;
+    public static final Translation2d kBlueHub = new Translation2d(4.63, kFieldWidth / 2.0);
+    public static final Translation2d kRedHub =
+        new Translation2d(kFieldLength - 4.55, kFieldWidth / 2.0);
+  }
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T. This changes the drive speed of the module (a pinion gear with

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -74,6 +75,11 @@ public class DriveSubsystem extends SubsystemBase {
   // Field2d for visualizing robot pose in Glass/AdvantageScope
   private final Field2d m_field = new Field2d();
 
+  private boolean m_isTrackingHub = false;
+
+  // Standard PID controller handles moving setpoints much better than ProfiledPIDController
+  private final PIDController m_turnToPointController = new PIDController(4.0, 0, 0);
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
@@ -83,6 +89,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Publish the field to SmartDashboard so Glass can show it
     SmartDashboard.putData("Field", m_field);
+
+    // Configure the turn to point controller
+    m_turnToPointController.enableContinuousInput(-Math.PI, Math.PI);
+    m_turnToPointController.setTolerance(Math.toRadians(2.0));
 
     if (RobotBase.isSimulation()) {
       m_driveSim = new DriveSim(m_frontLeft, m_frontRight, m_rearLeft, m_rearRight, m_gyro);
@@ -182,6 +192,33 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
 
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void setTrackingHub(boolean tracking) {
+    m_isTrackingHub = tracking;
+  }
+
+  public boolean isTrackingHub() {
+    return m_isTrackingHub;
+  }
+
+  /**
+   * Calculates the rotational velocity ([-1, 1]) required to face a target angle.
+   *
+   * @param targetAngle The field-relative angle to face.
+   * @return The rotational speed in [-1, 1] range for the drive() method.
+   */
+  public double calculateHubTracking(Rotation2d targetAngle) {
+    double rotSpeed =
+        m_turnToPointController.calculate(
+            getPose().getRotation().getRadians(), targetAngle.getRadians());
+
+    if (m_turnToPointController.atSetpoint()) {
+      rotSpeed = 0;
+    }
+
+    // Convert from radians/sec to [-1, 1] range expected by the drive() method
+    return rotSpeed / DriveConstants.kMaxAngularSpeed;
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
