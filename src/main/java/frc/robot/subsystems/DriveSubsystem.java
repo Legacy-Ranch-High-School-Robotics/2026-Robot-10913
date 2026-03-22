@@ -169,10 +169,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered,
-                    ySpeedDelivered,
-                    rotDelivered,
-                    Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()))
+                    xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -232,8 +229,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-
-    m_gyro.setYaw(0);
+    resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
   /**
