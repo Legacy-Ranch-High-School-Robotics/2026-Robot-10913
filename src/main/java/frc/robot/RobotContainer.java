@@ -85,15 +85,34 @@ public class RobotContainer {
     // Turning is controlled by the X axis of the right stick.
     m_robotDrive.setDefaultCommand(
         new RunCommand(
-            () ->
-                m_robotDrive.drive(
-                    -MathUtil.applyDeadband(
-                        m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(
-                        m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(
-                        m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                    true),
+            () -> {
+              double xSpeed =
+                  -MathUtil.applyDeadband(
+                      m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+              double ySpeed =
+                  -MathUtil.applyDeadband(
+                      m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+              double rotSpeed =
+                  -MathUtil.applyDeadband(
+                      m_driverController.getRightX(), OIConstants.kDriveDeadband);
+
+              if (m_robotDrive.isTrackingHub()) {
+                var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+                boolean isRed =
+                    alliance.isPresent()
+                        && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+                edu.wpi.first.math.geometry.Translation2d targetHub =
+                    isRed
+                        ? frc.robot.Constants.FieldConstants.kRedHub
+                        : frc.robot.Constants.FieldConstants.kBlueHub;
+
+                edu.wpi.first.math.geometry.Rotation2d targetAngle =
+                    targetHub.minus(m_robotDrive.getPose().getTranslation()).getAngle();
+                rotSpeed = m_robotDrive.calculateHubTracking(targetAngle);
+              }
+
+              m_robotDrive.drive(xSpeed, ySpeed, rotSpeed, true);
+            },
             m_robotDrive));
   }
 
@@ -139,6 +158,11 @@ public class RobotContainer {
     // Drive controls
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
+
+    // Toggle Hub Tracking
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        .onTrue(
+            new InstantCommand(() -> m_robotDrive.setTrackingHub(!m_robotDrive.isTrackingHub())));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));

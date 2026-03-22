@@ -26,8 +26,8 @@ public final class SimConstants {
   public static final Distance kTrackWidth = Meters.of(0.673); // 26.5 inches
 
   // FRC field dimensions (meters)
-  public static final double kFieldLengthX = 16.54;
-  public static final double kFieldWidth = 9.14;
+  public static final double kFieldLengthX = frc.robot.Constants.FieldConstants.kFieldLength;
+  public static final double kFieldWidth = frc.robot.Constants.FieldConstants.kFieldWidth;
 
   // Default starting pose (used before DriverStation data is available)
   public static final Pose2d kStartingPose = new Pose2d(2.0, 6.5, new Rotation2d());
