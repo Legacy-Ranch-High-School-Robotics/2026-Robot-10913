@@ -10,11 +10,11 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -59,8 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Odometry class for tracking robot pose
 
-  SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
+  SwerveDrivePoseEstimator m_odometry =
+      new SwerveDrivePoseEstimator(
           DriveConstants.kDriveKinematics,
           Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
           new SwerveModulePosition[] {
@@ -68,7 +68,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
-          });
+          },
+          new Pose2d());
 
   // Field2d for visualizing robot pose in Glass/AdvantageScope
   private final Field2d m_field = new Field2d();
@@ -127,10 +128,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    if (RobotBase.isSimulation() && m_driveSim != null) {
-      return m_driveSim.getOdometryPose();
-    }
-    return m_odometry.getPoseMeters();
+    return m_odometry.getEstimatedPosition();
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -259,5 +257,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     return m_gyro.getAngularVelocityZWorld().getValueAsDouble()
         * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  }
+
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    m_odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+  }
+
+  public double getPitch() {
+    return m_gyro.getPitch().getValueAsDouble();
+  }
+
+  public double getRoll() {
+    return m_gyro.getRoll().getValueAsDouble();
   }
 }
