@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -126,8 +125,7 @@ public class RobotContainer {
         .whileTrue(
             new RunCommand(
                 () -> {
-                  m_intake.outtake();
-                  new WaitCommand(2);
+                  m_intake.intake();
                   m_hopper.eject();
                   m_shooter.eject();
                 },
@@ -147,7 +145,7 @@ public class RobotContainer {
 
     // Intake controls
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(() -> m_intake.intake(), m_intake))
+        .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
         .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
 
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
