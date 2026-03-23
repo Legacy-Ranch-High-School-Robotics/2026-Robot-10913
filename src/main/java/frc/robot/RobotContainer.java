@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -150,7 +151,8 @@ public class RobotContainer {
         .whileTrue(
             new RunCommand(
                 () -> {
-                  m_shooter.setVelocity(ShooterConstants.shooterRPM);
+                  m_shooter.setVelocity(
+                      SmartDashboard.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
                   m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
                 },
                 m_shooter,
@@ -210,7 +212,12 @@ public class RobotContainer {
     // Shooter only (right bumper)
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(
-            new RunCommand(() -> m_shooter.setVelocity(ShooterConstants.shooterRPM), m_shooter))
+            new RunCommand(
+                () ->
+                    m_shooter.setVelocity(
+                        SmartDashboard.getNumber(
+                            "Shooter/Target RPM", ShooterConstants.shooterRPM)),
+                m_shooter))
         .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
   }
 
