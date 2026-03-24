@@ -33,9 +33,6 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
-
-import static frc.robot.subsystems.shooter.ShooterConstants.shooterRPM;
-
 import frc.robot.subsystems.vision.Vision;
 import java.util.List;
 
@@ -148,30 +145,30 @@ public class RobotContainer {
 
     // ========== OPERATOR CONTROLS ==========
 
-        // Launch button (A) - runs shooter and hopper forward to score
-        new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-                .whileTrue(
-                        new RunCommand(
-                                () -> {
-                                    m_shooter.setVelocity(SmartDashboard.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
-                                    // Set Target Rpm in the method below
-                                    if (m_shooter.atTargetVelocity()) {
-                                        m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                                    } else {
-                                        m_hopper.stop();
-                                    }
-                                },
-                                m_shooter,
-                                m_hopper))
-                .onFalse(
-                        new InstantCommand(
-                                () -> {
-                                    m_shooter.stop();
-                                    m_hopper.stop();
-                                },
-                                m_shooter,
-                                m_hopper));
-
+    // Launch button (A) - runs shooter and hopper forward to score
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_shooter.setVelocity(
+                      SmartDashboard.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
+                  // Set Target Rpm in the method below
+                  if (m_shooter.atTargetVelocity()) {
+                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  } else {
+                    m_hopper.stop();
+                  }
+                },
+                m_shooter,
+                m_hopper))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_shooter.stop();
+                  m_hopper.stop();
+                },
+                m_shooter,
+                m_hopper));
 
     // Eject button (B) - runs intake, hopper, and shooter backwards
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
