@@ -126,6 +126,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Publish odometry pose to the field widget
     m_field.setRobotPose(getPose());
+
+    // Publish Pigeon2 gyro telemetry
+    SmartDashboard.putNumber("Gyro/Yaw", m_gyro.getYaw().getValueAsDouble());
+    SmartDashboard.putNumber("Gyro/Pitch", m_gyro.getPitch().getValueAsDouble());
+    SmartDashboard.putNumber("Gyro/Roll", m_gyro.getRoll().getValueAsDouble());
   }
 
   /**

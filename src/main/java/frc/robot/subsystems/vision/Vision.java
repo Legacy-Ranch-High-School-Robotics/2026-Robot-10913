@@ -66,11 +66,15 @@ public class Vision extends SubsystemBase {
 
     var pitch = Math.abs(m_driveSubsystem.getPitch());
     var roll = Math.abs(m_driveSubsystem.getRoll());
+    SmartDashboard.putNumber(prefix + "Gyro/Pitch", pitch);
+    SmartDashboard.putNumber(prefix + "Gyro/Roll", roll);
 
-    if (pitch > VisionConstants.MAX_PITCH_ROLL_DEGREES
-        || roll > VisionConstants.MAX_PITCH_ROLL_DEGREES) {
+    // Skip pitch/roll check when disabled so vision can establish starting pose
+    if (!DriverStation.isDisabled()
+        && (pitch > VisionConstants.MAX_PITCH_ROLL_DEGREES
+            || roll > VisionConstants.MAX_PITCH_ROLL_DEGREES)) {
       SmartDashboard.putBoolean("Vision/IgnoringDueToPitchRoll", true);
-      SmartDashboard.putString(prefix + "Status", "Rejected: pitch/roll");
+      SmartDashboard.putString("Vision/Status", "Rejected: pitch/roll");
       return;
     }
     SmartDashboard.putBoolean("Vision/IgnoringDueToPitchRoll", false);
@@ -85,6 +89,16 @@ public class Vision extends SubsystemBase {
       SmartDashboard.putBoolean(prefix + "CoprocMultiTag", estimatedPose.isPresent());
 
       if (estimatedPose.isEmpty()) {
+        // Reject high-ambiguity single-tag estimates (noisy / flipped pose risk)
+        var bestTarget = result.getBestTarget();
+        if (bestTarget != null) {
+          double ambiguity = bestTarget.getPoseAmbiguity();
+          SmartDashboard.putNumber(prefix + "Ambiguity", ambiguity);
+          if (ambiguity > VisionConstants.MAX_AMBIGUITY) {
+            SmartDashboard.putString(prefix + "Status", "Rejected: ambiguity " + ambiguity);
+            continue;
+          }
+        }
         estimatedPose = estimator.estimateLowestAmbiguityPose(result);
         SmartDashboard.putBoolean(prefix + "LowestAmbiguity", estimatedPose.isPresent());
       }
