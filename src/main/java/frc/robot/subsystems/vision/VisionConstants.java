@@ -24,5 +24,8 @@ public final class VisionConstants {
   public static final double FIELD_WIDTH_METERS = 9.14;
 
   // Prevent odometry from jumping extremely far based on 1 erroneous vision frame
-  public static final double MAX_POSE_DIFFERENCE_METERS = 5.0;
+  public static final double MAX_POSE_DIFFERENCE_METERS = 2.0;
+
+  // Reject single-tag estimates with ambiguity above this threshold
+  public static final double MAX_AMBIGUITY = 0.2;
 }
