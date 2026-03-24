@@ -202,7 +202,7 @@
             ]
           },
           {
-            "title": "camera1",
+            "title": "Arducam3-front-10913",
             "x": 1024.0,
             "y": 0.0,
             "width": 256.0,
@@ -213,84 +213,32 @@
             },
             "children": [
               {
-                "title": "CoprocMultiTag",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/CoprocMultiTag",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "EstPose",
+                "title": "Status",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/EstPose",
+                  "topic": "/SmartDashboard/Vision/Arducam3-front-10913/Status",
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
                 }
-              },
-              {
-                "title": "HasTargets",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/HasTargets",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "LowestAmbiguity",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/LowestAmbiguity",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "ResultCount",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/ResultCount",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
+              }
+            ]
+          },
+          {
+            "title": "Arducam3-back-10913",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
               {
                 "title": "Status",
                 "x": 0.0,
@@ -299,23 +247,67 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/Status",
+                  "topic": "/SmartDashboard/Vision/Arducam3-back-10913/Status",
                   "period": 0.06,
                   "data_type": "string",
                   "show_submit_button": false
                 }
+              }
+            ]
+          },
+          {
+            "title": "Arducam3-front-10913",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "driverModeRequest",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/photonvision/Arducam3-front-10913/driverModeRequest",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
               },
               {
-                "title": "TargetCount",
+                "title": "fpsLimitRequest",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/SmartDashboard/Vision/camera1/TargetCount",
+                  "topic": "/photonvision/Arducam3-front-10913/fpsLimitRequest",
                   "period": 0.06,
-                  "data_type": "double",
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "pipelineIndexRequest",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/photonvision/Arducam3-front-10913/pipelineIndexRequest",
+                  "period": 0.06,
+                  "data_type": "int",
                   "show_submit_button": false
                 }
               }
