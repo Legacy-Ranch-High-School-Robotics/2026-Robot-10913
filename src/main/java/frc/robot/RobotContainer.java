@@ -135,6 +135,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new IntakeCommand(m_intake));
     NamedCommands.registerCommand("RetractIntake", new RetractIntake(m_intake));
     NamedCommands.registerCommand("StopIntake", new StopIntake(m_intake));
+  }
+
   public AprilTagFieldLayout getFieldLayout() {
     return m_fieldLayout;
   }

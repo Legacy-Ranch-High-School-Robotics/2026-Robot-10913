@@ -90,7 +90,7 @@ public class Vision extends SubsystemBase {
 
       if (estimatedPose.isEmpty()) {
         // Reject high-ambiguity single-tag estimates (noisy / flipped pose risk)
-        var bestTarget = result.getBestTarget();
+        var bestTarget = result.hasTargets() ? result.getBestTarget() : null;
         if (bestTarget != null) {
           double ambiguity = bestTarget.getPoseAmbiguity();
           SmartDashboard.putNumber(prefix + "Ambiguity", ambiguity);
