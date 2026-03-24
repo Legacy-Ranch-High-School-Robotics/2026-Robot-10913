@@ -16,7 +16,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -30,6 +29,9 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
+
+import static frc.robot.subsystems.shooter.ShooterConstants.shooterRPM;
+
 import java.util.List;
 
 /**
@@ -102,31 +104,37 @@ public class RobotContainer {
 
     // ========== OPERATOR CONTROLS ==========
 
-    // Launch button (A) - runs shooter and hopper forward to score
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_shooter.setVelocity(ShooterConstants.shooterRPM);
-                  m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                },
-                m_shooter,
-                m_hopper))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_shooter.stop();
-                  m_hopper.stop();
-                },
-                m_shooter,
-                m_hopper));
+        // Launch button (A) - runs shooter and hopper forward to score
+        new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+                .whileTrue(
+                        new RunCommand(
+                                () -> {
+                                    m_shooter.setVelocity(ShooterConstants.shooterRPM);
+                                    // Set Target Rpm in the method below
+                                    if (m_shooter.atTargetVelocity()) {
+                                        m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                                    } else {
+                                        m_hopper.stop();
+                                    }
+                                },
+                                m_shooter,
+                                m_hopper))
+                .onFalse(
+                        new InstantCommand(
+                                () -> {
+                                    m_shooter.stop();
+                                    m_hopper.stop();
+                                },
+                                m_shooter,
+                                m_hopper));
+
 
     // Eject button (B) - runs intake, hopper, and shooter backwards
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .whileTrue(
             new RunCommand(
                 () -> {
-                  m_intake.outtake();
+                  m_intake.intake();
                   m_hopper.eject();
                   m_shooter.eject();
                 },
@@ -145,24 +153,17 @@ public class RobotContainer {
                 m_shooter));
 
     // Intake controls
-    new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(() -> m_intake.intake(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
-
-    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
         .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
 
-    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .onTrue(
-            new ConditionalCommand(
-                new RunCommand(() -> m_intake.liftRetract(), m_intake)
-                    .until(m_intake::isLiftRetracted)
-                    .andThen(new InstantCommand(() -> m_intake.liftStop(), m_intake)),
-                new RunCommand(() -> m_intake.liftDeploy(), m_intake)
-                    .until(m_intake::isLiftDeployed)
-                    .andThen(new InstantCommand(() -> m_intake.liftStop(), m_intake)),
-                m_intake::isLiftDeployed));
+    new JoystickButton(m_operatorController, XboxController.Button.kX.value)
+        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    new JoystickButton(m_operatorController, XboxController.Button.kY.value)
+        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
 
     // Shooter only (right bumper)
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
