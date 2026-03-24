@@ -4,9 +4,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public final class VisionConstants {
-  public static final String CAMERA_1_NAME = "camera1";
-  public static final String CAMERA_2_NAME = "camera2";
-  public static final String CAMERA_3_NAME = "camera3";
+  public static final String CAMERA_1_NAME = "Arducam3-front-10913";
+  public static final String CAMERA_2_NAME = "Arducam2-back-10913";
+  public static final String CAMERA_3_NAME = "Arducam2-side-10913";
 
   // Robot to camera transforms
   public static final Transform3d ROBOT_TO_CAMERA_1 =
