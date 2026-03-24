@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -23,6 +24,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.intake.DeployIntake;
+import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.intake.RetractIntake;
+import frc.robot.commands.intake.StopIntake;
+import frc.robot.commands.shooter.ShootCommand;
+import frc.robot.commands.shooter.SpinUpShooter;
+import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.hopper.HopperConstants;
@@ -56,6 +64,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Register PathPlanner named commands
+    configurePathPlannerCommands();
+
     // Configure the button bindings
     configureButtonBindings();
 
@@ -83,6 +94,20 @@ public class RobotContainer {
    */
   public DriveSubsystem getDriveSubsystem() {
     return m_robotDrive;
+  }
+
+  /** Registers commands with PathPlanner for use in event markers. */
+  private void configurePathPlannerCommands() {
+    // Shooter commands
+    NamedCommands.registerCommand("SpinUpShooter", new SpinUpShooter(m_shooter));
+    NamedCommands.registerCommand("Shoot", new ShootCommand(m_shooter, m_hopper));
+    NamedCommands.registerCommand("StopShooter", new StopShooter(m_shooter));
+
+    // Intake commands
+    NamedCommands.registerCommand("DeployIntake", new DeployIntake(m_intake));
+    NamedCommands.registerCommand("Intake", new IntakeCommand(m_intake));
+    NamedCommands.registerCommand("RetractIntake", new RetractIntake(m_intake));
+    NamedCommands.registerCommand("StopIntake", new StopIntake(m_intake));
   }
 
   /**
