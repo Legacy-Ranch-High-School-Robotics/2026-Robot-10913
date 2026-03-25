@@ -1,6 +1,5 @@
 package frc.robot.telemetry;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
@@ -33,7 +32,7 @@ public final class ElasticTelemetry {
     ROOT_TABLE.getEntry(key).setInteger(value);
   }
 
-  public static GenericEntry getEntry(String key) {
+  public static edu.wpi.first.networktables.NetworkTableEntry getEntry(String key) {
     return ROOT_TABLE.getEntry(key);
   }
 

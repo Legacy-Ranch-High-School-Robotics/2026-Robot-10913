@@ -81,7 +81,8 @@ public class Vision extends SubsystemBase {
     ElasticTelemetry.setBoolean("Vision/IgnoringDueToPitchRoll", false);
 
     for (var result : results) {
-      ElasticTelemetry.setNumber(prefix + "LatencyMs", result.getLatencyMillis());
+      ElasticTelemetry.setNumber(
+          prefix + "LatencyMs", (Timer.getFPGATimestamp() - result.getTimestampSeconds()) * 1000.0);
       ElasticTelemetry.setBoolean(prefix + "HasTargets", result.hasTargets());
       ElasticTelemetry.setNumber(prefix + "TargetCount", result.getTargets().size());
 

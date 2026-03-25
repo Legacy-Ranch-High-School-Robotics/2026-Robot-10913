@@ -6,9 +6,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.config.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.config.ReplanningConfig;
-import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -335,17 +335,23 @@ public class RobotContainer {
   }
 
   private void configureAutoBuilder() {
-    AutoBuilder.configureHolonomic(
+    RobotConfig config;
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    AutoBuilder.configure(
         m_robotDrive::getPose,
         m_robotDrive::resetOdometry,
         m_robotDrive::getChassisSpeeds,
         m_robotDrive::driveRobotRelative,
-        new HolonomicPathFollowerConfig(
+        new PPHolonomicDriveController(
             new PIDConstants(AutoConstants.kPXController, 0, 0),
-            new PIDConstants(AutoConstants.kPThetaController, 0, 0),
-            DriveConstants.kMaxSpeedMetersPerSecond,
-            DriveConstants.kDriveBaseRadius,
-            new ReplanningConfig()),
+            new PIDConstants(AutoConstants.kPThetaController, 0, 0)),
+        config,
         () -> {
           var alliance = DriverStation.getAlliance();
           return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
@@ -360,11 +366,5 @@ public class RobotContainer {
         pose -> m_robotDrive.getField().getObject("Auto/CurrentPose").setPose(pose));
     PathPlannerLogging.setLogTargetPoseCallback(
         pose -> m_robotDrive.getField().getObject("Auto/TargetPose").setPose(pose));
-    PathPlannerLogging.setLogPathFollowingErrorCallback(
-        error -> {
-          ElasticTelemetry.setNumber("Auto/ErrorX", error.translationError.getX());
-          ElasticTelemetry.setNumber("Auto/ErrorY", error.translationError.getY());
-          ElasticTelemetry.setNumber("Auto/ErrorThetaDeg", error.rotationError.getDegrees());
-        });
   }
 }
