@@ -10,8 +10,8 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.ElasticTelemetry;
 
 public class Shooter extends SubsystemBase {
   private final SparkFlex topMotor;
@@ -45,13 +45,13 @@ public class Shooter extends SubsystemBase {
         com.revrobotics.PersistMode.kPersistParameters);
 
     // Publish the default target RPM so it can be edited from Elastic
-    SmartDashboard.putNumber("Shooter/Target RPM", shooterRPM);
+    ElasticTelemetry.setNumber("Shooter/Target RPM", shooterRPM);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Shooter/Actual RPM", topEncoder.getVelocity());
-    SmartDashboard.putNumber("Shooter/Target RPM Setpoint", targetVelocityRPM);
+    ElasticTelemetry.setNumber("Shooter/Actual RPM", topEncoder.getVelocity());
+    ElasticTelemetry.setNumber("Shooter/Target RPM Setpoint", targetVelocityRPM);
   }
 
   public void setVelocity(double velocityRPM) {

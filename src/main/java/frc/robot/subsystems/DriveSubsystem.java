@@ -20,10 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.sim.DriveSim;
+import frc.robot.telemetry.ElasticTelemetry;
 
 public class DriveSubsystem extends SubsystemBase {
   private DriveSim m_driveSim;
@@ -87,8 +87,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
-    // Publish the field to SmartDashboard so Glass can show it
-    SmartDashboard.putData("Field", m_field);
+    // Publish the field to Elastic so Glass/Elastic dashboards can show it
+    ElasticTelemetry.publishSendable("Field", m_field);
 
     // Configure the turn to point controller
     m_turnToPointController.enableContinuousInput(-Math.PI, Math.PI);
@@ -128,9 +128,21 @@ public class DriveSubsystem extends SubsystemBase {
     m_field.setRobotPose(getPose());
 
     // Publish Pigeon2 gyro telemetry
-    SmartDashboard.putNumber("Gyro/Yaw", m_gyro.getYaw().getValueAsDouble());
-    SmartDashboard.putNumber("Gyro/Pitch", m_gyro.getPitch().getValueAsDouble());
-    SmartDashboard.putNumber("Gyro/Roll", m_gyro.getRoll().getValueAsDouble());
+    ElasticTelemetry.setNumber("Gyro/Yaw", m_gyro.getYaw().getValueAsDouble());
+    ElasticTelemetry.setNumber("Gyro/Pitch", m_gyro.getPitch().getValueAsDouble());
+    ElasticTelemetry.setNumber("Gyro/Roll", m_gyro.getRoll().getValueAsDouble());
+
+    publishModuleTelemetry("Drive/FrontLeft", m_frontLeft);
+    publishModuleTelemetry("Drive/FrontRight", m_frontRight);
+    publishModuleTelemetry("Drive/RearLeft", m_rearLeft);
+    publishModuleTelemetry("Drive/RearRight", m_rearRight);
+
+    double totalDriveCurrent =
+        m_frontLeft.getDriveCurrent()
+            + m_frontRight.getDriveCurrent()
+            + m_rearLeft.getDriveCurrent()
+            + m_rearRight.getDriveCurrent();
+    ElasticTelemetry.setNumber("Drive/TotalDriveCurrent", totalDriveCurrent);
   }
 
   /**
@@ -274,6 +286,19 @@ public class DriveSubsystem extends SubsystemBase {
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    var states = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    setModuleStates(states);
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState());
+  }
+
   /**
    * Returns the heading of the robot.
    *
@@ -307,5 +332,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getRoll() {
     return m_gyro.getRoll().getValueAsDouble();
+  }
+
+  private void publishModuleTelemetry(String prefix, MAXSwerveModule module) {
+    ElasticTelemetry.setNumber(prefix + "/DriveCurrent", module.getDriveCurrent());
+    ElasticTelemetry.setNumber(prefix + "/TurnCurrent", module.getTurnCurrent());
+    ElasticTelemetry.setNumber(prefix + "/DriveTempC", module.getDriveTemperature());
+    ElasticTelemetry.setNumber(prefix + "/TurnTempC", module.getTurnTemperature());
   }
 }

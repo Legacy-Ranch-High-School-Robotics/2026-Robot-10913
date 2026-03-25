@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.config.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.config.ReplanningConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -17,14 +22,17 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -42,6 +50,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.telemetry.ElasticTelemetry;
 import java.util.List;
 
 /**
@@ -59,6 +68,7 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
+  private final SendableChooser<Command> m_autoChooser;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -68,8 +78,12 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Register PathPlanner named commands
+    // Register PathPlanner named commands and configure auto builder/logging
     configurePathPlannerCommands();
+    configureAutoBuilder();
+    configureAutoLogging();
+    m_autoChooser = AutoBuilder.buildAutoChooser("Auton1");
+    ElasticTelemetry.publishSendable("Auto/Chooser", m_autoChooser);
     m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     m_fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
@@ -175,7 +189,8 @@ public class RobotContainer {
             new RunCommand(
                 () -> {
                   m_shooter.setVelocity(
-                      SmartDashboard.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
+                      ElasticTelemetry.getNumber(
+                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
                   // Set Target Rpm in the method below
                   if (m_shooter.atTargetVelocity()) {
                     m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
@@ -236,10 +251,18 @@ public class RobotContainer {
             new RunCommand(
                 () ->
                     m_shooter.setVelocity(
-                        SmartDashboard.getNumber(
+                        ElasticTelemetry.getNumber(
                             "Shooter/Target RPM", ShooterConstants.shooterRPM)),
                 m_shooter))
         .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
+
+    // Shooter presets on D-pad
+    new POVButton(m_operatorController, 0)
+        .onTrue(new InstantCommand(() -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
+    new POVButton(m_operatorController, 90)
+        .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
+    new POVButton(m_operatorController, 180)
+        .onTrue(new InstantCommand(() -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM)));
   }
 
   /**
@@ -291,7 +314,47 @@ public class RobotContainer {
     // Reset odometry to the starting pose of the trajectory.
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+    Command auto = m_autoChooser.getSelected();
+    return auto != null ? auto : Commands.none();
+  }
+
+  private void setShooterPreset(String presetName, double rpm) {
+    ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
+    ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+  }
+
+  private void configureAutoBuilder() {
+    AutoBuilder.configureHolonomic(
+        m_robotDrive::getPose,
+        m_robotDrive::resetOdometry,
+        m_robotDrive::getChassisSpeeds,
+        m_robotDrive::driveRobotRelative,
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(AutoConstants.kPXController, 0, 0),
+            new PIDConstants(AutoConstants.kPThetaController, 0, 0),
+            DriveConstants.kMaxSpeedMetersPerSecond,
+            DriveConstants.kDriveBaseRadius,
+            new ReplanningConfig()),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+        },
+        m_robotDrive);
+  }
+
+  private void configureAutoLogging() {
+    PathPlannerLogging.setLogActivePathCallback(
+        poses -> m_robotDrive.getField().getObject("Auto/PlannedPath").setPoses(poses));
+    PathPlannerLogging.setLogCurrentPoseCallback(
+        pose -> m_robotDrive.getField().getObject("Auto/CurrentPose").setPose(pose));
+    PathPlannerLogging.setLogTargetPoseCallback(
+        pose -> m_robotDrive.getField().getObject("Auto/TargetPose").setPose(pose));
+    PathPlannerLogging.setLogPathFollowingErrorCallback(
+        error -> {
+          ElasticTelemetry.setNumber("Auto/ErrorX", error.translationError.getX());
+          ElasticTelemetry.setNumber("Auto/ErrorY", error.translationError.getY());
+          ElasticTelemetry.setNumber(
+              "Auto/ErrorThetaDeg", error.rotationError.getDegrees());
+        });
   }
 }

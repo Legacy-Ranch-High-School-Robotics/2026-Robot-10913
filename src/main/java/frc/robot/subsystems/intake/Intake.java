@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
         com.revrobotics.PersistMode.kPersistParameters);
 
     liftMotor.configure(
-        config,
+        liftConfig,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
   }

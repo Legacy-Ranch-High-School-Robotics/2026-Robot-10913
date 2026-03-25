@@ -3,9 +3,10 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.telemetry.ElasticTelemetry;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 
@@ -49,74 +50,89 @@ public class Vision extends SubsystemBase {
     String prefix = "Vision/" + camera.getName() + "/";
 
     if (estimator == null) {
-      SmartDashboard.putString(prefix + "Status", "No estimator");
+      ElasticTelemetry.setString(prefix + "Status", "No estimator");
       return;
     }
     if (!camera.isConnected()) {
-      SmartDashboard.putString(prefix + "Status", "Not connected");
+      ElasticTelemetry.setString(prefix + "Status", "Not connected");
       return;
     }
 
     var results = camera.getAllUnreadResults();
-    SmartDashboard.putNumber(prefix + "ResultCount", results.size());
+    ElasticTelemetry.setNumber(prefix + "ResultCount", results.size());
     if (results.isEmpty()) {
-      SmartDashboard.putString(prefix + "Status", "No results");
+      ElasticTelemetry.setString(prefix + "Status", "No results");
       return;
     }
 
     var pitch = Math.abs(m_driveSubsystem.getPitch());
     var roll = Math.abs(m_driveSubsystem.getRoll());
-    SmartDashboard.putNumber(prefix + "Gyro/Pitch", pitch);
-    SmartDashboard.putNumber(prefix + "Gyro/Roll", roll);
+    ElasticTelemetry.setNumber(prefix + "Gyro/Pitch", pitch);
+    ElasticTelemetry.setNumber(prefix + "Gyro/Roll", roll);
 
     // Skip pitch/roll check when disabled so vision can establish starting pose
     if (!DriverStation.isDisabled()
         && (pitch > VisionConstants.MAX_PITCH_ROLL_DEGREES
             || roll > VisionConstants.MAX_PITCH_ROLL_DEGREES)) {
-      SmartDashboard.putBoolean("Vision/IgnoringDueToPitchRoll", true);
-      SmartDashboard.putString("Vision/Status", "Rejected: pitch/roll");
+      ElasticTelemetry.setBoolean("Vision/IgnoringDueToPitchRoll", true);
+      ElasticTelemetry.setString("Vision/Status", "Rejected: pitch/roll");
       return;
     }
-    SmartDashboard.putBoolean("Vision/IgnoringDueToPitchRoll", false);
+    ElasticTelemetry.setBoolean("Vision/IgnoringDueToPitchRoll", false);
 
     for (var result : results) {
-      SmartDashboard.putBoolean(prefix + "HasTargets", result.hasTargets());
-      SmartDashboard.putNumber(prefix + "TargetCount", result.getTargets().size());
+      ElasticTelemetry.setNumber(prefix + "LatencyMs", result.getLatencyMillis());
+      ElasticTelemetry.setBoolean(prefix + "HasTargets", result.hasTargets());
+      ElasticTelemetry.setNumber(prefix + "TargetCount", result.getTargets().size());
 
       // Try coprocessor multi-tag first (real robot), fall back to lowest ambiguity (sim/single
       // tag)
       var estimatedPose = estimator.estimateCoprocMultiTagPose(result);
-      SmartDashboard.putBoolean(prefix + "CoprocMultiTag", estimatedPose.isPresent());
+      ElasticTelemetry.setBoolean(prefix + "CoprocMultiTag", estimatedPose.isPresent());
 
       if (estimatedPose.isEmpty()) {
         // Reject high-ambiguity single-tag estimates (noisy / flipped pose risk)
         var bestTarget = result.hasTargets() ? result.getBestTarget() : null;
         if (bestTarget != null) {
           double ambiguity = bestTarget.getPoseAmbiguity();
-          SmartDashboard.putNumber(prefix + "Ambiguity", ambiguity);
+          ElasticTelemetry.setNumber(prefix + "Ambiguity", ambiguity);
           if (ambiguity > VisionConstants.MAX_AMBIGUITY) {
-            SmartDashboard.putString(prefix + "Status", "Rejected: ambiguity " + ambiguity);
+            ElasticTelemetry.setString(prefix + "Status", "Rejected: ambiguity " + ambiguity);
             continue;
           }
         }
         estimatedPose = estimator.estimateLowestAmbiguityPose(result);
-        SmartDashboard.putBoolean(prefix + "LowestAmbiguity", estimatedPose.isPresent());
+        ElasticTelemetry.setBoolean(prefix + "LowestAmbiguity", estimatedPose.isPresent());
       }
 
       if (estimatedPose.isPresent()) {
         var est = estimatedPose.get();
         Pose2d pose2d = est.estimatedPose.toPose2d();
-        SmartDashboard.putString(prefix + "EstPose", pose2d.toString());
+        ElasticTelemetry.setString(prefix + "EstPose", pose2d.toString());
 
         if (isVisionPoseValid(pose2d, m_driveSubsystem.getPose())) {
+          double translationResidual =
+              pose2d
+                  .getTranslation()
+                  .getDistance(m_driveSubsystem.getPose().getTranslation());
+          double headingResidualDeg =
+              pose2d
+                  .getRotation()
+                  .minus(m_driveSubsystem.getPose().getRotation())
+                  .getDegrees();
+          ElasticTelemetry.setNumber(prefix + "Residual/TranslationMeters", translationResidual);
+          ElasticTelemetry.setNumber(prefix + "Residual/HeadingDegrees", headingResidualDeg);
+          ElasticTelemetry.setNumber(
+              prefix + "Residual/PoseAgeMs",
+              (Timer.getFPGATimestamp() - est.timestampSeconds) * 1000.0);
           m_driveSubsystem.addVisionMeasurement(pose2d, est.timestampSeconds);
           m_driveSubsystem.getField().getObject("VisionPose_" + camera.getName()).setPose(pose2d);
-          SmartDashboard.putString(prefix + "Status", "Applied");
+          ElasticTelemetry.setString(prefix + "Status", "Applied");
         } else {
-          SmartDashboard.putString(prefix + "Status", "Rejected: validation");
+          ElasticTelemetry.setString(prefix + "Status", "Rejected: validation");
         }
       } else {
-        SmartDashboard.putString(prefix + "Status", "No pose estimate");
+        ElasticTelemetry.setString(prefix + "Status", "No pose estimate");
       }
     }
   }
@@ -144,7 +160,7 @@ public class Vision extends SubsystemBase {
                 > VisionConstants.MAX_POSE_DIFFERENCE_METERS;
 
     if (!insideField || jumpTooLarge) {
-      SmartDashboard.putString(
+      ElasticTelemetry.setString(
           "Vision/RejectedPoseReason", !insideField ? "Outside Field" : "Jump Too Large");
       return false;
     }
