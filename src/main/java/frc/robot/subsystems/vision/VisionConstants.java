@@ -5,16 +5,20 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public final class VisionConstants {
   public static final String CAMERA_1_NAME = "Arducam3-front-10913";
-  public static final String CAMERA_2_NAME = "Arducam2-back-10913";
-  public static final String CAMERA_3_NAME = "Arducam2-side-10913";
+  public static final String CAMERA_2_NAME = "Arducam2-frontleft-10913";
+  public static final String CAMERA_3_NAME = "Arducam2-back-10913";
 
-  // Robot to camera transforms
+  static final double camera_h = 0.69215;
+  static final double camera_x = 0.08255;
+  static final double camera_y = 0.2921;
+
+  // Robot to camera transforms (X = forward, Y = left in WPILib)
   public static final Transform3d ROBOT_TO_CAMERA_1 =
-      new Transform3d(0.5, 0.0, 0.5, new Rotation3d(0, 0, 0));
+      new Transform3d(camera_y, -camera_x, camera_h, new Rotation3d(0, 0, 0));
   public static final Transform3d ROBOT_TO_CAMERA_2 =
-      new Transform3d(-0.5, 0.2, 0.5, new Rotation3d(0, 0, Math.PI));
+      new Transform3d(camera_y, camera_x, camera_h, new Rotation3d(0, 0, 0));
   public static final Transform3d ROBOT_TO_CAMERA_3 =
-      new Transform3d(-0.5, -0.2, 0.5, new Rotation3d(0, 0, Math.PI));
+      new Transform3d(camera_y - 0.0889, 0, camera_h, new Rotation3d(0, 0, Math.PI));
 
   // Max pitch/roll allowed before ignoring vision poses (bump handling)
   public static final double MAX_PITCH_ROLL_DEGREES = 3.0;
