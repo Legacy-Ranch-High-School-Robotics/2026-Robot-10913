@@ -59,11 +59,6 @@ public class Shooter extends SubsystemBase {
     topController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
-  public void setTopVelocity(double velocityRPM) {
-    targetVelocityRPM = velocityRPM;
-    topController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-  }
-
   public void setVoltage(double volts) {
     topMotor.setVoltage(volts);
   }
@@ -78,7 +73,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    System.out.println(topEncoder.getVelocity());
     return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
   }
 

@@ -70,14 +70,14 @@ public class Intake extends SubsystemBase {
 
   public void intakeFeed() {
 
-    motor.setVoltage(liftVoltage);
+    motor.setVoltage(feedVoltage);
   }
 
   public void liftRetract() {
 
     if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
 
-      liftMotor.setVoltage(liftVoltage * -1 * 8);
+      liftMotor.setVoltage(-liftVoltage);
 
     } else {
 

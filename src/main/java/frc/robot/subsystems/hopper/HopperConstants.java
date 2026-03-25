@@ -13,5 +13,5 @@ public class HopperConstants {
   public static final double hopperIdleRPM = 1500.0;
   public static final double hopperFeedRPM = 5000.0;
 
-  public static final double hopperToleranceRPM = 3000.0;
+  public static final double hopperToleranceRPM = 200.0;
 }

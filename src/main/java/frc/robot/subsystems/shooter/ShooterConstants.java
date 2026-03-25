@@ -20,5 +20,5 @@ public class ShooterConstants {
   public static final double ampPresetRPM = 3000.0;
   public static final double trapPresetRPM = 5200.0;
 
-  public static final double shooterToleranceRPM = 3000.0;
+  public static final double shooterToleranceRPM = 150.0;
 }
