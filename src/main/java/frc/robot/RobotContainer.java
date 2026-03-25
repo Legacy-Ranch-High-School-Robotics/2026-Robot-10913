@@ -84,7 +84,14 @@ public class RobotContainer {
     configurePathPlannerCommands();
     configureAutoBuilder();
     configureAutoLogging();
-    m_autoChooser = AutoBuilder.buildAutoChooser("Auton1");
+    if (AutoBuilder.isConfigured()) {
+      m_autoChooser = AutoBuilder.buildAutoChooser("Auton1");
+    } else {
+      m_autoChooser = new SendableChooser<>();
+      m_autoChooser.setDefaultOption("None", Commands.none());
+      DriverStation.reportError(
+          "AutoBuilder not configured. Did you generate settings.json in PathPlanner?", false);
+    }
     ElasticTelemetry.publishSendable("Auto/Chooser", m_autoChooser);
     m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     m_fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
