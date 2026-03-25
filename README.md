@@ -13,7 +13,7 @@ This project combines:
 
 ### Drive Subsystem
 - MAXSwerve modules with NEO motors
-- ADIS16470 IMU for heading
+- Pigeon 2 IMU for heading
 - Field-relative and robot-relative driving modes
 
 ### Shooter Subsystem
