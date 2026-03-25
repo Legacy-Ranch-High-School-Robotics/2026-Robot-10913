@@ -42,8 +42,7 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = 0;
     public static final double kBackRightChassisAngularOffset = 0;
 
-    public static final double kDriveBaseRadius =
-        Math.hypot(kTrackWidth / 2.0, kWheelBase / 2.0);
+    public static final double kDriveBaseRadius = Math.hypot(kTrackWidth / 2.0, kWheelBase / 2.0);
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 5;

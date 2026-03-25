@@ -28,13 +28,13 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -260,7 +260,9 @@ public class RobotContainer {
 
     // Shooter presets on D-pad
     new POVButton(m_operatorController, 0)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
     new POVButton(m_operatorController, 90)
         .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
     new POVButton(m_operatorController, 180)
@@ -269,11 +271,9 @@ public class RobotContainer {
     // Operator rumble feedback when shooter is ready
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(
-            new InstantCommand(
-                () -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
+            new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
         .onFalse(
-            new InstantCommand(
-                () -> m_operatorController.setRumble(RumbleType.kBothRumble, 0.0)));
+            new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 0.0)));
   }
 
   /**
@@ -364,8 +364,7 @@ public class RobotContainer {
         error -> {
           ElasticTelemetry.setNumber("Auto/ErrorX", error.translationError.getX());
           ElasticTelemetry.setNumber("Auto/ErrorY", error.translationError.getY());
-          ElasticTelemetry.setNumber(
-              "Auto/ErrorThetaDeg", error.rotationError.getDegrees());
+          ElasticTelemetry.setNumber("Auto/ErrorThetaDeg", error.rotationError.getDegrees());
         });
   }
 }

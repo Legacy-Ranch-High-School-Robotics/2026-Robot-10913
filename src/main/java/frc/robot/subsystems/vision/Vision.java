@@ -112,14 +112,9 @@ public class Vision extends SubsystemBase {
 
         if (isVisionPoseValid(pose2d, m_driveSubsystem.getPose())) {
           double translationResidual =
-              pose2d
-                  .getTranslation()
-                  .getDistance(m_driveSubsystem.getPose().getTranslation());
+              pose2d.getTranslation().getDistance(m_driveSubsystem.getPose().getTranslation());
           double headingResidualDeg =
-              pose2d
-                  .getRotation()
-                  .minus(m_driveSubsystem.getPose().getRotation())
-                  .getDegrees();
+              pose2d.getRotation().minus(m_driveSubsystem.getPose().getRotation()).getDegrees();
           ElasticTelemetry.setNumber(prefix + "Residual/TranslationMeters", translationResidual);
           ElasticTelemetry.setNumber(prefix + "Residual/HeadingDegrees", headingResidualDeg);
           ElasticTelemetry.setNumber(
