@@ -97,6 +97,8 @@ public class RobotContainer {
     m_fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
     m_vision = new Vision(m_robotDrive, m_fieldLayout);
+    m_shooter.setDistanceSupplier(m_robotDrive::getDistanceToHub);
+    m_shooter.setAngleSupplier(m_robotDrive::getAngleErrorToHub);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -118,18 +120,7 @@ public class RobotContainer {
                       m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
               if (m_robotDrive.isTrackingHub()) {
-                var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
-                boolean isRed =
-                    alliance.isPresent()
-                        && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
-                edu.wpi.first.math.geometry.Translation2d targetHub =
-                    isRed
-                        ? frc.robot.Constants.FieldConstants.kRedHub
-                        : frc.robot.Constants.FieldConstants.kBlueHub;
-
-                edu.wpi.first.math.geometry.Rotation2d targetAngle =
-                    targetHub.minus(m_robotDrive.getPose().getTranslation()).getAngle();
-                rotSpeed = m_robotDrive.calculateHubTracking(targetAngle);
+                rotSpeed = m_robotDrive.calculateHubTracking(m_robotDrive.getTargetAngleToHub());
               }
 
               m_robotDrive.drive(xSpeed, ySpeed, rotSpeed, true);

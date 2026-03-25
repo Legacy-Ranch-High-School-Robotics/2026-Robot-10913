@@ -22,6 +22,9 @@ public class Shooter extends SubsystemBase {
 
   private double targetVelocityRPM = 90.0;
 
+  private java.util.function.DoubleSupplier distanceSupplier;
+  private java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier;
+
   public Shooter() {
     topMotor = new SparkFlex(topMotorCanId, MotorType.kBrushless);
 
@@ -52,6 +55,28 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     ElasticTelemetry.setNumber("Shooter/Actual RPM", topEncoder.getVelocity());
     ElasticTelemetry.setNumber("Shooter/Target RPM Setpoint", targetVelocityRPM);
+
+    if (distanceSupplier != null) {
+      double distanceMeters = distanceSupplier.getAsDouble();
+      ElasticTelemetry.setNumber(
+          "Shooter/Distance To Hub (m)", Math.round(distanceMeters * 100.0) / 100.0);
+      ElasticTelemetry.setNumber(
+          "Shooter/Suggested RPM", Math.round(getRPMForDistance(distanceMeters) * 100.0) / 100.0);
+    }
+    if (angleSupplier != null) {
+      double angleErrorDeg = angleSupplier.get().getDegrees();
+      ElasticTelemetry.setNumber(
+          "Shooter/Angle Error To Hub (deg)", Math.round(angleErrorDeg * 100.0) / 100.0);
+    }
+  }
+
+  public void setDistanceSupplier(java.util.function.DoubleSupplier distanceSupplier) {
+    this.distanceSupplier = distanceSupplier;
+  }
+
+  public void setAngleSupplier(
+      java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier) {
+    this.angleSupplier = angleSupplier;
   }
 
   public void setVelocity(double velocityRPM) {
@@ -86,5 +111,15 @@ public class Shooter extends SubsystemBase {
 
   public double getTargetVelocityRPM() {
     return targetVelocityRPM;
+  }
+
+  /**
+   * Estimates the required shooter RPM for a given distance to the hub.
+   *
+   * @param distance Distance to the hub (in meters)
+   * @return The interpolated target RPM based on measured values
+   */
+  public double getRPMForDistance(double distance) {
+    return distanceToRpmMap.get(distance);
   }
 }

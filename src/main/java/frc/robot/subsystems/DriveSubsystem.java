@@ -238,6 +238,48 @@ public class DriveSubsystem extends SubsystemBase {
     return rotSpeed / DriveConstants.kMaxAngularSpeed;
   }
 
+  /**
+   * Calculates the distance to the speaker/hub.
+   *
+   * @return The distance to the hub in meters.
+   */
+  public double getDistanceToHub() {
+    var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+    boolean isRed =
+        alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+    edu.wpi.first.math.geometry.Translation2d targetHub =
+        isRed
+            ? frc.robot.Constants.FieldConstants.kRedHub
+            : frc.robot.Constants.FieldConstants.kBlueHub;
+    return getPose().getTranslation().getDistance(targetHub);
+  }
+
+  /**
+   * Calculates the target field angle to the speaker/hub.
+   *
+   * @return The field-relative angle from the robot to the hub.
+   */
+  public Rotation2d getTargetAngleToHub() {
+    var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+    boolean isRed =
+        alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+    edu.wpi.first.math.geometry.Translation2d targetHub =
+        isRed
+            ? frc.robot.Constants.FieldConstants.kRedHub
+            : frc.robot.Constants.FieldConstants.kBlueHub;
+    return targetHub.minus(getPose().getTranslation()).getAngle();
+  }
+
+  /**
+   * Calculates the angle error between where the robot is currently facing and the hub. Useful for
+   * telemetry to see when the robot points at the hub (error is 0).
+   *
+   * @return The angle error.
+   */
+  public Rotation2d getAngleErrorToHub() {
+    return getTargetAngleToHub().minus(getPose().getRotation());
+  }
+
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
 

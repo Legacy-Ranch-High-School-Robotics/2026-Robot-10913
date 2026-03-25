@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+
 public class ShooterConstants {
   // Orange Wheels
   public static final int topMotorCanId = 13;
@@ -21,4 +23,15 @@ public class ShooterConstants {
   public static final double trapPresetRPM = 5200.0;
 
   public static final double shooterToleranceRPM = 150.0;
+
+  // Interpolation map for distance in meters (converted from feet) to RPM
+  public static final InterpolatingDoubleTreeMap distanceToRpmMap =
+      new InterpolatingDoubleTreeMap();
+
+  static {
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(2.0), 2000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.0), 2500.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(5.0), 3500.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.0), 5000.0);
+  }
 }
