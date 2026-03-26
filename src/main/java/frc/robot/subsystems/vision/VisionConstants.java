@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public final class VisionConstants {
   public static final String CAMERA_1_NAME = "Arducam3-front-10913";
-  public static final String CAMERA_2_NAME = "Arducam2-frontleft-10913";
+  public static final String CAMERA_2_NAME = "Arducam1-frontleft-10913";
   public static final String CAMERA_3_NAME = "Arducam2-back-10913";
 
   static final double camera_h = 0.69215;
