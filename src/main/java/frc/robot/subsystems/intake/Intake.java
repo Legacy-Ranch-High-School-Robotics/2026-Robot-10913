@@ -77,7 +77,7 @@ public class Intake extends SubsystemBase {
 
     if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
 
-      liftMotor.setVoltage(liftVoltage * -1 * 8);
+      liftMotor.setVoltage(liftVoltage * -1 * 2.0);
 
     } else {
 

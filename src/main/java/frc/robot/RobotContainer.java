@@ -14,8 +14,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -37,9 +39,6 @@ import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
-
-import static frc.robot.subsystems.shooter.ShooterConstants.shooterRPM;
-
 import java.util.List;
 
 /**
@@ -59,8 +58,9 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // The operator's controller
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+  GenericHID m_keyboard = new GenericHID(2);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -129,30 +129,29 @@ public class RobotContainer {
 
     // ========== OPERATOR CONTROLS ==========
 
-        // Launch button (A) - runs shooter and hopper forward to score
-        new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-                .whileTrue(
-                        new RunCommand(
-                                () -> {
-                                    m_shooter.setVelocity(ShooterConstants.shooterRPM);
-                                    // Set Target Rpm in the method below
-                                    if (m_shooter.atTargetVelocity()) {
-                                        m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                                    } else {
-                                        m_hopper.stop();
-                                    }
-                                },
-                                m_shooter,
-                                m_hopper))
-                .onFalse(
-                        new InstantCommand(
-                                () -> {
-                                    m_shooter.stop();
-                                    m_hopper.stop();
-                                },
-                                m_shooter,
-                                m_hopper));
-
+    // Launch button (A) - runs shooter and hopper forward to score
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_shooter.setVelocity(ShooterConstants.shooterRPM);
+                  // Set Target Rpm in the method below
+                  if (m_shooter.atTargetVelocity()) {
+                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  } else {
+                    m_hopper.stop();
+                  }
+                },
+                m_shooter,
+                m_hopper))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_shooter.stop();
+                  m_hopper.stop();
+                },
+                m_shooter,
+                m_hopper));
 
     // Eject button (B) - runs intake, hopper, and shooter backwards
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
@@ -192,6 +191,67 @@ public class RobotContainer {
 
     // Shooter only (right bumper)
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
+        .whileTrue(
+            new RunCommand(() -> m_shooter.setVelocity(ShooterConstants.shooterRPM), m_shooter))
+        .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
+
+    new Trigger(() -> m_keyboard.getRawButton(1))
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_shooter.setVelocity(ShooterConstants.shooterRPM);
+                  if (m_shooter.atTargetVelocity()) {
+                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  } else {
+                    m_hopper.stop();
+                  }
+                },
+                m_shooter,
+                m_hopper))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_shooter.stop();
+                  m_hopper.stop();
+                },
+                m_shooter,
+                m_hopper));
+
+    new Trigger(() -> m_keyboard.getRawButton(2))
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_intake.intake();
+                  m_hopper.eject();
+                  m_shooter.eject();
+                },
+                m_intake,
+                m_hopper,
+                m_shooter))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_intake.stop();
+                  m_hopper.stop();
+                  m_shooter.stop();
+                },
+                m_intake,
+                m_hopper,
+                m_shooter));
+
+    new Trigger(() -> m_keyboard.getRawButton(3))
+        .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    new Trigger(() -> m_keyboard.getRawButton(4))
+        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    new Trigger(() -> m_keyboard.getRawButton(5))
+        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    new Trigger(() -> m_keyboard.getRawButton(6))
         .whileTrue(
             new RunCommand(() -> m_shooter.setVelocity(ShooterConstants.shooterRPM), m_shooter))
         .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
