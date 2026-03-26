@@ -18,8 +18,8 @@ public class ShooterConstants {
   public static final double shooterRPM = 4575.0;
   public static final double shooterRPMInverted = -2000.0;
 
-  public static final double speakerPresetRPM = 4600.0;
-  public static final double ampPresetRPM = 3000.0;
+  public static final double speakerPresetRPM = 5000.0;
+  public static final double ampPresetRPM = 5000.0;
   public static final double trapPresetRPM = 5200.0;
 
   public static final double shooterToleranceRPM = 150.0;
