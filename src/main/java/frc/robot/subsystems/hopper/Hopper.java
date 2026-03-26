@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.ElasticTelemetry;
 
 public class Hopper extends SubsystemBase {
   private final SparkMax hopperMotor;
@@ -41,7 +42,10 @@ public class Hopper extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    ElasticTelemetry.setNumber("Hopper/Actual RPM", hopperEncoder.getVelocity());
+    ElasticTelemetry.setNumber("Hopper/Target RPM", targetVelocityRPM);
+  }
 
   public void setVelocity(double velocityRPM) {
     targetVelocityRPM = velocityRPM;

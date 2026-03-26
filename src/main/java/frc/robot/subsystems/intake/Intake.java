@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
         com.revrobotics.PersistMode.kPersistParameters);
 
     liftMotor.configure(
-        config,
+        liftConfig,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
   }
@@ -70,14 +70,14 @@ public class Intake extends SubsystemBase {
 
   public void intakeFeed() {
 
-    motor.setVoltage(liftVoltage);
+    motor.setVoltage(feedVoltage);
   }
 
   public void liftRetract() {
 
     if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
 
-      liftMotor.setVoltage(liftVoltage * -1 * 8);
+      liftMotor.setVoltage(-liftVoltage);
 
     } else {
 

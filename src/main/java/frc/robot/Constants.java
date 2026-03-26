@@ -42,6 +42,8 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = 0;
     public static final double kBackRightChassisAngularOffset = 0;
 
+    public static final double kDriveBaseRadius = Math.hypot(kTrackWidth / 2.0, kWheelBase / 2.0);
+
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 5;
     public static final int kRearLeftDrivingCanId = 7;
@@ -56,6 +58,14 @@ public final class Constants {
     public static final int kPigeon2CanId = 9;
 
     public static final boolean kGyroReversed = false;
+  }
+
+  public static final class FieldConstants {
+    public static final double kFieldLength = 16.54;
+    public static final double kFieldWidth = 8.07;
+    public static final Translation2d kBlueHub = new Translation2d(4.63, kFieldWidth / 2.0);
+    public static final Translation2d kRedHub =
+        new Translation2d(kFieldLength - 4.55, kFieldWidth / 2.0);
   }
 
   public static final class ModuleConstants {

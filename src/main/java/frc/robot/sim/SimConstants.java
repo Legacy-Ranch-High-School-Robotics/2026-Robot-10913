@@ -10,6 +10,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.photonvision.simulation.SimCameraProperties;
 
 /**
  * Constants specific to the simulation environment. All physical properties used by maple-sim are
@@ -25,8 +26,8 @@ public final class SimConstants {
   public static final Distance kTrackWidth = Meters.of(0.673); // 26.5 inches
 
   // FRC field dimensions (meters)
-  public static final double kFieldLengthX = 16.54;
-  public static final double kFieldWidth = 9.14;
+  public static final double kFieldLengthX = frc.robot.Constants.FieldConstants.kFieldLength;
+  public static final double kFieldWidth = frc.robot.Constants.FieldConstants.kFieldWidth;
 
   // Default starting pose (used before DriverStation data is available)
   public static final Pose2d kStartingPose = new Pose2d(2.0, 6.5, new Rotation2d());
@@ -72,5 +73,16 @@ public final class SimConstants {
             COTS.WHEELS.COLSONS.cof, // Colson wheels COF
             3 // MAXSwerve Base Kit L3 = 14T pinion
             ));
+  }
+
+  /** Gets the global simulation properties for the cameras. */
+  public static SimCameraProperties createCameraProperties() {
+    SimCameraProperties properties = new SimCameraProperties();
+    properties.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+    properties.setCalibError(0.35, 0.10);
+    properties.setFPS(15);
+    properties.setAvgLatencyMs(50);
+    properties.setLatencyStdDevMs(15);
+    return properties;
   }
 }
