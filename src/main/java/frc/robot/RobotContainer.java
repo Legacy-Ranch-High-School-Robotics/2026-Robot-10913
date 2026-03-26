@@ -22,16 +22,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -77,6 +77,9 @@ public class RobotContainer {
 
   // The operator's controller
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+  // The operator's keyboard
+  CommandGenericHID m_operatorKeyboard = new CommandGenericHID(OIConstants.kOperatorKeyboardPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -170,7 +173,7 @@ public class RobotContainer {
     // ========== DRIVER CONTROLS ==========
 
     // Drive controls
-    new JoystickButton(m_driverController, Button.kR1.value)
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
     // Toggle Hub Tracking
@@ -272,6 +275,124 @@ public class RobotContainer {
             new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
         .onFalse(
             new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 0.0)));
+
+    // ========== KEYBOARD CONTROLS (Port 2) ==========
+
+    
+    m_operatorKeyboard
+        .button(1)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  // Enable hub tracking to auto-aim while driving
+                  m_robotDrive.setTrackingHub(true);
+                  // Spin shooter to target velocity
+                  m_shooter.setVelocity(
+                      ElasticTelemetry.getNumber(
+                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
+                },
+                m_shooter))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(false);
+                  m_shooter.stop();
+                },
+                m_shooter));
+
+    // Auto-Shoot (Key 2 / W) - Automatically shoots when aligned and at speed
+    m_operatorKeyboard
+        .button(2)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  // Enable hub tracking to auto-aim
+                  m_robotDrive.setTrackingHub(true);
+                  // Spin up shooter
+                  m_shooter.setVelocity(
+                      ElasticTelemetry.getNumber(
+                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
+                  // Auto-feed hopper when shooter is at speed and aligned
+                  if (m_shooter.atTargetVelocity()
+                      && Math.abs(m_robotDrive.getAngleErrorToHub().getDegrees()) < 3.0) {
+                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  } else {
+                    m_hopper.stop();
+                  }
+                },
+                m_shooter,
+                m_hopper))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(false);
+                  m_shooter.stop();
+                  m_hopper.stop();
+                },
+                m_shooter,
+                m_hopper));
+
+    // Manual Shoot (Key 3 / E) - Same as operator A button
+    m_operatorKeyboard
+        .button(3)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_shooter.setVelocity(
+                      ElasticTelemetry.getNumber(
+                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
+                  if (m_shooter.atTargetVelocity()) {
+                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  } else {
+                    m_hopper.stop();
+                  }
+                },
+                m_shooter,
+                m_hopper))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_shooter.stop();
+                  m_hopper.stop();
+                },
+                m_shooter,
+                m_hopper));
+
+    // Intake Deploy (Key 4 / R)
+    m_operatorKeyboard
+        .button(4)
+        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    // Intake Retract (Key 5 / T)
+    m_operatorKeyboard
+        .button(5)
+        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
+        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+
+    // Eject (Key 6 / Y)
+    m_operatorKeyboard
+        .button(6)
+        .whileTrue(
+            new RunCommand(
+                () -> {
+                  m_intake.intake();
+                  m_hopper.eject();
+                  m_shooter.eject();
+                },
+                m_intake,
+                m_hopper,
+                m_shooter))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_intake.stop();
+                  m_hopper.stop();
+                  m_shooter.stop();
+                },
+                m_intake,
+                m_hopper,
+                m_shooter));
   }
 
   /**
