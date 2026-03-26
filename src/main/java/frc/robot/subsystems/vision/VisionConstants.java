@@ -18,7 +18,7 @@ public final class VisionConstants {
   public static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(camera_y, camera_x, camera_h, new Rotation3d(0, 0, 0));
   public static final Transform3d ROBOT_TO_CAMERA_3 =
-      new Transform3d(camera_y - 0.0889, 0, camera_h, new Rotation3d(0, 0, Math.PI));
+      new Transform3d(camera_y - 0.0889, 0, camera_h -0.1016, new Rotation3d(0, 0, Math.PI));
 
   // Max pitch/roll allowed before ignoring vision poses (bump handling)
   public static final double MAX_PITCH_ROLL_DEGREES = 3.0;
