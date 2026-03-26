@@ -16,5 +16,5 @@ public class ShooterConstants {
   public static final double shooterRPM = 4575.0;
   public static final double shooterRPMInverted = -2000.0;
 
-  public static final double shooterToleranceRPM = 3000.0;
+  public static final double shooterToleranceRPM = 100.0;
 }
