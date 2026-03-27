@@ -39,4 +39,19 @@ public final class ElasticTelemetry {
   public static void publishSendable(String key, Sendable data) {
     SmartDashboard.putData(key, data);
   }
+
+  public static void setPose(String key, edu.wpi.first.math.geometry.Pose2d pose) {
+    ROOT_TABLE.getEntry(key).setDoubleArray(
+        new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()});
+  }
+
+  public static void setPoseArray(String key, edu.wpi.first.math.geometry.Pose2d[] poses) {
+    double[] poseData = new double[poses.length * 3];
+    for (int i = 0; i < poses.length; i++) {
+      poseData[i * 3] = poses[i].getX();
+      poseData[i * 3 + 1] = poses[i].getY();
+      poseData[i * 3 + 2] = poses[i].getRotation().getRadians();
+    }
+    ROOT_TABLE.getEntry(key).setDoubleArray(poseData);
+  }
 }
