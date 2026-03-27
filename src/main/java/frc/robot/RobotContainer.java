@@ -47,7 +47,6 @@ import frc.robot.commands.shooter.SpinUpShooter;
 import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.hopper.Hopper;
-import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
@@ -192,8 +191,8 @@ public class RobotContainer {
                       ElasticTelemetry.getNumber(
                           "Shooter/Target RPM", ShooterConstants.shooterRPM));
                   // Set Target Rpm in the method below
-                  if (m_shooter.atTargetVelocity()) {
-                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+                  if (true) {
+                    m_hopper.uneject();
                   } else {
                     m_hopper.stop();
                   }

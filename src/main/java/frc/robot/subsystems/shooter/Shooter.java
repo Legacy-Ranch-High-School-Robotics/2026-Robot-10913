@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+    return Math.abs(topEncoder.getVelocity() * 3 - targetVelocityRPM) < shooterToleranceRPM;
   }
 
   public boolean atTestingVelocity() {

@@ -65,6 +65,10 @@ public class Hopper extends SubsystemBase {
     hopperMotor.setVoltage(-6.0);
   }
 
+  public void uneject() {
+    hopperMotor.setVoltage(6.0);
+  }
+
   public boolean atTargetVelocity() {
     return Math.abs(hopperEncoder.getVelocity() - targetVelocityRPM) < hopperToleranceRPM;
   }
