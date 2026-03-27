@@ -479,10 +479,19 @@ public class RobotContainer {
 
   private void configureAutoLogging() {
     PathPlannerLogging.setLogActivePathCallback(
-        poses -> m_robotDrive.getField().getObject("Auto/PlannedPath").setPoses(poses));
+        poses -> {
+          m_robotDrive.getField().getObject("Auto/PlannedPath").setPoses(poses);
+          ElasticTelemetry.setPoseArray("PathPlanner/Active Path", poses.toArray(new edu.wpi.first.math.geometry.Pose2d[0]));
+        });
     PathPlannerLogging.setLogCurrentPoseCallback(
-        pose -> m_robotDrive.getField().getObject("Auto/CurrentPose").setPose(pose));
+        pose -> {
+          m_robotDrive.getField().getObject("Auto/CurrentPose").setPose(pose);
+          ElasticTelemetry.setPose("PathPlanner/Current Pose", pose);
+        });
     PathPlannerLogging.setLogTargetPoseCallback(
-        pose -> m_robotDrive.getField().getObject("Auto/TargetPose").setPose(pose));
+        pose -> {
+          m_robotDrive.getField().getObject("Auto/TargetPose").setPose(pose);
+          ElasticTelemetry.setPose("PathPlanner/Target Pose", pose);
+        });
   }
 }
