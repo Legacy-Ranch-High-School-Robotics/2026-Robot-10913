@@ -8,7 +8,7 @@ public class HopperConstants {
   public static final double hopperKp = 0.0001;
   public static final double hopperKi = 0.0;
   public static final double hopperKd = 0.0;
-  public static final double hopperKv = 0.000175;
+  public static final double hopperKv = 0.0021;
 
   public static final double hopperIdleRPM = 1500.0;
   public static final double hopperFeedRPM = 5000.0;
