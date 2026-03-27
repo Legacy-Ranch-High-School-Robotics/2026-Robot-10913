@@ -38,7 +38,7 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    topConfig.encoder.velocityConversionFactor(1.0);
+    topConfig.encoder.velocityConversionFactor(2.0);
     topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     topConfig.closedLoop.velocityFF(shooterKv);
 
