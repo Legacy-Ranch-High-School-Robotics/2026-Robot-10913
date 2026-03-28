@@ -58,8 +58,7 @@ public class ShootOnMoveCommand extends Command {
     ElasticTelemetry.setNumber("ShootOnMove/BaseRPM", baseRPM);
     ElasticTelemetry.setNumber("ShootOnMove/VelocityTowardTarget", velocityTowardTarget);
     ElasticTelemetry.setNumber("ShootOnMove/CompensatedRPM", compensatedRPM);
-    ElasticTelemetry.setNumber(
-        "ShootOnMove/AngleError", m_drive.getAngleErrorToHub().getDegrees());
+    ElasticTelemetry.setNumber("ShootOnMove/AngleError", m_drive.getAngleErrorToHub().getDegrees());
 
     m_shooter.setVelocity(compensatedRPM);
 

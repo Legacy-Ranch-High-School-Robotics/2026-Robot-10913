@@ -75,7 +75,7 @@ public class Intake extends SubsystemBase {
 
   public void liftRetract() {
     double currentPosition = getLiftPosition();
-    
+
     if (currentPosition <= liftLowerLimit) {
       liftStop();
     } else if (currentPosition > retractedPosition - liftPositionTolerance) {
@@ -87,7 +87,7 @@ public class Intake extends SubsystemBase {
 
   public void liftDeploy() {
     double currentPosition = getLiftPosition();
-    
+
     if (currentPosition >= liftUpperLimit) {
       liftStop();
     } else if (currentPosition < deployedPosition + liftPositionTolerance) {

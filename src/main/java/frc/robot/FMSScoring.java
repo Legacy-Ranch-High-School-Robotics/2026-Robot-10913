@@ -15,7 +15,7 @@ public class FMSScoring {
 
   public void periodic() {
     isFMSConnected = DriverStation.isFMSAttached();
-    
+
     if (!isFMSConnected) {
       ElasticTelemetry.setString("Game/Auto Winner", "N/A - No FMS");
       ElasticTelemetry.setBoolean("Game/CanScoreNow", false);
@@ -33,7 +33,7 @@ public class FMSScoring {
     }
 
     boolean isRed = alliance.get() == DriverStation.Alliance.Red;
-    
+
     int ourScore = (int) fmsTable.getEntry(isRed ? "RedScore" : "BlueScore").getDouble(0);
     int opponentScore = (int) fmsTable.getEntry(isRed ? "BlueScore" : "RedScore").getDouble(0);
 
@@ -50,7 +50,7 @@ public class FMSScoring {
     } else {
       winner = "Tie (" + ourScore + " pts)";
     }
-    
+
     ElasticTelemetry.setString("Game/Auto Winner", winner);
   }
 
@@ -65,7 +65,7 @@ public class FMSScoring {
       reason = "AUTO - ACTIVE hubs score";
     } else if (DriverStation.isTeleop()) {
       double matchTime = DriverStation.getMatchTime();
-      
+
       if (matchTime > 120) {
         canScore = true;
         reason = "TELEOP - Alliance Shift 1 (all hubs active)";

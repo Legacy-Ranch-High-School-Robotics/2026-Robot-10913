@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -81,7 +80,7 @@ public class RobotContainer {
 
   // The operator's controller (F310 gamepad)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
-  
+
   private boolean isAutomaticMode = false;
   private boolean useShootOnMove = true;
 
@@ -180,16 +179,20 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
-        .onTrue(new InstantCommand(() -> {
-          m_robotDrive.setTrackingHub(true);
-          ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
-        }));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(true);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                }));
 
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
-        .onTrue(new InstantCommand(() -> {
-          m_robotDrive.setTrackingHub(false);
-          ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
-        }));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(false);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+                }));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -201,8 +204,7 @@ public class RobotContainer {
         new RunCommand(
             () -> {
               m_shooter.setVelocity(
-                  ElasticTelemetry.getNumber(
-                      "Shooter/Target RPM", ShooterConstants.shooterRPM));
+                  ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
               if (m_shooter.atTargetVelocity()) {
                 m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
               } else {
@@ -219,7 +221,6 @@ public class RobotContainer {
             },
             m_shooter,
             m_hopper);
-
 
     // Eject button (B / E key) - runs intake, hopper, and shooter backwards
     var ejectCommand =
@@ -269,8 +270,7 @@ public class RobotContainer {
         new RunCommand(
             () ->
                 m_shooter.setVelocity(
-                    ElasticTelemetry.getNumber(
-                        "Shooter/Target RPM", ShooterConstants.shooterRPM)),
+                    ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
             m_shooter);
     var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -278,42 +278,50 @@ public class RobotContainer {
         .onFalse(stopShooterCommand);
 
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(
-            () -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM),
-            m_hopper))
+        .whileTrue(
+            new RunCommand(() -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM), m_hopper))
         .onFalse(new InstantCommand(() -> m_hopper.stop(), m_hopper));
 
     new POVButton(m_operatorController, 270)
-        .onTrue(new InstantCommand(() -> {
-          isAutomaticMode = !isAutomaticMode;
-          ElasticTelemetry.setBoolean("Shooter/AutomaticMode", isAutomaticMode);
-          ElasticTelemetry.setString("Shooter/Mode", isAutomaticMode ? "AUTOMATIC" : "MANUAL");
-        }));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  isAutomaticMode = !isAutomaticMode;
+                  ElasticTelemetry.setBoolean("Shooter/AutomaticMode", isAutomaticMode);
+                  ElasticTelemetry.setString(
+                      "Shooter/Mode", isAutomaticMode ? "AUTOMATIC" : "MANUAL");
+                }));
 
     new POVButton(m_operatorController, 0)
-        .onTrue(new InstantCommand(() -> {
-          if (isAutomaticMode) {
-            useShootOnMove = !useShootOnMove;
-            ElasticTelemetry.setBoolean("Shooter/UseShootOnMove", useShootOnMove);
-            ElasticTelemetry.setString("Shooter/AutoAimMode", 
-                useShootOnMove ? "SHOOT ON MOVE" : "AUTO SHOOT");
-          }
-        }));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  if (isAutomaticMode) {
+                    useShootOnMove = !useShootOnMove;
+                    ElasticTelemetry.setBoolean("Shooter/UseShootOnMove", useShootOnMove);
+                    ElasticTelemetry.setString(
+                        "Shooter/AutoAimMode", useShootOnMove ? "SHOOT ON MOVE" : "AUTO SHOOT");
+                  }
+                }));
 
     new POVButton(m_operatorController, 90)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
+        .onTrue(
+            new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
 
     new POVButton(m_operatorController, 180)
-        .onTrue(new InstantCommand(() -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(new ConditionalCommand(
+        .whileTrue(
             new ConditionalCommand(
-                new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
-                new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
-                () -> useShootOnMove),
-            launchCommand,
-            () -> isAutomaticMode));
+                new ConditionalCommand(
+                    new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
+                    new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
+                    () -> useShootOnMove),
+                launchCommand,
+                () -> isAutomaticMode));
 
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(

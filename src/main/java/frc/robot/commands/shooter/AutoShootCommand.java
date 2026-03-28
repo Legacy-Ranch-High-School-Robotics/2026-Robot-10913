@@ -40,8 +40,7 @@ public class AutoShootCommand extends Command {
 
     ElasticTelemetry.setNumber("AutoShoot/Distance", distance);
     ElasticTelemetry.setNumber("AutoShoot/CalculatedRPM", targetRPM);
-    ElasticTelemetry.setNumber(
-        "AutoShoot/AngleError", m_drive.getAngleErrorToHub().getDegrees());
+    ElasticTelemetry.setNumber("AutoShoot/AngleError", m_drive.getAngleErrorToHub().getDegrees());
 
     m_shooter.setVelocity(targetRPM);
 

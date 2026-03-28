@@ -21,13 +21,17 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 2.0; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
+    public static final double kMaxSpeedMetersPerSecond =
+        2.0; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
+    public static final double kMaxAngularSpeed =
+        2 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5); // DEBUG:DRIVE_TRACK_WIDTH - Left-to-right wheel distance
+    public static final double kTrackWidth =
+        Units.inchesToMeters(26.5); // DEBUG:DRIVE_TRACK_WIDTH - Left-to-right wheel distance
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5); // DEBUG:DRIVE_WHEEL_BASE - Front-to-back wheel distance
+    public static final double kWheelBase =
+        Units.inchesToMeters(26.5); // DEBUG:DRIVE_WHEEL_BASE - Front-to-back wheel distance
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
@@ -45,60 +49,80 @@ public final class Constants {
     public static final double kDriveBaseRadius = Math.hypot(kTrackWidth / 2.0, kWheelBase / 2.0);
 
     // SPARK MAX CAN IDs - Drive motors (SparkFlex)
-    public static final int kFrontLeftDrivingCanId = 5;   // DEBUG:CAN_FL_DRIVE - FL drive motor
-    public static final int kRearLeftDrivingCanId = 7;    // DEBUG:CAN_RL_DRIVE - RL drive motor
-    public static final int kFrontRightDrivingCanId = 3;  // DEBUG:CAN_FR_DRIVE - FR drive motor
-    public static final int kRearRightDrivingCanId = 1;   // DEBUG:CAN_RR_DRIVE - RR drive motor
+    public static final int kFrontLeftDrivingCanId = 5; // DEBUG:CAN_FL_DRIVE - FL drive motor
+    public static final int kRearLeftDrivingCanId = 7; // DEBUG:CAN_RL_DRIVE - RL drive motor
+    public static final int kFrontRightDrivingCanId = 3; // DEBUG:CAN_FR_DRIVE - FR drive motor
+    public static final int kRearRightDrivingCanId = 1; // DEBUG:CAN_RR_DRIVE - RR drive motor
 
     // SPARK MAX CAN IDs - Turning motors (SparkMax)
-    public static final int kFrontLeftTurningCanId = 6;   // DEBUG:CAN_FL_TURN - FL turn motor
-    public static final int kRearLeftTurningCanId = 8;    // DEBUG:CAN_RL_TURN - RL turn motor
-    public static final int kFrontRightTurningCanId = 4;  // DEBUG:CAN_FR_TURN - FR turn motor
-    public static final int kRearRightTurningCanId = 2;   // DEBUG:CAN_RR_TURN - RR turn motor
+    public static final int kFrontLeftTurningCanId = 6; // DEBUG:CAN_FL_TURN - FL turn motor
+    public static final int kRearLeftTurningCanId = 8; // DEBUG:CAN_RL_TURN - RL turn motor
+    public static final int kFrontRightTurningCanId = 4; // DEBUG:CAN_FR_TURN - FR turn motor
+    public static final int kRearRightTurningCanId = 2; // DEBUG:CAN_RR_TURN - RR turn motor
 
-    public static final int kPigeon2CanId = 9;            // DEBUG:CAN_GYRO - Gyro (Pigeon 2.0)
+    public static final int kPigeon2CanId = 9; // DEBUG:CAN_GYRO - Gyro (Pigeon 2.0)
 
     public static final boolean kGyroReversed = false;
   }
 
   public static final class FieldConstants {
-    public static final double kFieldLength = 16.54;  // DEBUG:FIELD_LENGTH - Field length (meters)
-    public static final double kFieldWidth = 8.07;    // DEBUG:FIELD_WIDTH - Field width (meters)
-    public static final Translation2d kBlueHub = new Translation2d(4.63, kFieldWidth / 2.0);  // DEBUG:BLUE_HUB_POSITION - Blue speaker position
+    public static final double kFieldLength = 16.54; // DEBUG:FIELD_LENGTH - Field length (meters)
+    public static final double kFieldWidth = 8.07; // DEBUG:FIELD_WIDTH - Field width (meters)
+    public static final Translation2d kBlueHub =
+        new Translation2d(
+            4.63, kFieldWidth / 2.0); // DEBUG:BLUE_HUB_POSITION - Blue speaker position
     public static final Translation2d kRedHub =
-        new Translation2d(kFieldLength - 4.55, kFieldWidth / 2.0);  // DEBUG:RED_HUB_POSITION - Red speaker position
+        new Translation2d(
+            kFieldLength - 4.55,
+            kFieldWidth / 2.0); // DEBUG:RED_HUB_POSITION - Red speaker position
   }
-  // Remember To Edit when changing gears 
-  public static final class ModuleConstants {
-   
-    public static final int kDrivingMotorPinionTeeth = 14;  // DEBUG:PINION_TEETH - Pinion gear teeth count
 
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;  // DEBUG:MOTOR_FREE_SPEED - Motor free speed (RPS)
-    public static final double kWheelDiameterMeters = 0.0762;  // DEBUG:WHEEL_DIAMETER - Wheel diameter (3 inches)
-    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;  // DEBUG:WHEEL_CIRCUMFERENCE - Wheel circumference
-    
+  // Remember To Edit when changing gears
+  public static final class ModuleConstants {
+
+    public static final int kDrivingMotorPinionTeeth =
+        14; // DEBUG:PINION_TEETH - Pinion gear teeth count
+
+    public static final double kDrivingMotorFreeSpeedRps =
+        NeoMotorConstants.kFreeSpeedRpm / 60; // DEBUG:MOTOR_FREE_SPEED - Motor free speed (RPS)
+    public static final double kWheelDiameterMeters =
+        0.0762; // DEBUG:WHEEL_DIAMETER - Wheel diameter (3 inches)
+    public static final double kWheelCircumferenceMeters =
+        kWheelDiameterMeters * Math.PI; // DEBUG:WHEEL_CIRCUMFERENCE - Wheel circumference
+
     public static final double kDrivingMotorReduction =
-        (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);  // DEBUG:GEAR_REDUCTION - Gear reduction ratio
+        (45.0 * 22)
+            / (kDrivingMotorPinionTeeth * 15); // DEBUG:GEAR_REDUCTION - Gear reduction ratio
     public static final double kDriveWheelFreeSpeedRps =
-        (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;  // DEBUG:WHEEL_MAX_SPEED - Max wheel speed
+        (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
+            / kDrivingMotorReduction; // DEBUG:WHEEL_MAX_SPEED - Max wheel speed
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;      // DEBUG:DRIVER_PORT - Driver Xbox controller USB port
-    public static final int kOperatorControllerPort = 1;    // DEBUG:OPERATOR_PORT - Operator F310 controller USB port
-    public static final int kKeyboardPort = 2;              // DEBUG:KEYBOARD_PORT - Keyboard USB port (not currently used)
-    public static final double kDriveDeadband = 0.5;        // DEBUG:DRIVE_DEADBAND - Joystick deadband (0.0-1.0)
+    public static final int kDriverControllerPort =
+        0; // DEBUG:DRIVER_PORT - Driver Xbox controller USB port
+    public static final int kOperatorControllerPort =
+        1; // DEBUG:OPERATOR_PORT - Operator F310 controller USB port
+    public static final int kKeyboardPort =
+        2; // DEBUG:KEYBOARD_PORT - Keyboard USB port (not currently used)
+    public static final double kDriveDeadband =
+        0.5; // DEBUG:DRIVE_DEADBAND - Joystick deadband (0.0-1.0)
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.2;                          // DEBUG:AUTO_MAX_SPEED - Auto max speed (m/s)
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;              // DEBUG:AUTO_MAX_ACCEL - Auto max acceleration
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;              // DEBUG:AUTO_MAX_ANGULAR_SPEED - Auto max rotation speed
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;       // DEBUG:AUTO_MAX_ANGULAR_ACCEL - Auto max rotation accel
+    public static final double kMaxSpeedMetersPerSecond =
+        0.2; // DEBUG:AUTO_MAX_SPEED - Auto max speed (m/s)
+    public static final double kMaxAccelerationMetersPerSecondSquared =
+        3; // DEBUG:AUTO_MAX_ACCEL - Auto max acceleration
+    public static final double kMaxAngularSpeedRadiansPerSecond =
+        Math.PI; // DEBUG:AUTO_MAX_ANGULAR_SPEED - Auto max rotation speed
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared =
+        Math.PI; // DEBUG:AUTO_MAX_ANGULAR_ACCEL - Auto max rotation accel
 
-    public static final double kPXController = 1;          // DEBUG:AUTO_PID_X - X-axis PID proportional gain
-    public static final double kPYController = 1;          // DEBUG:AUTO_PID_Y - Y-axis PID proportional gain
-    public static final double kPThetaController = 1;      // DEBUG:AUTO_PID_THETA - Rotation PID proportional gain
+    public static final double kPXController = 1; // DEBUG:AUTO_PID_X - X-axis PID proportional gain
+    public static final double kPYController = 1; // DEBUG:AUTO_PID_Y - Y-axis PID proportional gain
+    public static final double kPThetaController =
+        1; // DEBUG:AUTO_PID_THETA - Rotation PID proportional gain
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
@@ -107,7 +131,8 @@ public final class Constants {
   }
 
   public static final class NeoMotorConstants {
-    public static final double kFreeSpeedRpm = 5676;  // DEBUG:NEO_FREE_SPEED - NEO motor free speed (RPM)
+    public static final double kFreeSpeedRpm =
+        5676; // DEBUG:NEO_FREE_SPEED - NEO motor free speed (RPM)
   }
 
   // ========================================
@@ -117,7 +142,7 @@ public final class Constants {
   // All values are defined in their respective constant classes above.
   //
   // === CAN ID ASSIGNMENTS ===
-  // 
+  //
   // DRIVETRAIN (8 motors + 1 gyro = 9 devices):
   //   CAN 1  - Rear Right Drive (SparkFlex)
   //   CAN 2  - Rear Right Turn (SparkMax)
