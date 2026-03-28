@@ -9,7 +9,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.ElasticTelemetry;
 
@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
 
     topController = topMotor.getClosedLoopController();
 
-    var topConfig = new SparkMaxConfig();
+    var topConfig = new SparkFlexConfig();
     topConfig
         .inverted(topMotorInverted)
         .idleMode(IdleMode.kCoast)
@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase {
         .voltageCompensation(12.0);
     topConfig.encoder.velocityConversionFactor(1.0);
     topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
-    topConfig.closedLoop.velocityFF(shooterKv);
+    topConfig.closedLoop.feedForward.kV(shooterKv);
 
     topMotor.configure(
         topConfig,

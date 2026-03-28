@@ -33,7 +33,7 @@ public class Hopper extends SubsystemBase {
         .voltageCompensation(12.0);
     hopperConfig.encoder.velocityConversionFactor(1.0);
     hopperConfig.closedLoop.pid(hopperKp, hopperKi, hopperKd);
-    hopperConfig.closedLoop.velocityFF(hopperKv);
+    hopperConfig.closedLoop.feedForward.kV(hopperKv);
 
     hopperMotor.configure(
         hopperConfig,
