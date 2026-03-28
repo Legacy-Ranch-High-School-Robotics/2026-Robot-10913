@@ -27,20 +27,20 @@ package frc.robot.subsystems.hopper;
  * 4. Game piece is launched from shooter
  */
 public class HopperConstants {
-  public static final int hopperMotorCanId = 12;
-  public static final boolean hopperMotorInverted = false;
-  public static final int hopperCurrentLimit = 60;
+  public static final int hopperMotorCanId = 12;              // DEBUG:HOPPER_CAN_ID
+  public static final boolean hopperMotorInverted = false;    // DEBUG:HOPPER_INVERTED
+  public static final int hopperCurrentLimit = 60;            // DEBUG:HOPPER_CURRENT_LIMIT
 
-  public static final double hopperKp = 0.0001;
-  public static final double hopperKi = 0.0;
-  public static final double hopperKd = 0.0;
-  public static final double hopperKv = 0.0021;
+  public static final double hopperKp = 0.0001;  // DEBUG:HOPPER_KP
+  public static final double hopperKi = 0.0;     // DEBUG:HOPPER_KI
+  public static final double hopperKd = 0.0;     // DEBUG:HOPPER_KD
+  public static final double hopperKv = 0.0021;  // DEBUG:HOPPER_KV
 
-  public static final double hopperIdleRPM = 1500.0;
-  public static final double hopperFeedRPM = 5000.0;
+  public static final double hopperIdleRPM = 1500.0;  // DEBUG:HOPPER_IDLE_RPM
+  public static final double hopperFeedRPM = 5000.0;   // DEBUG:HOPPER_FEED_RPM
 
   // Tolerance: Maximum RPM error to consider the hopper "at target velocity".
   // If abs(actualRPM - targetRPM) < tolerance, the hopper is ready to feed.
   // Used to ensure consistent feeding speed before launching game pieces.
-  public static final double hopperToleranceRPM = 200.0;
+  public static final double hopperToleranceRPM = 200.0;  // DEBUG:HOPPER_TOLERANCE
 }

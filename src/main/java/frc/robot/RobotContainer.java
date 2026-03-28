@@ -78,9 +78,8 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // The operator's controller (F310 gamepad or keyboard)
+  // The operator's controller (F310 gamepad)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
-  CommandGenericHID m_keyboard = new CommandGenericHID(OIConstants.kKeyboardPort);
   
   private boolean isAutomaticMode = false;
   private boolean useShootOnMove = true;
@@ -246,27 +245,23 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
         .whileTrue(ejectCommand)
         .onFalse(stopEjectCommand);
-    m_keyboard.button(5).whileTrue(ejectCommand).onFalse(stopEjectCommand); // E key
 
     // Intake controls
-    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
+    // var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
     var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
-    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(outtakeCommand)
-        .onFalse(stopIntakeCommand);
-    m_keyboard.button(17).whileTrue(outtakeCommand).onFalse(stopIntakeCommand); // Q key
+    // new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+    //     .whileTrue(outtakeCommand)
+    //     .onFalse(stopIntakeCommand);
 
     var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
         .whileTrue(deployCommand)
         .onFalse(stopIntakeCommand);
-    m_keyboard.button(4).whileTrue(deployCommand).onFalse(stopIntakeCommand); // D key
 
     var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
         .whileTrue(retractCommand)
         .onFalse(stopIntakeCommand);
-    m_keyboard.button(23).whileTrue(retractCommand).onFalse(stopIntakeCommand); // W key
 
     // Shooter only (right bumper / R key)
     var shooterOnlyCommand =
@@ -280,7 +275,6 @@ public class RobotContainer {
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(shooterOnlyCommand)
         .onFalse(stopShooterCommand);
-    m_keyboard.button(18).whileTrue(shooterOnlyCommand).onFalse(stopShooterCommand); // R key
 
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new RunCommand(
@@ -307,29 +301,12 @@ public class RobotContainer {
 
     new POVButton(m_operatorController, 90)
         .onTrue(new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
-    m_keyboard
-        .button(3)
-        .onTrue(
-            new InstantCommand(
-                () -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
 
     new POVButton(m_operatorController, 180)
         .onTrue(new InstantCommand(() -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
-    m_keyboard
-        .button(4)
-        .onTrue(
-            new InstantCommand(
-                () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whileTrue(new ConditionalCommand(
-            new ConditionalCommand(
-                new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
-                new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
-                () -> useShootOnMove),
-            launchCommand,
-            () -> isAutomaticMode));
-    m_keyboard.button(1).whileTrue(new ConditionalCommand(
             new ConditionalCommand(
                 new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
                 new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
