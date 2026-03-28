@@ -38,7 +38,8 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    topConfig.encoder.velocityConversionFactor(1.0);
+   //Conversion Factor (Gear Ratio)
+    topConfig.encoder.velocityConversionFactor(0.4);
     topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     topConfig.closedLoop.feedForward.kV(shooterKv);
 
@@ -47,7 +48,7 @@ public class Shooter extends SubsystemBase {
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-    // Publish the default target RPM so it can be edited from Elastic
+    // Publishs the default target RPM so it can be edited from Elastic
     ElasticTelemetry.setNumber("Shooter/Target RPM", shooterRPM);
   }
 

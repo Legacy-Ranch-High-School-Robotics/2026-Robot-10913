@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -42,7 +43,9 @@ import frc.robot.commands.intake.DeployIntake;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.RetractIntake;
 import frc.robot.commands.intake.StopIntake;
+import frc.robot.commands.shooter.AutoShootCommand;
 import frc.robot.commands.shooter.ShootCommand;
+import frc.robot.commands.shooter.ShootOnMoveCommand;
 import frc.robot.commands.shooter.SpinUpShooter;
 import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.DriveSubsystem;
@@ -75,8 +78,9 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // The operator's controller
+  // The operator's controller (F310 gamepad or keyboard)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  CommandGenericHID m_keyboard = new CommandGenericHID(OIConstants.kKeyboardPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -181,90 +185,133 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-    // ========== OPERATOR CONTROLS ==========
+    // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
-    // Launch button (A) - runs shooter and hopper forward to score
+    // Launch button (A / Space) - runs shooter and hopper forward to score
+    var launchCommand =
+        new RunCommand(
+            () -> {
+              m_shooter.setVelocity(
+                  ElasticTelemetry.getNumber(
+                      "Shooter/Target RPM", ShooterConstants.shooterRPM));
+              if (m_shooter.atTargetVelocity()) {
+                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              } else {
+                m_hopper.stop();
+              }
+            },
+            m_shooter,
+            m_hopper);
+    var stopLaunchCommand =
+        new InstantCommand(
+            () -> {
+              m_shooter.stop();
+              m_hopper.stop();
+            },
+            m_shooter,
+            m_hopper);
+
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_shooter.setVelocity(
-                      ElasticTelemetry.getNumber(
-                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
-                  // Set Target Rpm in the method below
-                  if (m_shooter.atTargetVelocity()) {
-                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                  } else {
-                    m_hopper.stop();
-                  }
-                },
-                m_shooter,
-                m_hopper))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_shooter.stop();
-                  m_hopper.stop();
-                },
-                m_shooter,
-                m_hopper));
+        .whileTrue(launchCommand)
+        .onFalse(stopLaunchCommand);
+    m_keyboard.button(1).whileTrue(launchCommand).onFalse(stopLaunchCommand); // Space key
 
-    // Eject button (B) - runs intake, hopper, and shooter backwards
+    // Eject button (B / E key) - runs intake, hopper, and shooter backwards
+    var ejectCommand =
+        new RunCommand(
+            () -> {
+              m_intake.intake();
+              m_hopper.eject();
+              m_shooter.eject();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+    var stopEjectCommand =
+        new InstantCommand(
+            () -> {
+              m_intake.stop();
+              m_hopper.stop();
+              m_shooter.stop();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_intake.intake();
-                  m_hopper.eject();
-                  m_shooter.eject();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_intake.stop();
-                  m_hopper.stop();
-                  m_shooter.stop();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter));
+        .whileTrue(ejectCommand)
+        .onFalse(stopEjectCommand);
+    m_keyboard.button(5).whileTrue(ejectCommand).onFalse(stopEjectCommand); // E key
 
     // Intake controls
+    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
+    var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(outtakeCommand)
+        .onFalse(stopIntakeCommand);
+    m_keyboard.button(17).whileTrue(outtakeCommand).onFalse(stopIntakeCommand); // Q key
 
+    var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(deployCommand)
+        .onFalse(stopIntakeCommand);
+    m_keyboard.button(4).whileTrue(deployCommand).onFalse(stopIntakeCommand); // D key
 
+    var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(retractCommand)
+        .onFalse(stopIntakeCommand);
+    m_keyboard.button(23).whileTrue(retractCommand).onFalse(stopIntakeCommand); // W key
 
-    // Shooter only (right bumper)
+    // Shooter only (right bumper / R key)
+    var shooterOnlyCommand =
+        new RunCommand(
+            () ->
+                m_shooter.setVelocity(
+                    ElasticTelemetry.getNumber(
+                        "Shooter/Target RPM", ShooterConstants.shooterRPM)),
+            m_shooter);
+    var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(
-            new RunCommand(
-                () ->
-                    m_shooter.setVelocity(
-                        ElasticTelemetry.getNumber(
-                            "Shooter/Target RPM", ShooterConstants.shooterRPM)),
-                m_shooter))
-        .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
+        .whileTrue(shooterOnlyCommand)
+        .onFalse(stopShooterCommand);
+    m_keyboard.button(18).whileTrue(shooterOnlyCommand).onFalse(stopShooterCommand); // R key
 
-    // Shooter presets on D-pad
+    // Shooter presets on D-pad / number keys
     new POVButton(m_operatorController, 0)
         .onTrue(
             new InstantCommand(
                 () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
+    m_keyboard
+        .button(2)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM))); // 1 key
+
     new POVButton(m_operatorController, 90)
         .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
+    m_keyboard
+        .button(3)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM))); // 2 key
+
     new POVButton(m_operatorController, 180)
         .onTrue(new InstantCommand(() -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM)));
+    m_keyboard
+        .button(4)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM))); // 3 key
+
+    // Vision-based shooting commands on driver controller
+    // Auto-shoot: aims and shoots at hub with distance-based RPM calculation
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .whileTrue(new AutoShootCommand(m_shooter, m_hopper, m_robotDrive));
+
+    // Shoot-on-move: compensates for robot velocity while shooting
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+        .whileTrue(new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive));
 
     // Operator rumble feedback when shooter is ready
     new Trigger(m_shooter::atTargetVelocity)
