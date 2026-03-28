@@ -84,7 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
 
     // Usage reporting for MAXSwerve template
-
+    m_gyro.reset();
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
     // Publish the field to Elastic so Glass/Elastic dashboards can show it
@@ -114,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
 
     // Update the odometry in the periodic block
-
+    // m_gyro.getYaw().refresh();
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
         new SwerveModulePosition[] {
@@ -196,7 +196,10 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation())
+                    xSpeedDelivered,
+                    ySpeedDelivered,
+                    rotDelivered,
+                    Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
     SwerveDriveKinematics.desaturateWheelSpeeds(

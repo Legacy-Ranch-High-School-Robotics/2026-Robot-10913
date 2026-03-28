@@ -62,19 +62,18 @@ public final class Constants {
 
     public static final int kPigeon2CanId = 9; // DEBUG:CAN_GYRO - Gyro (Pigeon 2.0)
 
-    public static final boolean kGyroReversed = false;
+    public static final boolean kGyroReversed = false; // I changed thus from: true -2:40pm
+    // ONLY USE IF PIGEON IS FLIPPED UPSIDE DOWN
   }
 
   public static final class FieldConstants {
     public static final double kFieldLength = 16.54; // DEBUG:FIELD_LENGTH - Field length (meters)
     public static final double kFieldWidth = 8.07; // DEBUG:FIELD_WIDTH - Field width (meters)
     public static final Translation2d kBlueHub =
-        new Translation2d(
-            4.63, kFieldWidth / 2.0); // DEBUG:BLUE_HUB_POSITION - Blue speaker position
+        new Translation2d(4.63, kFieldWidth / 2.0); // DEBUG:BLUE_HUB_POSITION - Blue  position
     public static final Translation2d kRedHub =
         new Translation2d(
-            kFieldLength - 4.55,
-            kFieldWidth / 2.0); // DEBUG:RED_HUB_POSITION - Red speaker position
+            kFieldLength - 4.55, kFieldWidth / 2.0); // DEBUG:RED_HUB_POSITION - Red  position
   }
 
   // Remember To Edit when changing gears
@@ -285,7 +284,7 @@ public final class Constants {
   //   2. Verify motor controller shows up in REV Hardware Client
   //   3. Check motor inversion setting (see subsystem constants)
   //   4. Verify current limit isn't being hit (check telemetry)
-  //   5. Check if motor is in brake/coast mode as expected
+  //   5. Check if motor is in brake/coast mod2e as expected
   //
   // Encoder reading wrong values:
   //   1. Check velocity conversion factor (Shooter: 0.5, Hopper: 1.0, Intake: 1.0)

@@ -249,11 +249,11 @@ public class RobotContainer {
         .onFalse(stopEjectCommand);
 
     // Intake controls
-    // var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
+    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
     var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
-    // new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-    //     .whileTrue(outtakeCommand)
-    //     .onFalse(stopIntakeCommand);
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileTrue(outtakeCommand)
+        .onFalse(stopIntakeCommand);
 
     var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
@@ -277,10 +277,11 @@ public class RobotContainer {
         .whileTrue(shooterOnlyCommand)
         .onFalse(stopShooterCommand);
 
-    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(
-            new RunCommand(() -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM), m_hopper))
-        .onFalse(new InstantCommand(() -> m_hopper.stop(), m_hopper));
+    // new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+    //  .whileTrue(
+    //     new RunCommand(() -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM), m_hopper))
+
+    // .onFalse(new InstantCommand(() -> m_hopper.stop(), m_hopper));
 
     new POVButton(m_operatorController, 270)
         .onTrue(

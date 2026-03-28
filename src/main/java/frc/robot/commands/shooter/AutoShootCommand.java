@@ -12,7 +12,7 @@ public class AutoShootCommand extends Command {
   private final Hopper m_hopper;
   private final DriveSubsystem m_drive;
 
-  private static final double[][] SHOOTER_MAP = {
+  public double[][] SHOOTER_MAP = {
     {1.0, 3000.0},
     {2.0, 3500.0},
     {3.0, 4000.0},

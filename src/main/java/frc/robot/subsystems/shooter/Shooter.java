@@ -38,7 +38,7 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    // Gear ratio: 2:1 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
+    // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
     // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
     // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
     topConfig.encoder.velocityConversionFactor(0.667);
@@ -101,7 +101,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+    return true;
+    // return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
   }
 
   public boolean atTestingVelocity() {
