@@ -304,14 +304,18 @@ public class RobotContainer {
             new InstantCommand(
                 () -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM))); // 3 key
 
-    // Vision-based shooting commands on driver controller
-    // Auto-shoot: aims and shoots at hub with distance-based RPM calculation
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whileTrue(new AutoShootCommand(m_shooter, m_hopper, m_robotDrive));
+    // ========== VISION-BASED SHOOTING COMMANDS ==========
+    // UNCOMMENT THE LINES BELOW TO ENABLE VISION-BASED AUTO-AIM SHOOTING
+    
+    // Auto-shoot: Calculates RPM from distance, aims at hub, feeds when ready
+    // Driver A button - Hold to auto-aim and shoot at hub
+    // new JoystickButton(m_driverController, XboxController.Button.kA.value)
+    //     .whileTrue(new AutoShootCommand(m_shooter, m_hopper, m_robotDrive));
 
-    // Shoot-on-move: compensates for robot velocity while shooting
-    new JoystickButton(m_driverController, XboxController.Button.kB.value)
-        .whileTrue(new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive));
+    // Shoot-on-move: Adjusts target RPM based on robot velocity while shooting
+    // Driver B button - Hold to shoot while driving (advanced)
+    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
+    //     .whileTrue(new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive));
 
     // Operator rumble feedback when shooter is ready
     new Trigger(m_shooter::atTargetVelocity)
