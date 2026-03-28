@@ -38,8 +38,10 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-   //Conversion Factor (Gear Ratio)
-    topConfig.encoder.velocityConversionFactor(0.4);
+    // Gear ratio: 2:1 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
+    // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
+    // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
+    topConfig.encoder.velocityConversionFactor(0.5);
     topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     topConfig.closedLoop.feedForward.kV(shooterKv);
 

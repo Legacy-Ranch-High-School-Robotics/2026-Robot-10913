@@ -45,4 +45,8 @@ public class IntakeConstants {
   // Tolerance: Maximum position error (in encoder rotations) to consider the lift "at target".
   // If abs(currentPosition - targetPosition) < tolerance, the lift is considered in position.
   public static final double liftPositionTolerance = 0.5;
+
+  //Soft Limits (NEED TO TEST!!!!)
+  public static final double liftUpperLimit = 4.0;  
+  public static final double liftLowerLimit = -0.5; 
 }

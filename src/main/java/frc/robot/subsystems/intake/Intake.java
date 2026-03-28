@@ -74,25 +74,25 @@ public class Intake extends SubsystemBase {
   }
 
   public void liftRetract() {
-
-    if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
-
+    double currentPosition = getLiftPosition();
+    
+    if (currentPosition <= liftLowerLimit) {
+      liftStop();
+    } else if (currentPosition > retractedPosition - liftPositionTolerance) {
       liftMotor.setVoltage(-liftVoltage);
-
     } else {
-
       liftStop();
     }
   }
 
   public void liftDeploy() {
-
-    if (getLiftPosition() < deployedPosition + liftPositionTolerance) {
-
+    double currentPosition = getLiftPosition();
+    
+    if (currentPosition >= liftUpperLimit) {
+      liftStop();
+    } else if (currentPosition < deployedPosition + liftPositionTolerance) {
       liftMotor.setVoltage(liftVoltage);
-
     } else {
-
       liftStop();
     }
   }

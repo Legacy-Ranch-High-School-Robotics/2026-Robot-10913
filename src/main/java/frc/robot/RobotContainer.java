@@ -81,6 +81,9 @@ public class RobotContainer {
   // The operator's controller (F310 gamepad or keyboard)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
   CommandGenericHID m_keyboard = new CommandGenericHID(OIConstants.kKeyboardPort);
+  
+  private boolean isAutomaticMode = false;
+  private boolean useShootOnMove = true;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -173,14 +176,20 @@ public class RobotContainer {
 
     // ========== DRIVER CONTROLS ==========
 
-    // Drive controls
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
-    // Toggle Hub Tracking
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .onTrue(new InstantCommand(() -> {
+          m_robotDrive.setTrackingHub(true);
+          ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+        }));
+
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
-        .onTrue(
-            new InstantCommand(() -> m_robotDrive.setTrackingHub(!m_robotDrive.isTrackingHub())));
+        .onTrue(new InstantCommand(() -> {
+          m_robotDrive.setTrackingHub(false);
+          ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+        }));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -211,10 +220,6 @@ public class RobotContainer {
             m_shooter,
             m_hopper);
 
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(launchCommand)
-        .onFalse(stopLaunchCommand);
-    m_keyboard.button(1).whileTrue(launchCommand).onFalse(stopLaunchCommand); // Space key
 
     // Eject button (B / E key) - runs intake, hopper, and shooter backwards
     var ejectCommand =
@@ -277,47 +282,61 @@ public class RobotContainer {
         .onFalse(stopShooterCommand);
     m_keyboard.button(18).whileTrue(shooterOnlyCommand).onFalse(stopShooterCommand); // R key
 
-    // Shooter presets on D-pad / number keys
+    new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+        .whileTrue(new RunCommand(
+            () -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM),
+            m_hopper))
+        .onFalse(new InstantCommand(() -> m_hopper.stop(), m_hopper));
+
+    new POVButton(m_operatorController, 270)
+        .onTrue(new InstantCommand(() -> {
+          isAutomaticMode = !isAutomaticMode;
+          ElasticTelemetry.setBoolean("Shooter/AutomaticMode", isAutomaticMode);
+          ElasticTelemetry.setString("Shooter/Mode", isAutomaticMode ? "AUTOMATIC" : "MANUAL");
+        }));
+
     new POVButton(m_operatorController, 0)
-        .onTrue(
-            new InstantCommand(
-                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
-    m_keyboard
-        .button(2)
-        .onTrue(
-            new InstantCommand(
-                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM))); // 1 key
+        .onTrue(new InstantCommand(() -> {
+          if (isAutomaticMode) {
+            useShootOnMove = !useShootOnMove;
+            ElasticTelemetry.setBoolean("Shooter/UseShootOnMove", useShootOnMove);
+            ElasticTelemetry.setString("Shooter/AutoAimMode", 
+                useShootOnMove ? "SHOOT ON MOVE" : "AUTO SHOOT");
+          }
+        }));
 
     new POVButton(m_operatorController, 90)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
+        .onTrue(new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
     m_keyboard
         .button(3)
         .onTrue(
             new InstantCommand(
-                () -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM))); // 2 key
+                () -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
 
     new POVButton(m_operatorController, 180)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM)));
+        .onTrue(new InstantCommand(() -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
     m_keyboard
         .button(4)
         .onTrue(
             new InstantCommand(
-                () -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM))); // 3 key
+                () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
-    // ========== VISION-BASED SHOOTING COMMANDS ==========
-    // UNCOMMENT THE LINES BELOW TO ENABLE VISION-BASED AUTO-AIM SHOOTING
-    
-    // Auto-shoot: Calculates RPM from distance, aims at hub, feeds when ready
-    // Driver A button - Hold to auto-aim and shoot at hub
-    // new JoystickButton(m_driverController, XboxController.Button.kA.value)
-    //     .whileTrue(new AutoShootCommand(m_shooter, m_hopper, m_robotDrive));
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(new ConditionalCommand(
+            new ConditionalCommand(
+                new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
+                new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
+                () -> useShootOnMove),
+            launchCommand,
+            () -> isAutomaticMode));
+    m_keyboard.button(1).whileTrue(new ConditionalCommand(
+            new ConditionalCommand(
+                new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
+                new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
+                () -> useShootOnMove),
+            launchCommand,
+            () -> isAutomaticMode));
 
-    // Shoot-on-move: Adjusts target RPM based on robot velocity while shooting
-    // Driver B button - Hold to shoot while driving (advanced)
-    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    //     .whileTrue(new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive));
-
-    // Operator rumble feedback when shooter is ready
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(
             new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
@@ -379,8 +398,10 @@ public class RobotContainer {
   }
 
   private void setShooterPreset(String presetName, double rpm) {
-    ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
-    ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+    if (!isAutomaticMode) {
+      ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
+      ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+    }
   }
 
   private void configureAutoBuilder() {
