@@ -41,7 +41,7 @@ public class ShooterConstants {
   public static final double shooterKd = 0.0; // DEBUG:SHOOTER_KD
   public static final double shooterKv = 0.0021; // DEBUG:SHOOTER_KV
 
-  public static final double shooterRPM = 4575.0; // DEBUG:SHOOTER_DEFAULT_RPM
+  public static final double shooterRPM = 5500.0; // DEBUG:SHOOTER_DEFAULT_RPM
   public static final double shooterRPMInverted = -2000.0; // DEBUG:SHOOTER_EJECT_RPM
 
   public static final double closePresetRPM = 3000.0; // DEBUG:SHOOTER_CLOSE_PRESET
@@ -60,9 +60,9 @@ public class ShooterConstants {
       new InterpolatingDoubleTreeMap();
 
   static {
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(2.0), 2000.0);
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.0), 2500.0);
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(5.0), 3500.0);
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.0), 5000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(2.0), 3000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.0), 3500.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(5.0), 4000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.0), 5500.0);
   }
 }

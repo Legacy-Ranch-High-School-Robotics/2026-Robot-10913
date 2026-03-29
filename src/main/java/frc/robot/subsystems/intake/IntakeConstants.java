@@ -15,7 +15,7 @@ public class IntakeConstants {
 
   public static final int intakeCurrentLimit = 40;
 
-  public static final double intakeVoltage = 10.0;
+  public static final double intakeVoltage = 12.0;
 
   public static final double outtakeVoltage = -8.0;
 
