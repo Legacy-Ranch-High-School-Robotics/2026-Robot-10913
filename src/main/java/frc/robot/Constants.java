@@ -168,7 +168,8 @@ public final class Constants {
   // === IMPORTANT SUBSYSTEM VALUES ===
   //
   // SHOOTER:
-  //   - Gear Ratio: 2:1 (motor @ 4000 RPM → flywheel @ 2000 RPM)
+  //   - Gear Ratio: 2:1 (motor @ 4000 RPM → flywheel @ 2000 RPM) (TODO: Needs to be checked
+  // physically)
   //   - Velocity Conversion Factor: 0.5
   //   - Close Preset: 3000 RPM (flywheel speed)
   //   - At Distance Preset: 5200 RPM (flywheel speed)

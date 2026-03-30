@@ -382,6 +382,18 @@ public class RobotContainer {
     }
   }
 
+  public Shooter getShooter() {
+    return m_shooter;
+  }
+
+  public Hopper getHopper() {
+    return m_hopper;
+  }
+
+  public Intake getIntake() {
+    return m_intake;
+  }
+
   private void configureAutoBuilder() {
     RobotConfig config;
     try {
