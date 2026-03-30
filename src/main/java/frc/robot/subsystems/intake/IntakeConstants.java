@@ -23,6 +23,8 @@ public class IntakeConstants {
 
   public static final double feedVoltage = 12.0;
 
+  public static final double intakeLiftGearRatio = 3.476 * 4.0; // ~13.9:1
+
   public static final double deployedPosition = 3.476;
 
   public static final double retractedPosition = 0;

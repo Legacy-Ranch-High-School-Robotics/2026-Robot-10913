@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
     // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
     // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
     // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
-    motorOneConfig.encoder.velocityConversionFactor(0.667);
+    motorOneConfig.encoder.velocityConversionFactor(1.0 / shooterGearRatio);
     motorOneConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     motorOneConfig.closedLoop.feedForward.kV(shooterKv);
 
@@ -117,6 +117,15 @@ public class Shooter extends SubsystemBase {
 
   public double getVelocityRPM() {
     return shooterMotorOneEncoder.getVelocity();
+  }
+
+  /** Returns the shooter motors (for simulation access). */
+  public SparkFlex getMotorOne() {
+    return shooterMotorOne;
+  }
+
+  public SparkFlex getMotorTwo() {
+    return shooterMotorTwo;
   }
 
   /**
