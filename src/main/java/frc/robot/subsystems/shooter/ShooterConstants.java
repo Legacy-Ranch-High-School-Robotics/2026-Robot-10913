@@ -36,10 +36,10 @@ public class ShooterConstants {
 
   public static final int shooterCurrentLimit = 60; // DEBUG:SHOOTER_CURRENT_LIMIT
 
-  public static final double shooterKp = 0.0001; // DEBUG:SHOOTER_KP
-  public static final double shooterKi = 0.0; // DEBUG:SHOOTER_KI
-  public static final double shooterKd = 0.0; // DEBUG:SHOOTER_KD
-  public static final double shooterKv = 0.0021; // DEBUG:SHOOTER_KV
+  public static final double shooterKp = 0.0001;
+  public static final double shooterKi = 0.0;
+  public static final double shooterKd = 0.0;
+  public static final double shooterKv = 0.0021;
 
   public static final double shooterRPM = 5500.0; // DEBUG:SHOOTER_DEFAULT_RPM
   public static final double shooterRPMInverted = -2000.0; // DEBUG:SHOOTER_EJECT_RPM
