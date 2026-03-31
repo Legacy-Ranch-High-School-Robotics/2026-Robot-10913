@@ -7,7 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BallParkLeft"
+            "pathName": "Ballpark2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpShooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
           }
         }
       ]

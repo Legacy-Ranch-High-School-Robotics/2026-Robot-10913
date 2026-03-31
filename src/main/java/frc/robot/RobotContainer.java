@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -43,9 +42,7 @@ import frc.robot.commands.intake.DeployIntake;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.RetractIntake;
 import frc.robot.commands.intake.StopIntake;
-import frc.robot.commands.shooter.AutoShootCommand;
 import frc.robot.commands.shooter.ShootCommand;
-import frc.robot.commands.shooter.ShootOnMoveCommand;
 import frc.robot.commands.shooter.SpinUpShooter;
 import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.DriveSubsystem;
@@ -315,14 +312,8 @@ public class RobotContainer {
                 () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(
-            new ConditionalCommand(
-                new ConditionalCommand(
-                    new ShootOnMoveCommand(m_shooter, m_hopper, m_robotDrive),
-                    new AutoShootCommand(m_shooter, m_hopper, m_robotDrive),
-                    () -> useShootOnMove),
-                launchCommand,
-                () -> isAutomaticMode));
+        .whileTrue(launchCommand)
+        .onFalse(stopLaunchCommand);
 
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(

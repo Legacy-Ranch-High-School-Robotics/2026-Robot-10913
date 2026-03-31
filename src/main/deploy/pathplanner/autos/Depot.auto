@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ballpark2"
+            "pathName": "Depot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "DeployIntake"
+            "name": "RetractIntake"
           }
         }
       ]

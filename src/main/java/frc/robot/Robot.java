@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
     if (alliance.isPresent()) {
       String team = alliance.get() == DriverStation.Alliance.Red ? "Red" : "Blue";
       ElasticTelemetry.setString("Game/My Team", team);
-      ElasticTelemetry.setString("Game/Active HUB", team + " Speaker");
+      ElasticTelemetry.setString("Game/Active HUB", team + "Hub");
     } else {
       ElasticTelemetry.setString("Game/My Team", "Unknown");
       ElasticTelemetry.setString("Game/Active HUB", "Unknown");
@@ -146,7 +146,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // m_autonomousCommand.execute();
+    m_autonomousCommand.execute();
   }
 
   @Override
