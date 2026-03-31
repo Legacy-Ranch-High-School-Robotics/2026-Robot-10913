@@ -75,8 +75,11 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // The operator's controller
+  // The operator's controller (F310 gamepad)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+  private boolean isAutomaticMode = false;
+  private boolean useShootOnMove = true;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -169,104 +172,149 @@ public class RobotContainer {
 
     // ========== DRIVER CONTROLS ==========
 
-    // Drive controls
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
-    // Toggle Hub Tracking
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(true);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                }));
+
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .onTrue(
-            new InstantCommand(() -> m_robotDrive.setTrackingHub(!m_robotDrive.isTrackingHub())));
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(false);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+                }));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-    // ========== OPERATOR CONTROLS ==========
+    // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
-    // Launch button (A) - runs shooter and hopper forward to score
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_shooter.setVelocity(
-                      ElasticTelemetry.getNumber(
-                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
-                  // Set Target Rpm in the method below
-                  if (m_shooter.atTargetVelocity()) {
-                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                  } else {
-                    m_hopper.stop();
-                  }
-                },
-                m_shooter,
-                m_hopper))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_shooter.stop();
-                  m_hopper.stop();
-                },
-                m_shooter,
-                m_hopper));
+    // Launch button (A / Space) - runs shooter and hopper forward to score
+    var launchCommand =
+        new RunCommand(
+            () -> {
+              m_shooter.setVelocity(
+                  ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
+              if (m_shooter.atTargetVelocity()) {
+                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              } else {
+                m_hopper.stop();
+              }
+            },
+            m_shooter,
+            m_hopper);
+    var stopLaunchCommand =
+        new InstantCommand(
+            () -> {
+              m_shooter.stop();
+              m_hopper.stop();
+            },
+            m_shooter,
+            m_hopper);
 
-    // Eject button (B) - runs intake, hopper, and shooter backwards
+    // Eject button (B / E key) - runs intake, hopper, and shooter backwards
+    var ejectCommand =
+        new RunCommand(
+            () -> {
+              m_intake.intake();
+              m_hopper.eject();
+              m_shooter.eject();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+    var stopEjectCommand =
+        new InstantCommand(
+            () -> {
+              m_intake.stop();
+              m_hopper.stop();
+              m_shooter.stop();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_intake.intake();
-                  m_hopper.eject();
-                  m_shooter.eject();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_intake.stop();
-                  m_hopper.stop();
-                  m_shooter.stop();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter));
+        .whileTrue(ejectCommand)
+        .onFalse(stopEjectCommand);
 
     // Intake controls
+    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
+    var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(outtakeCommand)
+        .onFalse(stopIntakeCommand);
 
+    var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(deployCommand)
+        .onFalse(stopIntakeCommand);
 
+    var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(retractCommand)
+        .onFalse(stopIntakeCommand);
 
-    // Shooter only (right bumper)
+    // Shooter only (right bumper / R key)
+    var shooterOnlyCommand =
+        new RunCommand(
+            () ->
+                m_shooter.setVelocity(
+                    ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
+            m_shooter);
+    var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(
-            new RunCommand(
-                () ->
-                    m_shooter.setVelocity(
-                        ElasticTelemetry.getNumber(
-                            "Shooter/Target RPM", ShooterConstants.shooterRPM)),
-                m_shooter))
-        .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
+        .whileTrue(shooterOnlyCommand)
+        .onFalse(stopShooterCommand);
 
-    // Shooter presets on D-pad
+    // new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
+    //  .whileTrue(
+    //     new RunCommand(() -> m_hopper.setVelocity(HopperConstants.hopperFeedRPM), m_hopper))
+
+    // .onFalse(new InstantCommand(() -> m_hopper.stop(), m_hopper));
+
+    new POVButton(m_operatorController, 270)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  isAutomaticMode = !isAutomaticMode;
+                  ElasticTelemetry.setBoolean("Shooter/AutomaticMode", isAutomaticMode);
+                  ElasticTelemetry.setString(
+                      "Shooter/Mode", isAutomaticMode ? "AUTOMATIC" : "MANUAL");
+                }));
+
     new POVButton(m_operatorController, 0)
         .onTrue(
             new InstantCommand(
-                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
-    new POVButton(m_operatorController, 90)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
-    new POVButton(m_operatorController, 180)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM)));
+                () -> {
+                  if (isAutomaticMode) {
+                    useShootOnMove = !useShootOnMove;
+                    ElasticTelemetry.setBoolean("Shooter/UseShootOnMove", useShootOnMove);
+                    ElasticTelemetry.setString(
+                        "Shooter/AutoAimMode", useShootOnMove ? "SHOOT ON MOVE" : "AUTO SHOOT");
+                  }
+                }));
 
-    // Operator rumble feedback when shooter is ready
+    new POVButton(m_operatorController, 90)
+        .onTrue(
+            new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
+
+    new POVButton(m_operatorController, 180)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
+
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(launchCommand)
+        .onFalse(stopLaunchCommand);
+
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(
             new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
@@ -328,8 +376,10 @@ public class RobotContainer {
   }
 
   private void setShooterPreset(String presetName, double rpm) {
-    ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
-    ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+    if (!isAutomaticMode) {
+      ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
+      ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+    }
   }
 
   private void configureAutoBuilder() {

@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase {
 
     config
         .inverted(intakeMotorInverted)
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(intakeCurrentLimit)
         .voltageCompensation(12.0);
 
@@ -45,7 +45,8 @@ public class Intake extends SubsystemBase {
 
     liftConfig
         .inverted(intakeLiftMotorInverted)
-        .idleMode(IdleMode.kBrake)
+        // idleMode(IdleMode.kBrake)
+        // dleMode(IdleMode.kCoast)
         .smartCurrentLimit(intakeCurrentLimit)
         .voltageCompensation(12.0);
 

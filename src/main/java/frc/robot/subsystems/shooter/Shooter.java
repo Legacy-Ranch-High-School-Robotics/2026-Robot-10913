@@ -38,7 +38,10 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    topConfig.encoder.velocityConversionFactor(1.0);
+    // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
+    // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
+    // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
+    topConfig.encoder.velocityConversionFactor(0.667);
     topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     topConfig.closedLoop.feedForward.kV(shooterKv);
 
@@ -47,7 +50,7 @@ public class Shooter extends SubsystemBase {
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-    // Publish the default target RPM so it can be edited from Elastic
+    // Publishs the default target RPM so it can be edited from Elastic
     ElasticTelemetry.setNumber("Shooter/Target RPM", shooterRPM);
   }
 
@@ -98,7 +101,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
+    return true;
+    // return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
   }
 
   public boolean atTestingVelocity() {

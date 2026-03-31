@@ -15,13 +15,13 @@ public class IntakeConstants {
 
   public static final int intakeCurrentLimit = 40;
 
-  public static final double intakeVoltage = 10.0;
+  public static final double intakeVoltage = 12.0;
 
-  public static final double outtakeVoltage = -8.0;
+  public static final double outtakeVoltage = -11.0;
 
-  public static final double liftVoltage = 1.25;
+  public static final double liftVoltage = 2;
 
-  public static final double feedVoltage = 6.0;
+  public static final double feedVoltage = 12.0;
 
   public static final double deployedPosition = 3.476;
 

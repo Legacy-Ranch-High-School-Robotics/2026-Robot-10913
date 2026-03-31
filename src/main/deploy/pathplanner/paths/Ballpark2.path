@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 3.5732667617622473,
+        "y": 4.119101283878156
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 2.589928673323822,
+        "y": 3.3427817403708993
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 3.793223965763195,
+        "y": 2.2171184022824537
       },
       "prevControl": {
-        "x": -0.0022084196969009984,
-        "y": 5.344428410486962
+        "x": 3.5878146666968465,
+        "y": 2.074615701055174
       },
       "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
+        "x": 5.863409415121253,
+        "y": 3.653309557774609
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
+        "x": 7.9724108416547566,
+        "y": 4.947175463631217
       },
       "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 4.491911554914864,
+        "y": 0.36689015692449356
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +46,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.3698520591763297,
+      "rotationDegrees": -45.0
     }
   ],
   "constraintZones": [],
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
+      "waypointRelativePos": 0.41500474833808054,
       "endWaypointRelativePos": null,
       "command": null
     }
