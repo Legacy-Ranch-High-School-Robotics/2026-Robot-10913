@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.subsystems.MAXSwerveModule;
 import org.ironmaple.simulation.SimulatedArena;
@@ -21,8 +22,8 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
  *   <li>Reads the desired module states from the real {@link MAXSwerveModule} objects.
  *   <li>Feeds them into the self-controlled simulation.
  *   <li>Steps the physics engine forward.
- *   <li>Writes the resulting encoder and gyro values back into the WPILib sim objects so the
- *       student code's odometry "sees" realistic, slipping wheels.
+ *   <li>Writes the resulting gyro values back into the Pigeon2 SimState so the odometry sees
+ *       realistic headings.
  * </ol>
  */
 public class DriveSim {
@@ -30,6 +31,8 @@ public class DriveSim {
   private final Pigeon2 m_gyro;
 
   private final SelfControlledSwerveDriveSimulation m_simDrive;
+
+  private Rotation2d m_prevHeading = new Rotation2d();
 
   public DriveSim(
       MAXSwerveModule frontLeft,
@@ -73,14 +76,18 @@ public class DriveSim {
     // 4. Update the self-controlled sim's internal odometry
     m_simDrive.periodic();
 
-    // TODO: Inject the resulting simulated encoder positions/velocities and
-    // gyro heading back into the WPILib sim objects so that the student
-    // code's SwerveDriveOdometry sees realistic (slipping) values.
-    // This requires using the REV SparkMax simulation API or
-    // WPILib's SimDevice hooks.
-    //
-    // For now, the sim self-tracks its own odometry. The ground truth
-    // pose is available via getActualPose() for visualization.
+    // 5. Inject gyro values from the simulation into the Pigeon2 SimState
+    Rotation2d heading = getActualPose().getRotation();
+    double dtSeconds = 0.02;
+    double omegaDegPerSec = heading.minus(m_prevHeading).getDegrees() / dtSeconds;
+    m_prevHeading = heading;
+
+    var simState = m_gyro.getSimState();
+    simState.setSupplyVoltage(12.0);
+    simState.setRawYaw(heading.getDegrees());
+    simState.setAngularVelocityZ(omegaDegPerSec);
+    simState.setPitch(0);
+    simState.setRoll(0);
   }
 
   /**

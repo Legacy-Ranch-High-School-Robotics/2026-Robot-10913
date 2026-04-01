@@ -37,6 +37,7 @@ public class ShooterConstants {
   public static final boolean shooterMotorTwoInverted = false; // DEBUG:SHOOTER_MOTOR_TWO_INVERTED
 
   public static final int shooterCurrentLimit = 60; // DEBUG:SHOOTER_CURRENT_LIMIT
+  public static final double shooterGearRatio = 1.5; // 3:2 motor:flywheel reduction
 
   public static final double shooterKp = 0.0001;
   public static final double shooterKi = 0.0;

@@ -137,4 +137,14 @@ public class Intake extends SubsystemBase {
 
     return Math.abs(getLiftPosition() - retractedPosition) < liftPositionTolerance;
   }
+
+  /** Returns the intake roller motor (for simulation access). */
+  public SparkMax getMotor() {
+    return motor;
+  }
+
+  /** Returns the intake lift motor (for simulation access). */
+  public SparkMax getLiftMotor() {
+    return liftMotor;
+  }
 }

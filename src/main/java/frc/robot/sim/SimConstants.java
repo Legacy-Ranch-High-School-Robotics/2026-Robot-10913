@@ -56,8 +56,8 @@ public final class SimConstants {
   }
 
   /**
-   * Creates a fully configured DriveTrainSimulationConfig for our robot. Uses NEO motors (same as
-   * our MAXSwerve modules) and MAXSwerve gearing.
+   * Creates a fully configured DriveTrainSimulationConfig for our robot. Uses NEO Vortex drive
+   * motors and NEO 550 steering motors (same as our MAXSwerve modules) and MAXSwerve gearing.
    */
   public static DriveTrainSimulationConfig createDriveTrainConfig() {
     return new DriveTrainSimulationConfig(
@@ -68,7 +68,7 @@ public final class SimConstants {
         kTrackWidth,
         COTS.ofPigeon2(), // Gyro sim (closest available; we use ADIS16470 on real robot)
         COTS.ofMAXSwerve(
-            DCMotor.getNEO(1), // Drive motor: NEO
+            DCMotor.getNeoVortex(1), // Drive motor: NEO Vortex
             DCMotor.getNeo550(1), // Steer motor: NEO 550
             COTS.WHEELS.COLSONS.cof, // Colson wheels COF
             3 // MAXSwerve Base Kit L3 = 14T pinion
@@ -85,4 +85,27 @@ public final class SimConstants {
     properties.setLatencyStdDevMs(15);
     return properties;
   }
+
+  // ===== Mechanism Simulation Constants =====
+
+  // Shooter flywheel (SparkFlex + NEO Vortex, CAN 13)
+  public static final double kShooterFlywheelMOI = 0.004; // kg·m²
+  public static final double kShooterGearing =
+      frc.robot.subsystems.shooter.ShooterConstants.shooterGearRatio;
+
+  // Hopper feed wheel (SparkMax + NEO, CAN 12)
+  public static final double kHopperMOI = 0.001; // kg·m²
+
+  // Intake roller (SparkMax + NEO 550, CAN 11)
+  public static final double kIntakeRollerMOI = 0.001; // kg·m²
+
+  // Intake arm / lift (SparkMax + NEO 550, CAN 10)
+  // Belt-driven arm: 3.476 motor rotations sweeps the arm π/2 radians (0° to 90°)
+  public static final double kIntakeArmLengthMeters = 0.3;
+  public static final double kIntakeArmMassKg = 1.5;
+  public static final double kIntakeArmGearing =
+      frc.robot.subsystems.intake.IntakeConstants.intakeLiftGearRatio;
+  public static final double kIntakeArmMinAngleRad = 0.0; // horizontal (deployed)
+  public static final double kIntakeArmMaxAngleRad = Math.PI / 2.0; // vertical (retracted)
+  public static final double kIntakeArmStartingAngleRad = Math.PI / 2.0; // starts retracted
 }
