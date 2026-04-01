@@ -5,11 +5,11 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 /**
  * SHOOTER SUBSYSTEM OPERATION:
  *
- * <p>The shooter is a single-flywheel mechanism that launches game pieces at high velocity.
+ * <p>The shooter is a dual-flywheel mechanism that launches game pieces at high velocity.
  *
- * <p>MOTOR: SparkFlex NEO Vortex (CAN ID 13) - Uses closed-loop velocity control (PID +
- * feedforward) - Encoder measures flywheel RPM to maintain consistent shot velocity - Higher RPM =
- * longer shooting distance
+ * <p>MOTORS: Two SparkFlex NEO Vortex motors (CAN IDs 13 and 14) - Motor Two follows Motor One -
+ * Uses closed-loop velocity control (PID + feedforward) - Encoder measures flywheel RPM to maintain
+ * consistent shot velocity - Higher RPM = longer shooting distance
  *
  * <p>VELOCITY CONTROL: - PID controller adjusts motor voltage to maintain target RPM - Feedforward
  * (Kv) provides baseline voltage proportional to desired speed - Very low Kp (0.0001) because
@@ -30,9 +30,11 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
  * toward target
  */
 public class ShooterConstants {
-  public static final int topMotorCanId = 13; // DEBUG:SHOOTER_CAN_ID
+  public static final int shooterMotorOneCanId = 13; // DEBUG:SHOOTER_MOTOR_ONE_CAN_ID
+  public static final int shooterMotorTwoCanId = 14; // DEBUG:SHOOTER_MOTOR_TWO_CAN_ID
 
-  public static final boolean topMotorInverted = false; // DEBUG:SHOOTER_INVERTED
+  public static final boolean shooterMotorOneInverted = false; // DEBUG:SHOOTER_MOTOR_ONE_INVERTED
+  public static final boolean shooterMotorTwoInverted = false; // DEBUG:SHOOTER_MOTOR_TWO_INVERTED
 
   public static final int shooterCurrentLimit = 60; // DEBUG:SHOOTER_CURRENT_LIMIT
 
@@ -60,9 +62,9 @@ public class ShooterConstants {
       new InterpolatingDoubleTreeMap();
 
   static {
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(2.0), 3000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(1.0), 3000.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.0), 3500.0);
-    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(5.0), 4000.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(6.0), 3500.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.0), 5500.0);
   }
 }
