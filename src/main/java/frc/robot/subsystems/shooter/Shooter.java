@@ -14,47 +14,62 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.ElasticTelemetry;
 
 public class Shooter extends SubsystemBase {
-  private final SparkFlex topMotor;
+  private final SparkFlex shooterMotorOne;
+  private final SparkFlex shooterMotorTwo;
 
-  private final RelativeEncoder topEncoder;
+  private final RelativeEncoder shooterMotorOneEncoder;
 
-  private final SparkClosedLoopController topController;
-
-  private double targetVelocityRPM = 90.0;
+  private final SparkClosedLoopController shooterMotorOneController;
 
   private java.util.function.DoubleSupplier distanceSupplier;
   private java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier;
 
   public Shooter() {
-    topMotor = new SparkFlex(topMotorCanId, MotorType.kBrushless);
+    shooterMotorOne = new SparkFlex(shooterMotorOneCanId, MotorType.kBrushless);
+    shooterMotorTwo = new SparkFlex(shooterMotorTwoCanId, MotorType.kBrushless);
 
-    topEncoder = topMotor.getEncoder();
+    shooterMotorOneEncoder = shooterMotorOne.getEncoder();
 
-    topController = topMotor.getClosedLoopController();
+    shooterMotorOneController = shooterMotorOne.getClosedLoopController();
 
-    var topConfig = new SparkFlexConfig();
-    topConfig
-        .inverted(topMotorInverted)
+    var motorOneConfig = new SparkFlexConfig();
+    motorOneConfig
+        .inverted(shooterMotorOneInverted)
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    topConfig.encoder.velocityConversionFactor(1.0);
-    topConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
-    topConfig.closedLoop.feedForward.kV(shooterKv);
+    // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
+    // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
+    // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
+    motorOneConfig.encoder.velocityConversionFactor(0.667);
+    motorOneConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
+    motorOneConfig.closedLoop.feedForward.kV(shooterKv);
 
-    topMotor.configure(
-        topConfig,
+    shooterMotorOne.configure(
+        motorOneConfig,
         com.revrobotics.ResetMode.kResetSafeParameters,
         com.revrobotics.PersistMode.kPersistParameters);
 
-    // Publish the default target RPM so it can be edited from Elastic
+    var motorTwoConfig = new SparkFlexConfig();
+    motorTwoConfig
+        .inverted(shooterMotorTwoInverted)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(shooterCurrentLimit)
+        .voltageCompensation(12.0)
+        .follow(shooterMotorOneCanId, true);
+
+    shooterMotorTwo.configure(
+        motorTwoConfig,
+        com.revrobotics.ResetMode.kResetSafeParameters,
+        com.revrobotics.PersistMode.kPersistParameters);
+
+    // Publishs the default target RPM so it can be edited from Elastic
     ElasticTelemetry.setNumber("Shooter/Target RPM", shooterRPM);
   }
 
   @Override
   public void periodic() {
-    ElasticTelemetry.setNumber("Shooter/Actual RPM", topEncoder.getVelocity());
-    ElasticTelemetry.setNumber("Shooter/Target RPM Setpoint", targetVelocityRPM);
+    ElasticTelemetry.setNumber("Shooter/Actual RPM", shooterMotorOneEncoder.getVelocity());
 
     if (distanceSupplier != null) {
       double distanceMeters = distanceSupplier.getAsDouble();
@@ -80,37 +95,28 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocityRPM) {
-    targetVelocityRPM = velocityRPM;
-    topController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    shooterMotorOneController.setSetpoint(
+        velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void setVoltage(double volts) {
-    topMotor.setVoltage(volts);
+    shooterMotorOne.setVoltage(volts);
   }
 
   public void stop() {
-    targetVelocityRPM = 0.0;
-    topMotor.stopMotor();
+    shooterMotorOne.stopMotor();
   }
 
   public void eject() {
-    topMotor.setVoltage(-6.0);
+    shooterMotorOne.setVoltage(-6.0);
   }
 
   public boolean atTargetVelocity() {
-    return Math.abs(topEncoder.getVelocity() - targetVelocityRPM) < shooterToleranceRPM;
-  }
-
-  public boolean atTestingVelocity() {
-    return false;
+    return true;
   }
 
   public double getVelocityRPM() {
-    return topEncoder.getVelocity();
-  }
-
-  public double getTargetVelocityRPM() {
-    return targetVelocityRPM;
+    return shooterMotorOneEncoder.getVelocity();
   }
 
   /**

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.sim.RobotSim;
 import frc.robot.sim.SimConstants;
+import frc.robot.telemetry.ElasticTelemetry;
 import org.ironmaple.simulation.SimulatedArena;
 
 /**
@@ -25,8 +26,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private RobotSim m_robotSim;
+  private FMSScoring m_fmsScoring;
 
-  // Track last-seen alliance/station so we can detect changes while disabled
   private DriverStation.Alliance m_lastAlliance = null;
   private int m_lastStation = -1;
 
@@ -36,9 +37,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_fmsScoring = new FMSScoring();
 
     if (RobotBase.isSimulation()) {
       m_robotSim =
@@ -58,11 +58,34 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    m_fmsScoring.periodic();
+    publishGameInfo();
+  }
+
+  private void publishGameInfo() {
+    if (DriverStation.isDisabled()) {
+      ElasticTelemetry.setString("Game/Phase", "Disabled");
+    } else if (DriverStation.isAutonomous()) {
+      ElasticTelemetry.setString("Game/Phase", "Autonomous");
+    } else if (DriverStation.isTeleop()) {
+      ElasticTelemetry.setString("Game/Phase", "Teleop");
+    } else if (DriverStation.isTest()) {
+      ElasticTelemetry.setString("Game/Phase", "Test");
+    }
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      String team = alliance.get() == DriverStation.Alliance.Red ? "Red" : "Blue";
+      ElasticTelemetry.setString("Game/My Team", team);
+      ElasticTelemetry.setString("Game/Active HUB", team + "Hub");
+    } else {
+      ElasticTelemetry.setString("Game/My Team", "Unknown");
+      ElasticTelemetry.setString("Game/Active HUB", "Unknown");
+    }
+
+    ElasticTelemetry.setNumber("Game/Game Time (s)", DriverStation.getMatchTime());
   }
 
   /**

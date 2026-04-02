@@ -14,17 +14,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,12 +23,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.intake.DeployIntake;
 import frc.robot.commands.intake.IntakeCommand;
@@ -86,7 +75,7 @@ public class RobotContainer {
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   private double m_driverTranslationScale = MEDIUM_TRANSLATION_SCALE;
 
-  // The operator's controller
+  // The operator's controller (F310 gamepad)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -161,10 +150,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", new IntakeCommand(m_intake));
     NamedCommands.registerCommand("RetractIntake", new RetractIntake(m_intake));
     NamedCommands.registerCommand("StopIntake", new StopIntake(m_intake));
-
-    // Hopper utility command for PathPlanner markers
     NamedCommands.registerCommand(
-        "HoppperRollers", new InstantCommand(() -> m_hopper.setVelocity(6), m_hopper));
+        "hopperRollers", new RunCommand(() -> m_hopper.setVoltage(6.00), m_hopper));
   }
 
   public AprilTagFieldLayout getFieldLayout() {
@@ -185,14 +172,24 @@ public class RobotContainer {
 
     // ========== DRIVER CONTROLS ==========
 
-    // Drive controls
-    new JoystickButton(m_driverController, Button.kR1.value)
+    new JoystickButton(m_driverController, XboxController.Button.kRightStick.value)
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
-    // Toggle Hub Tracking
+    new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(true);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                }));
+
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .onTrue(
-            new InstantCommand(() -> m_robotDrive.setTrackingHub(!m_robotDrive.isTrackingHub())));
+            new InstantCommand(
+                () -> {
+                  m_robotDrive.setTrackingHub(false);
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+                }));
 
     // Press A to rotate in place toward the nearest trench AprilTag, then stop
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
@@ -209,92 +206,99 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-    // ========== OPERATOR CONTROLS ==========
+    // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
-    // Launch button (A) - runs shooter and hopper forward to score
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_shooter.setVelocity(
-                      ElasticTelemetry.getNumber(
-                          "Shooter/Target RPM", ShooterConstants.shooterRPM));
-                  // Set Target Rpm in the method below
-                  if (m_shooter.atTargetVelocity()) {
-                    m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-                  } else {
-                    m_hopper.stop();
-                  }
-                },
-                m_shooter,
-                m_hopper))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_shooter.stop();
-                  m_hopper.stop();
-                },
-                m_shooter,
-                m_hopper));
+    // Launch button (A / Space) - runs shooter and hopper forward to score
+    var launchCommand =
+        new RunCommand(
+            () -> {
+              m_shooter.setVelocity(
+                  ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
+              if (m_shooter.atTargetVelocity()) {
+                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              } else {
+                m_hopper.stop();
+              }
+            },
+            m_shooter,
+            m_hopper);
+    var stopLaunchCommand =
+        new InstantCommand(
+            () -> {
+              m_shooter.stop();
+              m_hopper.stop();
+            },
+            m_shooter,
+            m_hopper);
 
-    // Eject button (B) - runs intake, hopper, and shooter backwards
+    // Eject button (B / E key) - runs intake, hopper, and shooter backwards
+    var ejectCommand =
+        new RunCommand(
+            () -> {
+              m_intake.intake();
+              m_hopper.eject();
+              m_shooter.eject();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+    var stopEjectCommand =
+        new InstantCommand(
+            () -> {
+              m_intake.stop();
+              m_hopper.stop();
+              m_shooter.stop();
+            },
+            m_intake,
+            m_hopper,
+            m_shooter);
+
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whileTrue(
-            new RunCommand(
-                () -> {
-                  m_intake.intake();
-                  m_hopper.eject();
-                  m_shooter.eject();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_intake.stop();
-                  m_hopper.stop();
-                  m_shooter.stop();
-                },
-                m_intake,
-                m_hopper,
-                m_shooter));
+        .whileTrue(ejectCommand)
+        .onFalse(stopEjectCommand);
 
     // Intake controls
+    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
+    var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new RunCommand(() -> m_intake.outtake(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(outtakeCommand)
+        .onFalse(stopIntakeCommand);
 
+    var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftDeploy(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(deployCommand)
+        .onFalse(stopIntakeCommand);
 
+    var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(() -> m_intake.liftRetract(), m_intake))
-        .onFalse(new InstantCommand(() -> m_intake.stop(), m_intake));
+        .whileTrue(retractCommand)
+        .onFalse(stopIntakeCommand);
 
-    // Shooter only (right bumper)
+    // Shooter only (right bumper / R key)
+    var shooterOnlyCommand =
+        new RunCommand(
+            () ->
+                m_shooter.setVelocity(
+                    ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
+            m_shooter);
+    var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(
-            new RunCommand(
-                () ->
-                    m_shooter.setVelocity(
-                        ElasticTelemetry.getNumber(
-                            "Shooter/Target RPM", ShooterConstants.shooterRPM)),
-                m_shooter))
-        .onFalse(new InstantCommand(() -> m_shooter.stop(), m_shooter));
+        .whileTrue(shooterOnlyCommand)
+        .onFalse(stopShooterCommand);
 
-    // Shooter presets on D-pad
-    new POVButton(m_operatorController, 0)
+    new POVButton(m_operatorController, 90)
+        .onTrue(
+            new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
+
+    new POVButton(m_operatorController, 180)
         .onTrue(
             new InstantCommand(
-                () -> setShooterPreset("Speaker", ShooterConstants.speakerPresetRPM)));
-    new POVButton(m_operatorController, 90)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Amp", ShooterConstants.ampPresetRPM)));
-    new POVButton(m_operatorController, 180)
-        .onTrue(new InstantCommand(() -> setShooterPreset("Trap", ShooterConstants.trapPresetRPM)));
+                () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
-    // Operator rumble feedback when shooter is ready
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(launchCommand)
+        .onFalse(stopLaunchCommand);
+
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(
             new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1.0)))
@@ -308,49 +312,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(DriveConstants.kDriveKinematics);
-
-    // Determine starting pose based on DriverStation alliance and station
-    Pose2d startPose = frc.robot.sim.SimConstants.getStartingPose();
-    double dir = startPose.getRotation().getDegrees() == 180 ? -1 : 1;
-    double x = startPose.getX();
-    double y = startPose.getY();
-    Rotation2d rot = startPose.getRotation();
-
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            startPose,
-            List.of(new Translation2d(x + 1 * dir, y + 1), new Translation2d(x + 2 * dir, y - 1)),
-            new Pose2d(x + 3 * dir, y, rot),
-            config);
-
-    var thetaController =
-        new ProfiledPIDController(
-            AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand =
-        new SwerveControllerCommand(
-            exampleTrajectory,
-            m_robotDrive::getPose, // Functional interface to feed supplier
-            DriveConstants.kDriveKinematics,
-            // Position controllers
-            new PIDController(AutoConstants.kPXController, 0, 0),
-            new PIDController(AutoConstants.kPYController, 0, 0),
-            thetaController,
-            m_robotDrive::setModuleStates,
-            m_robotDrive);
-
-    // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
     Command auto = m_autoChooser.getSelected();
     return auto != null ? auto : Commands.none();
   }
