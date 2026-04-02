@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -42,6 +43,9 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.telemetry.ElasticTelemetry;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,6 +54,13 @@ import frc.robot.telemetry.ElasticTelemetry;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  // Update these IDs to the AprilTags that correspond to the trench on your field.
+  private static final int[] TRENCH_TAG_IDS = {7, 6, 12, 1, 17, 28, 22, 23};
+  private static final double SLOW_TRANSLATION_SCALE =
+      1.5 / DriveConstants.kMaxSpeedMetersPerSecond;
+  private static final double MEDIUM_TRANSLATION_SCALE =
+      3.0 / DriveConstants.kMaxSpeedMetersPerSecond;
+  private static final double FAST_TRANSLATION_SCALE = 1.0;
 
   // The robot's subsystems
   private final AprilTagFieldLayout m_fieldLayout;
@@ -62,6 +73,7 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private double m_driverTranslationScale = MEDIUM_TRANSLATION_SCALE;
 
   // The operator's controller (F310 gamepad)
   XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -87,6 +99,7 @@ public class RobotContainer {
     m_vision = new Vision(m_robotDrive, m_fieldLayout);
     m_shooter.setDistanceSupplier(m_robotDrive::getDistanceToHub);
     m_shooter.setAngleSupplier(m_robotDrive::getAngleErrorToHub);
+    setDriverSpeedPreset("Medium", MEDIUM_TRANSLATION_SCALE);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -98,11 +111,11 @@ public class RobotContainer {
         new RunCommand(
             () -> {
               double xSpeed =
-                  -MathUtil.applyDeadband(
-                      m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+                  -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband)
+                      * m_driverTranslationScale;
               double ySpeed =
-                  -MathUtil.applyDeadband(
-                      m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+                  -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
+                      * m_driverTranslationScale;
               double rotSpeed =
                   -MathUtil.applyDeadband(
                       m_driverController.getRightX(), OIConstants.kDriveDeadband);
@@ -177,6 +190,18 @@ public class RobotContainer {
                   m_robotDrive.setTrackingHub(false);
                   ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
                 }));
+
+    // Press A to rotate in place toward the nearest trench AprilTag, then stop
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .onTrue(rotateToNearestTrenchTagCommand());
+
+    // Driver speed presets (easy-to-reach face buttons)
+    new JoystickButton(m_driverController, XboxController.Button.kX.value)
+        .onTrue(new InstantCommand(() -> setDriverSpeedPreset("Slow", SLOW_TRANSLATION_SCALE)));
+    new JoystickButton(m_driverController, XboxController.Button.kY.value)
+        .onTrue(new InstantCommand(() -> setDriverSpeedPreset("Medium", MEDIUM_TRANSLATION_SCALE)));
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+        .onTrue(new InstantCommand(() -> setDriverSpeedPreset("Fast", FAST_TRANSLATION_SCALE)));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
@@ -328,5 +353,51 @@ public class RobotContainer {
         pose -> m_robotDrive.getField().getObject("Auto/CurrentPose").setPose(pose));
     PathPlannerLogging.setLogTargetPoseCallback(
         pose -> m_robotDrive.getField().getObject("Auto/TargetPose").setPose(pose));
+  }
+
+  private Rotation2d getNearestTrenchTagAngle() {
+    Translation2d robotTranslation = m_robotDrive.getPose().getTranslation();
+    Optional<Pose2d> nearestTagPose =
+        m_fieldLayout.getTags().stream()
+            .filter(tag -> Arrays.stream(TRENCH_TAG_IDS).anyMatch(id -> id == tag.ID))
+            .map(tag -> tag.pose.toPose2d())
+            .min(
+                (a, b) ->
+                    Double.compare(
+                        robotTranslation.getDistance(a.getTranslation()),
+                        robotTranslation.getDistance(b.getTranslation())));
+
+    if (nearestTagPose.isEmpty()) {
+      return null;
+    }
+
+    return nearestTagPose.get().getTranslation().minus(robotTranslation).getAngle();
+  }
+
+  private Command rotateToNearestTrenchTagCommand() {
+    final Rotation2d[] targetAngle = new Rotation2d[1];
+    return new FunctionalCommand(
+        () -> targetAngle[0] = getNearestTrenchTagAngle(),
+        () -> {
+          if (targetAngle[0] == null) {
+            return;
+          }
+          double rotSpeed = m_robotDrive.calculateHubTracking(targetAngle[0]);
+          m_robotDrive.drive(0.0, 0.0, rotSpeed, true);
+        },
+        interrupted -> m_robotDrive.drive(0.0, 0.0, 0.0, true),
+        () ->
+            targetAngle[0] == null
+                || Math.abs(targetAngle[0].minus(m_robotDrive.getPose().getRotation()).getDegrees())
+                    < 2.0,
+        m_robotDrive);
+  }
+
+  private void setDriverSpeedPreset(String presetName, double translationScale) {
+    m_driverTranslationScale = translationScale;
+    ElasticTelemetry.setString("Drive/SpeedPreset", presetName);
+    ElasticTelemetry.setNumber(
+        "Drive/SpeedPresetMetersPerSecond",
+        DriveConstants.kMaxSpeedMetersPerSecond * translationScale);
   }
 }

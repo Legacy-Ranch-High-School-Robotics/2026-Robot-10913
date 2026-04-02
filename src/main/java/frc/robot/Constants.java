@@ -21,12 +21,9 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond =
-        3.6; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
-    // change for extra speed orginally 2.4
-    public static final double kMaxAngularSpeed =
-        1.4 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
-    // changed max angular speed at 3:41
+    public static final double kMaxSpeedMetersPerSecond = 4.0;
+    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+
     // Chassis configuration
     // change for extra speed orginally 1.4
     public static final double kTrackWidth =
