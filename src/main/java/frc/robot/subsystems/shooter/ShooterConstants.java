@@ -46,7 +46,9 @@ public class ShooterConstants {
   public static final double shooterRPM = 5500.0; // DEBUG:SHOOTER_DEFAULT_RPM
   public static final double shooterRPMInverted = -2000.0; // DEBUG:SHOOTER_EJECT_RPM
 
+  //THESE PRESETS ARE NOT FULLY TESTED OR INTEGRATED
   public static final double closePresetRPM = 3000.0; // DEBUG:SHOOTER_CLOSE_PRESET
+  public static final double atMediumPresetRPM = 3800.0; //DEBUG: SHOOTER_MEDIUM_PRESET 
   public static final double atDistancePresetRPM = 5200.0; // DEBUG:SHOOTER_DISTANCE_PRESET
 
   // Tolerance: Maximum RPM error to consider the shooter "at target velocity".

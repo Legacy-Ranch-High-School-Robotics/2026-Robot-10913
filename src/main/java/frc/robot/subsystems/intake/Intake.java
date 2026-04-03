@@ -69,11 +69,6 @@ public class Intake extends SubsystemBase {
     motor.setVoltage(intakeVoltage);
   }
 
-  public void intakeFeed() {
-
-    motor.setVoltage(feedVoltage);
-  }
-
   public void liftRetract() {
 
     if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
