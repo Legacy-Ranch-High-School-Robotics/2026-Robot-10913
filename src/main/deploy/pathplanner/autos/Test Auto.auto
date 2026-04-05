@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootPath"
+            "pathName": "Test Path"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 1.0
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 5.0
                 }
               },
               {
@@ -52,36 +52,6 @@
           "type": "named",
           "data": {
             "name": "StopShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Placeholder"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CollectBalls"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CollectBalls2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BackToAlliance"
           }
         }
       ]

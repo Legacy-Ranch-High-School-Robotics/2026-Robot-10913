@@ -1,0 +1,98 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.767325301204821,
+        "y": 3.6088192771084504
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.66897590361407,
+        "y": 2.1007951807229075
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.280927710842985,
+        "y": 0.8222530120482077
+      },
+      "prevControl": {
+        "x": 8.28092771084354,
+        "y": 1.8222530120482017
+      },
+      "nextControl": {
+        "x": 8.280927710842596,
+        "y": 0.12287951807232056
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7952168674694917,
+        "y": 0.4616385542168677
+      },
+      "prevControl": {
+        "x": 2.379963855421299,
+        "y": 0.8331807228915816
+      },
+      "nextControl": {
+        "x": 3.1678375242320325,
+        "y": 0.12824112448194908
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2925421686746983,
+        "y": 4.045927710843373
+      },
+      "prevControl": {
+        "x": 2.0425421686746983,
+        "y": 4.034999999999992
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3518672199169837,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RetractIntake",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -88.61964592658012
+  },
+  "useDefaultConstraints": true
+}

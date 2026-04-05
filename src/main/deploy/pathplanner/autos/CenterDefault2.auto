@@ -36,7 +36,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 2.0
                 }
               },
               {
@@ -57,31 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Placeholder"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CollectBalls"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CollectBalls2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BackToAlliance"
+            "pathName": "placeHolderCenterDefualt2"
           }
         }
       ]

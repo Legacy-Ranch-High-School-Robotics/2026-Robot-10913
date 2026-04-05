@@ -261,11 +261,16 @@ public class RobotContainer {
         .whileTrue(shooterOnlyCommand)
         .onFalse(stopShooterCommand);
 
-    new POVButton(m_operatorController, 90)
+    new POVButton(m_operatorController, 270)
         .onTrue(
             new InstantCommand(() -> setShooterPreset("Close", ShooterConstants.closePresetRPM)));
 
-    new POVButton(m_operatorController, 180)
+    new POVButton(m_operatorController, 0)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("Medium Distance", ShooterConstants.atMediumPresetRPM)));
+
+    new POVButton(m_operatorController, 90)
         .onTrue(
             new InstantCommand(
                 () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
