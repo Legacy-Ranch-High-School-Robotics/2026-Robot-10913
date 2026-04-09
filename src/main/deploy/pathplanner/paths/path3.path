@@ -3,77 +3,70 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 2.4346647646219686,
+        "y": 7.237318116975749
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 3.2517949735918434,
+        "y": 7.274620688051844
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 4.970641940085592,
+        "y": 7.444336661911555
       },
       "prevControl": {
-        "x": -0.0022084196969005543,
-        "y": 5.344428410486962
+        "x": 4.521518880574668,
+        "y": 7.470783595274534
       },
       "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
+        "x": 5.624896095221008,
+        "y": 7.40581043691175
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
+        "x": 7.674821683309556,
+        "y": 7.237318116975749
       },
       "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 6.606756979610596,
+        "y": 7.6097299030211145
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Path 3 end"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.2452025586354054,
+      "rotationDegrees": -0.053307404734078294
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.4,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "New Folder",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

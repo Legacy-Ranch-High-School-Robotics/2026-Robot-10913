@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootPath"
+            "pathName": "Path1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path2"
           }
         },
         {
@@ -17,34 +23,58 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 0.7
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RetractIntake"
+                  "name": "DeployIntake"
                 }
               }
             ]
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "path3"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Intake1"
+            "pathName": "path4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopIntake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "GoBack"
+            "pathName": "path5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path7"
           }
         },
         {
@@ -84,11 +114,23 @@
               }
             ]
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 30.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "placeholder8"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "New Folder",
+  "folder": null,
   "choreoAuto": false
 }
