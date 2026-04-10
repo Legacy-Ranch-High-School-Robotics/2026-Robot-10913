@@ -181,9 +181,12 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
+    new JoystickButton(m_driverController, XboxController.Button.kY.value)
+        .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+
     // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
-    // Launch button (A / Space) - runs shooter and hopper forward to score
+    // Launch button (A / Space) - runs the shooter and hopper forward to score
     var launchCommand =
         new RunCommand(
             () -> {
