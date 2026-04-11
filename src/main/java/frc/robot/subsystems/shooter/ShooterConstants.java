@@ -56,7 +56,7 @@ public class ShooterConstants {
   // If abs(actualRPM - targetRPM) < tolerance, the shooter is ready to launch.
   // Tighter tolerance = more consistent shots but longer spin-up wait time.
   // 150 RPM tolerance provides good balance between accuracy and responsiveness.
-  public static final double shooterToleranceRPM = 150.0; // DEBUG:SHOOTER_TOLERANCE
+  public static final double shooterToleranceRPM = 75.0; // DEBUG:SHOOTER_TOLERANCE
 
   // Distance-to-RPM lookup table: Automatically interpolates between data points.
   // Add more entries by testing shots at known distances and recording successful RPMs.

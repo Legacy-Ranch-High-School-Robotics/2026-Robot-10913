@@ -24,6 +24,8 @@ public class Shooter extends SubsystemBase {
   private java.util.function.DoubleSupplier distanceSupplier;
   private java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier;
 
+  private double targetRPM = 0.0;
+
   public Shooter() {
     shooterMotorOne = new SparkFlex(shooterMotorOneCanId, MotorType.kBrushless);
     shooterMotorTwo = new SparkFlex(shooterMotorTwoCanId, MotorType.kBrushless);
@@ -56,6 +58,9 @@ public class Shooter extends SubsystemBase {
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0)
         .follow(shooterMotorOneCanId, true);
+    motorTwoConfig.encoder.velocityConversionFactor(0.667);
+    motorTwoConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
+    motorTwoConfig.closedLoop.feedForward.kV(shooterKv);
 
     shooterMotorTwo.configure(
         motorTwoConfig,
@@ -94,8 +99,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocityRPM) {
-    shooterMotorOneController.setSetpoint(
-        velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    targetRPM = velocityRPM;  // store it
+    shooterMotorOneController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void setVoltage(double volts) {
@@ -111,7 +116,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return true;
+    return targetRPM > 0 && Math.abs(getVelocityRPM() - targetRPM) < shooterToleranceRPM;
   }
 
   public double getVelocityRPM() {
