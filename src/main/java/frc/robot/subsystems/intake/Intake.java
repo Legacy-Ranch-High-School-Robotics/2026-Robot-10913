@@ -132,4 +132,12 @@ public class Intake extends SubsystemBase {
 
     return Math.abs(getLiftPosition() - retractedPosition) < liftPositionTolerance;
   }
+
+  public SparkMax getMotor() {
+    return motor;
+  }
+
+  public SparkMax getLiftMotor() {
+    return liftMotor;
+  }
 }

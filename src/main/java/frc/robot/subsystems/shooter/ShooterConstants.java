@@ -43,6 +43,8 @@ public class ShooterConstants {
   public static final double shooterKd = 0.0; // DEBUG:SHOOTER_KD
   public static final double shooterKv = 0.0021; // DEBUG:SHOOTER_KV
 
+  public static final double shooterGearRatio = 0.667; // flywheel RPM / motor RPM (matches velocityConversionFactor)
+
   public static final double shooterRPM = 3800.0; // DEBUG:SHOOTER_DEFAULT_RPM
   public static final double shooterRPMInverted = -2000.0; // DEBUG:SHOOTER_EJECT_RPM
 

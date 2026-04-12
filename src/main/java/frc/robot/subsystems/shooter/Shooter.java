@@ -124,6 +124,14 @@ public class Shooter extends SubsystemBase {
     return shooterMotorOneEncoder.getVelocity();
   }
 
+  public SparkFlex getMotorOne() {
+    return shooterMotorOne;
+  }
+
+  public SparkFlex getMotorTwo() {
+    return shooterMotorTwo;
+  }
+
   /**
    * Estimates the required shooter RPM for a given distance to the hub.
    *

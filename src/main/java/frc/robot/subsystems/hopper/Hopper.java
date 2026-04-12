@@ -76,4 +76,8 @@ public class Hopper extends SubsystemBase {
   public double getTargetVelocityRPM() {
     return targetVelocityRPM;
   }
+
+  public SparkMax getHopperMotor() {
+    return hopperMotor;
+  }
 }
