@@ -127,6 +127,30 @@ public class DriveSubsystem extends SubsystemBase {
     // Publish odometry pose to the field widget
     m_field.setRobotPose(getPose());
 
+    // Pose telemetry
+    Pose2d pose = getPose();
+    ElasticTelemetry.setNumber("Drive/PoseX", pose.getX());
+    ElasticTelemetry.setNumber("Drive/PoseY", pose.getY());
+    ElasticTelemetry.setNumber("Drive/Heading", pose.getRotation().getDegrees());
+
+    // Velocity telemetry
+    ChassisSpeeds speeds = getChassisSpeeds();
+    ElasticTelemetry.setNumber("Drive/VelocityX", speeds.vxMetersPerSecond);
+    ElasticTelemetry.setNumber("Drive/VelocityY", speeds.vyMetersPerSecond);
+    ElasticTelemetry.setNumber(
+        "Drive/AngularVelocityDegPerSec", Math.toDegrees(speeds.omegaRadiansPerSecond));
+    ElasticTelemetry.setNumber(
+        "Drive/SpeedMPS",
+        Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+
+    // Hub targeting telemetry
+    double distToHub = getDistanceToHub();
+    double angleErrDeg = getAngleErrorToHub().getDegrees();
+    ElasticTelemetry.setBoolean("Drive/HubTracking", m_isTrackingHub);
+    ElasticTelemetry.setNumber("Drive/DistanceToHub", distToHub);
+    ElasticTelemetry.setNumber("Drive/AngleErrorToHub", angleErrDeg);
+    ElasticTelemetry.setBoolean("Drive/IsAimedAtHub", isAimedAtHub());
+
     // Publish Pigeon2 gyro telemetry
     ElasticTelemetry.setNumber("Gyro/Yaw", m_gyro.getYaw().getValueAsDouble());
     ElasticTelemetry.setNumber("Gyro/Pitch", m_gyro.getPitch().getValueAsDouble());

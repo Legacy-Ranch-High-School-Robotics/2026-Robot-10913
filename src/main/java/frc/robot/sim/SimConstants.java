@@ -19,7 +19,7 @@ import org.photonvision.simulation.SimCameraProperties;
 public final class SimConstants {
 
   // Robot physical properties
-  public static final Mass kRobotMass = Kilograms.of(54.0); // ~120 lbs
+  public static final Mass kRobotMass = Kilograms.of(38.0); // ~120 lbs
   public static final Distance kBumperLengthX = Meters.of(0.813); // ~32 inches
   public static final Distance kBumperWidthY = Meters.of(0.813); // ~32 inches
   public static final Distance kTrackLength = Meters.of(0.673); // 26.5 inches

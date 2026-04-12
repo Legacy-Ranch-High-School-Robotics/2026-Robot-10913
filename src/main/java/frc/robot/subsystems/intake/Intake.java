@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.ElasticTelemetry;
 
 public class Intake extends SubsystemBase {
 
@@ -62,7 +63,13 @@ public class Intake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    ElasticTelemetry.setNumber("Intake/RollerRPM", encoder.getVelocity());
+    ElasticTelemetry.setNumber("Intake/LiftPosition", liftEncoder.getPosition());
+    ElasticTelemetry.setNumber("Intake/LiftVelocity", liftEncoder.getVelocity());
+    ElasticTelemetry.setBoolean("Intake/IsDeployed", isLiftDeployed());
+    ElasticTelemetry.setBoolean("Intake/IsRetracted", isLiftRetracted());
+  }
 
   public void intake() {
 

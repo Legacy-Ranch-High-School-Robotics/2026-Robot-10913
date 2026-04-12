@@ -53,13 +53,11 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final SendableChooser<Command> m_autoChooser;
 
-  // Speed preset state
-  private double m_driveMaxSpeed = DriveConstants.kTurboSpeedMetersPerSecond;
-  private double m_driveMaxAngularSpeed = DriveConstants.kTurboAngularSpeed;
-  private String m_speedModeName = "Turbo";
+  // Speed preset state — Normal is the default
+  private double m_driveMaxSpeed = DriveConstants.kNormalSpeedMetersPerSecond;
+  private double m_driveMaxAngularSpeed = DriveConstants.kNormalAngularSpeed;
+  private String m_speedModeName = "Normal";
 
-  // Shooting preset state
-  private ShootingPreset m_activePreset = ShootingPreset.TRENCH;
   private final RobotCommands.ShootOnMove m_shootOnMoveCommand =
       new RobotCommands.ShootOnMove(m_shooter, m_hopper, m_robotDrive);
 
@@ -93,7 +91,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
+    ElasticTelemetry.setString("Drive/ShootingPreset", "Hub");
 
     // Configure default commands
     // The left stick controls translation of the robot.
@@ -117,14 +115,18 @@ public class RobotContainer {
                 rotSpeed *= m_driveMaxAngularSpeed / DriveConstants.kMaxAngularSpeed;
               }
 
-              ElasticTelemetry.setNumber("Drive/MaxSpeed", m_driveMaxSpeed);
-              ElasticTelemetry.setString("Drive/SpeedMode", m_speedModeName);
+              double scaledX = xSpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond;
+              double scaledY = ySpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond;
 
-              m_robotDrive.drive(
-                  xSpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond,
-                  ySpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond,
-                  rotSpeed,
-                  true);
+              ElasticTelemetry.setNumber("Drive/MaxSpeed", m_driveMaxSpeed);
+              ElasticTelemetry.setNumber("Drive/MaxAngularSpeed", m_driveMaxAngularSpeed);
+              ElasticTelemetry.setString("Drive/SpeedMode", m_speedModeName);
+              ElasticTelemetry.setNumber("Drive/Joystick/X", scaledX);
+              ElasticTelemetry.setNumber("Drive/Joystick/Y", scaledY);
+              ElasticTelemetry.setNumber("Drive/Joystick/Rot", rotSpeed);
+              ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", m_robotDrive.isTrackingHub());
+
+              m_robotDrive.drive(scaledX, scaledY, rotSpeed, true);
             },
             m_robotDrive));
   }
@@ -188,29 +190,27 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
-        .onTrue(new InstantCommand(() -> activatePresetTargeting()));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_shootOnMoveCommand.schedule();
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                }));
 
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .onTrue(
-            Commands.sequence(
-                Commands.runOnce(
-                    () -> {
-                      m_shootOnMoveCommand.cancel();
-                      m_robotDrive.setTrackingHub(true);
-                      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
-                    }),
-                Commands.waitUntil(m_robotDrive::isAimedAtHub).withTimeout(3.0),
-                Commands.runOnce(
-                    () -> {
-                      m_robotDrive.zeroHeading();
-                      m_robotDrive.setTrackingHub(false);
-                      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
-                    })));
+            new InstantCommand(
+                () -> {
+                  m_shootOnMoveCommand.cancel();
+                  m_robotDrive.setTrackingHub(false);
+                  m_robotDrive.zeroHeading();
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+                }));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-    // Driver D-Pad: speed presets
+    // Driver D-Pad: speed presets (↑=Turbo, →=Fast, ↓=Normal, ←=Slow)
     new POVButton(m_driverController, 0)
         .onTrue(new InstantCommand(() -> setSpeedMode("Turbo",
             DriveConstants.kTurboSpeedMetersPerSecond, DriveConstants.kTurboAngularSpeed)));
@@ -223,15 +223,6 @@ public class RobotContainer {
     new POVButton(m_driverController, 270)
         .onTrue(new InstantCommand(() -> setSpeedMode("Slow",
             DriveConstants.kSlowSpeedMetersPerSecond, DriveConstants.kSlowAngularSpeed)));
-
-    // Driver Y: cycle shooting preset (Trench → Hub → Outpost → ...)
-    new JoystickButton(m_driverController, XboxController.Button.kY.value)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_activePreset = m_activePreset.next();
-                  ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
-                }));
 
     // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
@@ -284,16 +275,6 @@ public class RobotContainer {
     return auto != null ? auto : Commands.none();
   }
 
-  private void activatePresetTargeting() {
-    ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
-    if (m_activePreset == ShootingPreset.HUB) {
-      m_shootOnMoveCommand.schedule();
-    } else {
-      m_robotDrive.setTrackingHub(true);
-      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
-    }
-  }
-
   private void setSpeedMode(String name, double maxSpeed, double maxAngularSpeed) {
     m_driveMaxSpeed = maxSpeed;
     m_driveMaxAngularSpeed = maxAngularSpeed;
@@ -305,22 +286,6 @@ public class RobotContainer {
   private void setShooterPreset(String presetName, double rpm) {
     ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
     ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
-  }
-
-  private enum ShootingPreset {
-    TRENCH,
-    HUB,
-    OUTPOST;
-
-    public ShootingPreset next() {
-      ShootingPreset[] vals = values();
-      return vals[(ordinal() + 1) % vals.length];
-    }
-
-    public String displayName() {
-      String n = name();
-      return n.charAt(0) + n.substring(1).toLowerCase();
-    }
   }
 
   private void configureAutoBuilder() {

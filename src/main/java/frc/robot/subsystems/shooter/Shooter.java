@@ -71,6 +71,8 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     ElasticTelemetry.setNumber("Shooter/Actual RPM", shooterMotorOneEncoder.getVelocity());
+    ElasticTelemetry.setNumber("Shooter/Setpoint RPM", targetVelocityRPM);
+    ElasticTelemetry.setBoolean("Shooter/AtTargetVelocity", atTargetVelocity());
 
     if (distanceSupplier != null) {
       double distanceMeters = distanceSupplier.getAsDouble();

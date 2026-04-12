@@ -143,6 +143,7 @@ public final class RobotCommands {
     @Override
     public void initialize() {
       m_drive.setTrackingHub(true);
+      ElasticTelemetry.setBoolean("ShootOnMove/Active", true);
     }
 
     @Override
@@ -184,7 +185,9 @@ public final class RobotCommands {
       m_shooter.stop();
       m_hopper.stop();
       m_drive.setTrackingHub(false);
+      m_drive.zeroHeading();
       ElasticTelemetry.setBoolean("ShootOnMove/Feeding", false);
+      ElasticTelemetry.setBoolean("ShootOnMove/Active", false);
     }
 
     @Override
