@@ -283,6 +283,10 @@ public class DriveSubsystem extends SubsystemBase {
     return getTargetAngleToHub().minus(getPose().getRotation());
   }
 
+  public boolean isAimedAtHub() {
+    return m_turnToPointController.atSetpoint();
+  }
+
   /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
 

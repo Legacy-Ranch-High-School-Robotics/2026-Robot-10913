@@ -145,9 +145,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    m_autonomousCommand.execute();
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {

@@ -26,17 +26,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.intake.DeployIntake;
-import frc.robot.commands.intake.IntakeCommand;
-import frc.robot.commands.intake.RetractIntake;
-import frc.robot.commands.intake.StopIntake;
-import frc.robot.commands.shooter.ShootCommand;
-import frc.robot.commands.shooter.SpinUpShooter;
-import frc.robot.commands.shooter.StopShooter;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.hopper.Hopper;
-import frc.robot.subsystems.hopper.HopperConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
@@ -59,6 +52,16 @@ public class RobotContainer {
   private final Hopper m_hopper = new Hopper();
   private final Intake m_intake = new Intake();
   private final SendableChooser<Command> m_autoChooser;
+
+  // Speed preset state
+  private double m_driveMaxSpeed = DriveConstants.kTurboSpeedMetersPerSecond;
+  private double m_driveMaxAngularSpeed = DriveConstants.kTurboAngularSpeed;
+  private String m_speedModeName = "Turbo";
+
+  // Shooting preset state
+  private ShootingPreset m_activePreset = ShootingPreset.TRENCH;
+  private final RobotCommands.ShootOnMove m_shootOnMoveCommand =
+      new RobotCommands.ShootOnMove(m_shooter, m_hopper, m_robotDrive);
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -90,6 +93,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
 
     // Configure default commands
     // The left stick controls translation of the robot.
@@ -109,9 +113,18 @@ public class RobotContainer {
 
               if (m_robotDrive.isTrackingHub()) {
                 rotSpeed = m_robotDrive.calculateHubTracking(m_robotDrive.getTargetAngleToHub());
+              } else {
+                rotSpeed *= m_driveMaxAngularSpeed / DriveConstants.kMaxAngularSpeed;
               }
 
-              m_robotDrive.drive(xSpeed, ySpeed, rotSpeed, true);
+              ElasticTelemetry.setNumber("Drive/MaxSpeed", m_driveMaxSpeed);
+              ElasticTelemetry.setString("Drive/SpeedMode", m_speedModeName);
+
+              m_robotDrive.drive(
+                  xSpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond,
+                  ySpeed * m_driveMaxSpeed / DriveConstants.kMaxSpeedMetersPerSecond,
+                  rotSpeed,
+                  true);
             },
             m_robotDrive));
   }
@@ -128,15 +141,15 @@ public class RobotContainer {
   /** Registers commands with PathPlanner for use in event markers. */
   private void configurePathPlannerCommands() {
     // Shooter commands
-    NamedCommands.registerCommand("SpinUpShooter", new SpinUpShooter(m_shooter));
-    NamedCommands.registerCommand("Shoot", new ShootCommand(m_shooter, m_hopper));
-    NamedCommands.registerCommand("StopShooter", new StopShooter(m_shooter));
+    NamedCommands.registerCommand("SpinUpShooter", RobotCommands.spinUpShooter(m_shooter));
+    NamedCommands.registerCommand("Shoot", RobotCommands.shoot(m_shooter, m_hopper));
+    NamedCommands.registerCommand("StopShooter", RobotCommands.stopShooter(m_shooter));
 
     // Intake commands
-    NamedCommands.registerCommand("DeployIntake", new DeployIntake(m_intake));
-    NamedCommands.registerCommand("Intake", new IntakeCommand(m_intake));
-    NamedCommands.registerCommand("RetractIntake", new RetractIntake(m_intake));
-    NamedCommands.registerCommand("StopIntake", new StopIntake(m_intake));
+    NamedCommands.registerCommand("DeployIntake", RobotCommands.deployIntake(m_intake));
+    NamedCommands.registerCommand("Intake", RobotCommands.intakeRollers(m_intake));
+    NamedCommands.registerCommand("RetractIntake", RobotCommands.retractIntake(m_intake));
+    NamedCommands.registerCommand("StopIntake", RobotCommands.stopIntake(m_intake));
     NamedCommands.registerCommand(
         "hopperRollers", new RunCommand(() -> m_hopper.setVoltage(6.00), m_hopper));
   }
@@ -163,103 +176,70 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> m_robotDrive.setX(), m_robotDrive));
 
     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_robotDrive.setTrackingHub(true);
-                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
-                }));
+        .onTrue(new InstantCommand(() -> activatePresetTargeting()));
 
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_robotDrive.setTrackingHub(false);
-                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
-                }));
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> {
+                      m_shootOnMoveCommand.cancel();
+                      m_robotDrive.setTrackingHub(true);
+                      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                    }),
+                Commands.waitUntil(m_robotDrive::isAimedAtHub).withTimeout(3.0),
+                Commands.runOnce(
+                    () -> {
+                      m_robotDrive.zeroHeading();
+                      m_robotDrive.setTrackingHub(false);
+                      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", false);
+                    })));
 
     new JoystickButton(m_driverController, XboxController.Button.kStart.value)
         .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
+    // Driver D-Pad: speed presets
+    new POVButton(m_driverController, 0)
+        .onTrue(new InstantCommand(() -> setSpeedMode("Turbo",
+            DriveConstants.kTurboSpeedMetersPerSecond, DriveConstants.kTurboAngularSpeed)));
+    new POVButton(m_driverController, 90)
+        .onTrue(new InstantCommand(() -> setSpeedMode("Fast",
+            DriveConstants.kFastSpeedMetersPerSecond, DriveConstants.kFastAngularSpeed)));
+    new POVButton(m_driverController, 180)
+        .onTrue(new InstantCommand(() -> setSpeedMode("Normal",
+            DriveConstants.kNormalSpeedMetersPerSecond, DriveConstants.kNormalAngularSpeed)));
+    new POVButton(m_driverController, 270)
+        .onTrue(new InstantCommand(() -> setSpeedMode("Slow",
+            DriveConstants.kSlowSpeedMetersPerSecond, DriveConstants.kSlowAngularSpeed)));
+
+    // Driver Y: cycle shooting preset (Trench → Hub → Outpost → ...)
+    new JoystickButton(m_driverController, XboxController.Button.kY.value)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_activePreset = m_activePreset.next();
+                  ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
+                }));
+
     // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
-    // Launch button (A / Space) - runs shooter and hopper forward to score
-    var launchCommand =
-        new RunCommand(
-            () -> {
-              m_shooter.setVelocity(
-                  ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
-              if (m_shooter.atTargetVelocity()) {
-                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-              } else {
-                m_hopper.stop();
-              }
-            },
-            m_shooter,
-            m_hopper);
-    var stopLaunchCommand =
-        new InstantCommand(
-            () -> {
-              m_shooter.stop();
-              m_hopper.stop();
-            },
-            m_shooter,
-            m_hopper);
-
-    // Eject button (B / E key) - runs intake, hopper, and shooter backwards
-    var ejectCommand =
-        new RunCommand(
-            () -> {
-              m_intake.intake();
-              m_hopper.eject();
-              m_shooter.eject();
-            },
-            m_intake,
-            m_hopper,
-            m_shooter);
-    var stopEjectCommand =
-        new InstantCommand(
-            () -> {
-              m_intake.stop();
-              m_hopper.stop();
-              m_shooter.stop();
-            },
-            m_intake,
-            m_hopper,
-            m_shooter);
+    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
+        .whileTrue(RobotCommands.launch(m_shooter, m_hopper));
 
     new JoystickButton(m_operatorController, XboxController.Button.kB.value)
-        .whileTrue(ejectCommand)
-        .onFalse(stopEjectCommand);
+        .whileTrue(RobotCommands.eject(m_intake, m_hopper, m_shooter));
 
-    // Intake controls
-    var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
-    var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(outtakeCommand)
-        .onFalse(stopIntakeCommand);
+        .whileTrue(RobotCommands.outtakeRollers(m_intake));
 
-    var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(deployCommand)
-        .onFalse(stopIntakeCommand);
+        .whileTrue(RobotCommands.deployIntake(m_intake));
 
-    var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .whileTrue(retractCommand)
-        .onFalse(stopIntakeCommand);
+        .whileTrue(RobotCommands.retractIntake(m_intake));
 
-    // Shooter only (right bumper / R key)
-    var shooterOnlyCommand =
-        new RunCommand(
-            () ->
-                m_shooter.setVelocity(
-                    ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
-            m_shooter);
-    var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .whileTrue(shooterOnlyCommand)
-        .onFalse(stopShooterCommand);
+        .whileTrue(RobotCommands.spinUpAndHold(m_shooter));
 
     new POVButton(m_operatorController, 270)
         .onTrue(
@@ -274,10 +254,6 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
-
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value)
-        .whileTrue(launchCommand)
-        .onFalse(stopLaunchCommand);
 
     new Trigger(m_shooter::atTargetVelocity)
         .onTrue(
@@ -296,9 +272,43 @@ public class RobotContainer {
     return auto != null ? auto : Commands.none();
   }
 
+  private void activatePresetTargeting() {
+    ElasticTelemetry.setString("Drive/ShootingPreset", m_activePreset.displayName());
+    if (m_activePreset == ShootingPreset.HUB) {
+      m_shootOnMoveCommand.schedule();
+    } else {
+      m_robotDrive.setTrackingHub(true);
+      ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+    }
+  }
+
+  private void setSpeedMode(String name, double maxSpeed, double maxAngularSpeed) {
+    m_driveMaxSpeed = maxSpeed;
+    m_driveMaxAngularSpeed = maxAngularSpeed;
+    m_speedModeName = name;
+    ElasticTelemetry.setNumber("Drive/MaxSpeed", maxSpeed);
+    ElasticTelemetry.setString("Drive/SpeedMode", name);
+  }
+
   private void setShooterPreset(String presetName, double rpm) {
     ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
     ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+  }
+
+  private enum ShootingPreset {
+    TRENCH,
+    HUB,
+    OUTPOST;
+
+    public ShootingPreset next() {
+      ShootingPreset[] vals = values();
+      return vals[(ordinal() + 1) % vals.length];
+    }
+
+    public String displayName() {
+      String n = name();
+      return n.charAt(0) + n.substring(1).toLowerCase();
+    }
   }
 
   private void configureAutoBuilder() {

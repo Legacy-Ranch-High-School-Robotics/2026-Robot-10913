@@ -21,6 +21,8 @@ public class Shooter extends SubsystemBase {
 
   private final SparkClosedLoopController shooterMotorOneController;
 
+  private double targetVelocityRPM = 0.0;
+
   private java.util.function.DoubleSupplier distanceSupplier;
   private java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier;
 
@@ -94,6 +96,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocityRPM) {
+    targetVelocityRPM = velocityRPM;
     shooterMotorOneController.setSetpoint(
         velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
@@ -103,6 +106,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stop() {
+    targetVelocityRPM = 0.0;
     shooterMotorOne.stopMotor();
   }
 
@@ -111,7 +115,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return true;
+    return targetVelocityRPM > 0
+        && Math.abs(shooterMotorOneEncoder.getVelocity() - targetVelocityRPM)
+            < ShooterConstants.shooterToleranceRPM;
   }
 
   public double getVelocityRPM() {
