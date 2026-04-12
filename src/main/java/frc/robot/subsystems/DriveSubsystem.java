@@ -186,8 +186,15 @@ public class DriveSubsystem extends SubsystemBase {
     if (RobotBase.isSimulation() && m_driveSim != null) {
       m_driveSim.setSimulationWorldPose(pose);
     }
+    // In simulation, DriveSim hasn't injected the new heading yet — use pose.getRotation()
+    // directly so the odometry reference angle is consistent with what DriveSim will inject.
+    // On real hardware, use the actual gyro reading.
+    Rotation2d gyroAngle =
+        (RobotBase.isSimulation() && m_driveSim != null)
+            ? pose.getRotation()
+            : Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble());
     m_odometry.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+        gyroAngle,
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -216,6 +223,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
+    // Use the odometry-tracked heading for field-relative drive. This is updated every
+    // periodic() before commands run, so it's always fresh. In simulation it also stays
+    // consistent with resetOdometry() which sets the same angle into the pose estimator.
     var swerveModuleStates =
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
@@ -223,7 +233,7 @@ public class DriveSubsystem extends SubsystemBase {
                     xSpeedDelivered,
                     ySpeedDelivered,
                     rotDelivered,
-                    Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()))
+                    getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
