@@ -228,6 +228,10 @@ public class DriveSubsystem extends SubsystemBase {
    * @param targetAngle The field-relative angle to face.
    * @return The rotational speed in [-1, 1] range for the drive() method.
    */
+  public boolean isAimedAtHub() {
+    return m_turnToPointController.atSetpoint();
+  }
+
   public double calculateHubTracking(Rotation2d targetAngle) {
     double rotSpeed =
         m_turnToPointController.calculate(

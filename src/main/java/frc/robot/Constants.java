@@ -27,6 +27,18 @@ public final class Constants {
     public static final double kMaxAngularSpeed =
         1.4 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
     // changed max angular speed at 3:41
+
+    // Driver speed presets (m/s and rad/s)
+    public static final double kTurboSpeedMetersPerSecond = kMaxSpeedMetersPerSecond; // 3.60 m/s
+    public static final double kFastSpeedMetersPerSecond = kMaxSpeedMetersPerSecond * 0.75; // 2.70 m/s
+    public static final double kNormalSpeedMetersPerSecond = kMaxSpeedMetersPerSecond * 0.50; // 1.80 m/s
+    public static final double kSlowSpeedMetersPerSecond = kMaxSpeedMetersPerSecond * 0.25; // 0.90 m/s
+
+    public static final double kTurboAngularSpeed = kMaxAngularSpeed; // ~4.40 rad/s
+    public static final double kFastAngularSpeed = kMaxAngularSpeed * 0.75; // ~3.30 rad/s
+    public static final double kNormalAngularSpeed = kMaxAngularSpeed * 0.50; // ~2.20 rad/s
+    public static final double kSlowAngularSpeed = kMaxAngularSpeed * 0.25; // ~1.10 rad/s
+
     // Chassis configuration
     // change for extra speed orginally 1.4
     public static final double kTrackWidth =
