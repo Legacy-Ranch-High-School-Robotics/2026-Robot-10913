@@ -140,8 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
     ElasticTelemetry.setNumber(
         "Drive/AngularVelocityDegPerSec", Math.toDegrees(speeds.omegaRadiansPerSecond));
     ElasticTelemetry.setNumber(
-        "Drive/SpeedMPS",
-        Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        "Drive/SpeedMPS", Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
 
     // Hub targeting telemetry
     double distToHub = getDistanceToHub();
@@ -230,10 +229,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered,
-                    ySpeedDelivered,
-                    rotDelivered,
-                    getPose().getRotation())
+                    xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
     SwerveDriveKinematics.desaturateWheelSpeeds(

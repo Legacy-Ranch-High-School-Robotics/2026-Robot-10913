@@ -22,7 +22,8 @@ public class IntakeConstants {
 
   public static final double feedVoltage = 12.0;
 
-  public static final double intakeLiftGearRatio = 13.904; // motor rotations per arm rotation (3.476 motor rot / 0.25 arm rot)
+  public static final double intakeLiftGearRatio =
+      13.904; // motor rotations per arm rotation (3.476 motor rot / 0.25 arm rot)
 
   public static final double deployedPosition = 3.476;
 

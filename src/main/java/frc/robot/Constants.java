@@ -24,13 +24,17 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond =
         4.2; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
     // change for extra speed orginally 2.4
-    public static final double kMaxAngularSpeed = 4.8; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
+    public static final double kMaxAngularSpeed =
+        4.8; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
 
     // Driver speed presets (m/s and rad/s) — Normal is the DEFAULT
     public static final double kTurboSpeedMetersPerSecond = kMaxSpeedMetersPerSecond; // 4.20 m/s
-    public static final double kFastSpeedMetersPerSecond = kMaxSpeedMetersPerSecond * 0.75; // 3.15 m/s
-    public static final double kNormalSpeedMetersPerSecond = kMaxSpeedMetersPerSecond; // 4.20 m/s (full linear, controlled turns)
-    public static final double kSlowSpeedMetersPerSecond = kMaxSpeedMetersPerSecond * 0.25; // 1.05 m/s
+    public static final double kFastSpeedMetersPerSecond =
+        kMaxSpeedMetersPerSecond * 0.75; // 3.15 m/s
+    public static final double kNormalSpeedMetersPerSecond =
+        kMaxSpeedMetersPerSecond; // 4.20 m/s (full linear, controlled turns)
+    public static final double kSlowSpeedMetersPerSecond =
+        kMaxSpeedMetersPerSecond * 0.25; // 1.05 m/s
 
     public static final double kTurboAngularSpeed = 4.8; // rad/s
     public static final double kFastAngularSpeed = 4.5; // rad/s

@@ -212,17 +212,37 @@ public class RobotContainer {
 
     // Driver D-Pad: speed presets (↑=Turbo, →=Fast, ↓=Normal, ←=Slow)
     new POVButton(m_driverController, 0)
-        .onTrue(new InstantCommand(() -> setSpeedMode("Turbo",
-            DriveConstants.kTurboSpeedMetersPerSecond, DriveConstants.kTurboAngularSpeed)));
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    setSpeedMode(
+                        "Turbo",
+                        DriveConstants.kTurboSpeedMetersPerSecond,
+                        DriveConstants.kTurboAngularSpeed)));
     new POVButton(m_driverController, 90)
-        .onTrue(new InstantCommand(() -> setSpeedMode("Fast",
-            DriveConstants.kFastSpeedMetersPerSecond, DriveConstants.kFastAngularSpeed)));
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    setSpeedMode(
+                        "Fast",
+                        DriveConstants.kFastSpeedMetersPerSecond,
+                        DriveConstants.kFastAngularSpeed)));
     new POVButton(m_driverController, 180)
-        .onTrue(new InstantCommand(() -> setSpeedMode("Normal",
-            DriveConstants.kNormalSpeedMetersPerSecond, DriveConstants.kNormalAngularSpeed)));
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    setSpeedMode(
+                        "Normal",
+                        DriveConstants.kNormalSpeedMetersPerSecond,
+                        DriveConstants.kNormalAngularSpeed)));
     new POVButton(m_driverController, 270)
-        .onTrue(new InstantCommand(() -> setSpeedMode("Slow",
-            DriveConstants.kSlowSpeedMetersPerSecond, DriveConstants.kSlowAngularSpeed)));
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    setSpeedMode(
+                        "Slow",
+                        DriveConstants.kSlowSpeedMetersPerSecond,
+                        DriveConstants.kSlowAngularSpeed)));
 
     // ========== OPERATOR CONTROLS (F310 or Keyboard) ==========
 
