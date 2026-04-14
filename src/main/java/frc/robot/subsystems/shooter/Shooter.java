@@ -99,8 +99,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocityRPM) {
-    targetRPM = velocityRPM;  // store it
-    shooterMotorOneController.setSetpoint(velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    targetRPM = velocityRPM; // store it
+    shooterMotorOneController.setSetpoint(
+        velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
   public void setVoltage(double volts) {
@@ -130,6 +131,6 @@ public class Shooter extends SubsystemBase {
    * @return The interpolated target RPM based on measured values
    */
   public double getRPMForDistance(double distance) {
-    return distanceToRpmMap.get(distance);
+    return targetRPM = distanceToRpmMap.get(distance);
   }
 }

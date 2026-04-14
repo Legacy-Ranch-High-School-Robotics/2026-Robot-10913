@@ -185,18 +185,17 @@ public class RobotContainer {
 
     // Launch button (A / Space) - runs shooter and hopper forward to score
     var launchCommand =
-    new RunCommand(
-        () -> {
-            m_shooter.setVelocity(
-                m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
-            if (m_shooter.atTargetVelocity()) {
-                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-            } else {
-                m_hopper.stop(); // wait for flywheel to recover before next ball
-            }
-        },
-        m_shooter,
-        m_hopper);
+        new RunCommand(
+            () -> {
+              m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
+              // if (m_shooter.atTargetVelocity()) {
+              m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              // } else {
+              //  m_hopper.stop(); // wait for flywheel to recover before next ball
+
+            },
+            m_shooter,
+            m_hopper);
     var stopLaunchCommand =
         new InstantCommand(
             () -> {
@@ -251,11 +250,10 @@ public class RobotContainer {
 
     // Shooter only (right bumper / R key)
     var shooterOnlyCommand =
-    new RunCommand(
-        () ->
-            m_shooter.setVelocity(
-                m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub())),
-        m_shooter);
+        new RunCommand(
+            () ->
+                m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub())),
+            m_shooter);
     var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
         .whileTrue(shooterOnlyCommand)

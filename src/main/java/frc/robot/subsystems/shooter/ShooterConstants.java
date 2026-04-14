@@ -74,5 +74,22 @@ public class ShooterConstants {
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(5.5), 3900.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(6.0), 4000.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(6.5), 4050.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.0), 4150.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(7.5), 4225.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(8.0), 4300.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(8.5), 4375.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(9.0), 4450.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(9.5), 4525.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(10.0), 4600.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(10.5), 4675.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(11.0), 4750.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(11.5), 4825.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(12.0), 4900.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(12.5), 4975.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(13.0), 5050.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(13.5), 5100.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(14.0), 5175.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(14.5), 5225.0);
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(15.0), 5300.0);
   }
 }
