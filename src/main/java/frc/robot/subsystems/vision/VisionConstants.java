@@ -11,7 +11,7 @@ public final class VisionConstants {
 
   static final double camera_h = Units.inchesToMeters(16.875); // DEBUG:CAMERA_HEIGHT
   static final double camera_x = Units.inchesToMeters(9.5); // DEBUG:CAMERA_X_OFFSET
-  static final double camera_y = Units.inchesToMeters(12.8125); // DEBUG:CAMERA_Y_OFFSET
+  static final double camera_y = Units.inchesToMeters(15.75); // DEBUG:CAMERA_Y_OFFSET
 
   // Robot to camera transforms (X = forward, Y = left in WPILib)
   public static final Transform3d ROBOT_TO_CAMERA_1 =
@@ -19,19 +19,19 @@ public final class VisionConstants {
           camera_y,
           camera_x,
           camera_h,
-          new Rotation3d(-Math.PI, (Math.PI) / 12, (Math.PI) / 12)); // DEBUG:CAMERA_1_TRANSFORM
+          new Rotation3d(0, (Math.PI) / 12, -(Math.PI) / 18)); // DEBUG:CAMERA_1_TRANSFORM
   public static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
           -camera_y,
           camera_x,
           camera_h,
-          new Rotation3d(0, (Math.PI) / 12, -(Math.PI) / 12)); // DEBUG:CAMERA_2_TRANSFORM
+          new Rotation3d(0, (Math.PI) / 12, (Math.PI) / 18)); // DEBUG:CAMERA_2_TRANSFORM
   public static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
           Units.inchesToMeters(10.875),
           -Units.inchesToMeters(9.0),
           Units.inchesToMeters(17.0),
-          new Rotation3d(Math.PI, 0, Math.PI)); // DEBUG:CAMERA_3_TRANSFORM
+          new Rotation3d((Math.PI) / 2, 0, 0)); // DEBUG:CAMERA_3_TRANSFORM
 
   public static final double MAX_PITCH_ROLL_DEGREES = 3.0; // DEBUG:VISION_MAX_TILT
 
