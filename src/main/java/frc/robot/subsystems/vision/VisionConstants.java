@@ -19,13 +19,13 @@ public final class VisionConstants {
           camera_y,
           camera_x,
           camera_h,
-          new Rotation3d(-Math.PI, (Math.PI) / 12, (Math.PI) / 9)); // DEBUG:CAMERA_1_TRANSFORM
+          new Rotation3d(-Math.PI, (Math.PI) / 12, (Math.PI) / 12)); // DEBUG:CAMERA_1_TRANSFORM
   public static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
           -camera_y,
           camera_x,
           camera_h,
-          new Rotation3d(0, (Math.PI) / 12, -(Math.PI) / 9)); // DEBUG:CAMERA_2_TRANSFORM
+          new Rotation3d(0, (Math.PI) / 12, -(Math.PI) / 12)); // DEBUG:CAMERA_2_TRANSFORM
   public static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
           Units.inchesToMeters(10.875),

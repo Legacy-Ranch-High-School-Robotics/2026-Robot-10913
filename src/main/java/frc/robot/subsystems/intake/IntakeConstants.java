@@ -16,7 +16,7 @@ public class IntakeConstants {
 
   public static final double intakeVoltage = 12.0;
 
-  public static final double outtakeVoltage = -10.0;
+  public static final double outtakeVoltage = -11.0;
 
   public static final double liftVoltage = 3;
 
