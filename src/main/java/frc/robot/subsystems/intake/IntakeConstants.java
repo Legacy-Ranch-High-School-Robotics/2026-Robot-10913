@@ -27,4 +27,8 @@ public class IntakeConstants {
   public static final double retractedPosition = 0;
 
   public static final double liftPositionTolerance = 0.5;
+
+  // Time-based deployment constants (seconds)
+  public static final double deployTimeSeconds = 1.5; // Time to deploy intake down
+  public static final double retractTimeSeconds = 1.0; // Time to retract intake up
 }

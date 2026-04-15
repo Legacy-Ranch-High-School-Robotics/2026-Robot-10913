@@ -188,11 +188,11 @@ public class RobotContainer {
         new RunCommand(
             () -> {
               m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
-              // if (m_shooter.atTargetVelocity()) {
-              m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-              // } else {
-              //  m_hopper.stop(); // wait for flywheel to recover before next ball
-
+              if (m_shooter.atTargetVelocity()) {
+                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              } else {
+                m_hopper.stop(); // wait for flywheel to reach target RPM
+              }
             },
             m_shooter,
             m_hopper);
@@ -231,6 +231,13 @@ public class RobotContainer {
         .whileTrue(ejectCommand)
         .onFalse(stopEjectCommand);
 
+    // ShootOnMove toggle (POV-Up) - operator controls shooting mode
+    new POVButton(m_operatorController, 0)
+        .onTrue(new InstantCommand(() -> {
+                  m_shootOnMoveCommand.schedule();
+                  ElasticTelemetry.setBoolean("Drive/HubTrackingEnabled", true);
+                }));
+    
     // Intake controls
     var outtakeCommand = new RunCommand(() -> m_intake.outtake(), m_intake);
     var stopIntakeCommand = new InstantCommand(() -> m_intake.stop(), m_intake);
@@ -238,14 +245,14 @@ public class RobotContainer {
         .whileTrue(outtakeCommand)
         .onFalse(stopIntakeCommand);
 
-    var deployCommand = new RunCommand(() -> m_intake.liftDeploy(), m_intake);
+    var deployCommand = new RunCommand(() -> m_intake.deployTimed(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kX.value)
-        .whileTrue(deployCommand)
+        .onTrue(deployCommand)
         .onFalse(stopIntakeCommand);
 
-    var retractCommand = new RunCommand(() -> m_intake.liftRetract(), m_intake);
+    var retractCommand = new RunCommand(() -> m_intake.retractTimed(), m_intake);
     new JoystickButton(m_operatorController, XboxController.Button.kY.value)
-        .whileTrue(retractCommand)
+        .onTrue(retractCommand)
         .onFalse(stopIntakeCommand);
 
     // Shooter only (right bumper / R key)
