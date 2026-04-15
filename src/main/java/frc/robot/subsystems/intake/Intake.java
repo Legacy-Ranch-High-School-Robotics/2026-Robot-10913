@@ -68,7 +68,13 @@ public class Intake extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    // Publish intake deployment state telemetry
+    ElasticTelemetry.setBoolean("Intake/IsDeployed", isLiftDeployed());
+    ElasticTelemetry.setBoolean("Intake/IsRetracted", isLiftRetracted());
+    ElasticTelemetry.setBoolean("Intake/IsDeploying", isDeploying());
+    ElasticTelemetry.setBoolean("Intake/IsRetracting", isRetracting());
+  }
 
   public void intake() {
 

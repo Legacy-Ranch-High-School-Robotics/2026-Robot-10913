@@ -45,6 +45,7 @@ public class Hopper extends SubsystemBase {
   public void periodic() {
     ElasticTelemetry.setNumber("Hopper/Actual RPM", hopperEncoder.getVelocity());
     ElasticTelemetry.setNumber("Hopper/Target RPM", targetVelocityRPM);
+    ElasticTelemetry.setBoolean("Hopper/AtTargetVelocity", atTargetVelocity());
   }
 
   public void setVelocity(double velocityRPM) {
