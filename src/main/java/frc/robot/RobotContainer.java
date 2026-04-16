@@ -189,7 +189,7 @@ public class RobotContainer {
             () -> {
               m_shooter.setVelocity(
                   ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
-              if (m_shooter.atTargetVelocity()) {
+              if (true) {
                 m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
               } else {
                 m_hopper.stop();
@@ -197,19 +197,6 @@ public class RobotContainer {
             },
             m_shooter,
             m_hopper);
-    var distanceBasedLaunchCommand =
-        new RunCommand(
-            () -> {
-              m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
-              // if (m_shooter.atTargetVelocity()) {
-              m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
-              // } else {
-              //  m_hopper.stop(); // wait for flywheel to recover before next ball
-
-            },
-            m_shooter,
-            m_hopper);
-
     var stopLaunchCommand =
         new InstantCommand(
             () -> {
@@ -268,11 +255,6 @@ public class RobotContainer {
             () ->
                 m_shooter.setVelocity(
                     ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
-            m_shooter);
-    var distanceBasedShooterOnlyCommand =
-        new RunCommand(
-            () ->
-                m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub())),
             m_shooter);
     var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
