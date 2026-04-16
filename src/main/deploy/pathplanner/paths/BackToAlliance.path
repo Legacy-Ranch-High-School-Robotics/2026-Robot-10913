@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 7.767325301204821,
+        "y": 3.6088192771084504
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 7.66897590361407,
+        "y": 2.1007951807229075
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 8.280927710842985,
+        "y": 0.8222530120482077
       },
       "prevControl": {
-        "x": -0.0022084196969005543,
-        "y": 5.344428410486962
+        "x": 8.28092771084354,
+        "y": 1.8222530120482017
       },
       "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
+        "x": 8.280927710842596,
+        "y": 0.12287951807232056
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
+        "x": 2.7952168674694917,
+        "y": 0.4616385542168677
       },
       "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 2.379963855421299,
+        "y": 0.8331807228915816
+      },
+      "nextControl": {
+        "x": 3.1678375242320325,
+        "y": 0.12824112448194908
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2925421686746983,
+        "y": 4.045927710843373
+      },
+      "prevControl": {
+        "x": 2.0425421686746983,
+        "y": 4.034999999999992
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,16 +62,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.3518672199169837,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
+      "name": "RetractIntake",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -76,7 +92,7 @@
   "folder": "New Folder",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -88.61964592658012
   },
   "useDefaultConstraints": true
 }

@@ -26,10 +26,10 @@ public class HopperConstants {
   public static final boolean hopperMotorInverted = false; // DEBUG:HOPPER_INVERTED
   public static final int hopperCurrentLimit = 60; // DEBUG:HOPPER_CURRENT_LIMIT
 
-  public static final double hopperKp = 0.0001;
-  public static final double hopperKi = 0.0;
-  public static final double hopperKd = 0.0;
-  public static final double hopperKv = 0.0021;
+  public static final double hopperKp = 0.0001; // DEBUG:HOPPER_KP
+  public static final double hopperKi = 0.0; // DEBUG:HOPPER_KI
+  public static final double hopperKd = 0.0; // DEBUG:HOPPER_KD
+  public static final double hopperKv = 0.0021; // DEBUG:HOPPER_KV
 
   public static final double hopperIdleRPM = 1500.0; // DEBUG:HOPPER_IDLE_RPM
   public static final double hopperFeedRPM = 5000.0; // DEBUG:HOPPER_FEED_RPM

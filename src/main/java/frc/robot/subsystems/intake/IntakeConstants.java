@@ -6,7 +6,6 @@ public class IntakeConstants {
 
   public static final int intakeMotorCanId = 11;
 
-  public static final int intakeLiftCanID = 10;
   public static final int intakeLiftMotorCanId = 10;
 
   public static final boolean intakeMotorInverted = false;
@@ -19,7 +18,7 @@ public class IntakeConstants {
 
   public static final double outtakeVoltage = -11.0;
 
-  public static final double liftVoltage = 2;
+  public static final double liftVoltage = 3;
 
   public static final double feedVoltage = 12.0;
 

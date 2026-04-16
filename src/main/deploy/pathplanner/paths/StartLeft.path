@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 3.5473894436519258,
+        "y": 7.4702139800285305
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 4.547389443651925,
+        "y": 7.4702139800285305
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 7.480741797432238,
+        "y": 7.4702139800285305
       },
       "prevControl": {
-        "x": -0.0022084196969005543,
-        "y": 5.344428410486962
+        "x": 6.783384537193996,
+        "y": 7.666904489326496
       },
       "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
+        "x": 7.985349500713266,
+        "y": 7.327888730385164
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
+        "x": 7.273723252496433,
+        "y": 4.416690442225392
       },
       "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 7.312539229671896,
+        "y": 4.9083594864479325
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,20 +46,17 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 0.8144989339019204,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.4029850746268426,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.4,
     "maxAcceleration": 3.0,
@@ -70,10 +67,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -88.91907581333939
   },
   "reversed": false,
-  "folder": "New Folder",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

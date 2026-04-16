@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ballpark2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "DeployIntake"
+            "pathName": "StartLeft"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "New Folder",
+  "folder": null,
   "choreoAuto": false
 }

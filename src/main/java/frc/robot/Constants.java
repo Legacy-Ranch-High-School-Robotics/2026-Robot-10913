@@ -22,10 +22,10 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond =
-        3.6; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
+        4.5; // DEBUG:DRIVE_MAX_SPEED - Maximum drive speed (m/s)
     // change for extra speed orginally 2.4
     public static final double kMaxAngularSpeed =
-        1.4 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
+        1.7 * Math.PI; // DEBUG:DRIVE_MAX_ANGULAR_SPEED - Maximum rotation speed (rad/s)
     // changed max angular speed at 3:41
     // Chassis configuration
     // change for extra speed orginally 1.4
@@ -64,7 +64,7 @@ public final class Constants {
 
     public static final int kPigeon2CanId = 9; // DEBUG:CAN_GYRO - Gyro (Pigeon 2.0)
 
-    public static final boolean kGyroReversed = false; // I changed thus from: true -2:40pm
+    public static final boolean kGyroReversed = false;
     // ONLY USE IF PIGEON IS FLIPPED UPSIDE DOWN
   }
 
@@ -78,7 +78,7 @@ public final class Constants {
             kFieldLength - 4.55, kFieldWidth / 2.0); // DEBUG:RED_HUB_POSITION - Red  position
   }
 
-  // Remember To Edit when changing gears
+  // Remember To Edit when changing gear ratio
   public static final class ModuleConstants {
 
     public static final int kDrivingMotorPinionTeeth =

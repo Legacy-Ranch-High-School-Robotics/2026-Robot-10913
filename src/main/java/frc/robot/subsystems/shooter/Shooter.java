@@ -24,6 +24,8 @@ public class Shooter extends SubsystemBase {
   private java.util.function.DoubleSupplier distanceSupplier;
   private java.util.function.Supplier<edu.wpi.first.math.geometry.Rotation2d> angleSupplier;
 
+  private double targetRPM = 0.0;
+
   public Shooter() {
     shooterMotorOne = new SparkFlex(shooterMotorOneCanId, MotorType.kBrushless);
     shooterMotorTwo = new SparkFlex(shooterMotorTwoCanId, MotorType.kBrushless);
@@ -40,7 +42,6 @@ public class Shooter extends SubsystemBase {
         .voltageCompensation(12.0);
     // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
     // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
-    // This makes encoder.getVelocity() return actual flywheel RPM instead of motor shaft RPM
     motorOneConfig.encoder.velocityConversionFactor(0.667);
     motorOneConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     motorOneConfig.closedLoop.feedForward.kV(shooterKv);
@@ -57,6 +58,9 @@ public class Shooter extends SubsystemBase {
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0)
         .follow(shooterMotorOneCanId, true);
+    motorTwoConfig.encoder.velocityConversionFactor(0.667);
+    motorTwoConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
+    motorTwoConfig.closedLoop.feedForward.kV(shooterKv);
 
     shooterMotorTwo.configure(
         motorTwoConfig,
@@ -95,6 +99,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setVelocity(double velocityRPM) {
+    targetRPM = velocityRPM; // store it
     shooterMotorOneController.setSetpoint(
         velocityRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
@@ -112,7 +117,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean atTargetVelocity() {
-    return true;
+    return targetRPM > 0 && Math.abs(getVelocityRPM() - targetRPM) < shooterToleranceRPM;
   }
 
   public double getVelocityRPM() {
@@ -125,7 +130,9 @@ public class Shooter extends SubsystemBase {
    * @param distance Distance to the hub (in meters)
    * @return The interpolated target RPM based on measured values
    */
+  double lastKnownRPM = 0.0;
+
   public double getRPMForDistance(double distance) {
-    return distanceToRpmMap.get(distance);
+    return targetRPM = distanceToRpmMap.get(distance);
   }
 }

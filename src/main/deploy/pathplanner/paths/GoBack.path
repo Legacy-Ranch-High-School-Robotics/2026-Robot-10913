@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 7.483204819277108,
+        "y": 4.537674698795181
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 7.352072289156625,
+        "y": 5.37910843373494
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 7.614337349397591,
+        "y": 7.280530120481927
       },
       "prevControl": {
-        "x": -0.0022084196969005543,
-        "y": 5.344428410486962
+        "x": 7.647120481927711,
+        "y": 6.723216867469879
       },
       "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
+        "x": 7.599656843909723,
+        "y": 7.5300987137756765
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
+        "x": 2.183265060240964,
+        "y": 7.400734939759036
       },
       "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 2.694192771084335,
+        "y": 7.400734939759036
+      },
+      "nextControl": {
+        "x": 1.6723373493975924,
+        "y": 7.400734939759036
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.183265060240964,
+        "y": 3.9694337349397593
+      },
+      "prevControl": {
+        "x": 1.927801204819278,
+        "y": 3.9803614457831333
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,16 +62,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.3767634854771917,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
+      "name": "StopIntake",
+      "waypointRelativePos": 2.039702233250625,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -76,7 +92,7 @@
   "folder": "New Folder",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -87.6784694101673
   },
   "useDefaultConstraints": true
 }

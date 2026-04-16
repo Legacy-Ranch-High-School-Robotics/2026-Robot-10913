@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.52151212553495,
-        "y": 4.080285306704707
+        "x": 3.534450784593438,
+        "y": 7.4572753209700435
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.08124852720291,
-        "y": 4.0935981458150055
+        "x": 3.284836892046463,
+        "y": 7.471164332725644
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0243509272467899,
-        "y": 5.982268188302426
+        "x": 2.680499286733238,
+        "y": 7.4572753209700435
       },
       "prevControl": {
-        "x": -0.0022084196969005543,
-        "y": 5.344428410486962
-      },
-      "nextControl": {
-        "x": 1.4716985359098682,
-        "y": 6.260222015487819
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.7877318116975744,
-        "y": 5.982268188302426
-      },
-      "prevControl": {
-        "x": 1.4501193605581681,
-        "y": 6.014576004874308
+        "x": 2.9277944168441286,
+        "y": 7.493951179834393
       },
       "nextControl": null,
       "isLocked": false,
@@ -52,14 +36,7 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "DeployIntake",
-      "waypointRelativePos": 0.996201329534663,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.4,
     "maxAcceleration": 3.0,
@@ -70,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "New Folder",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
