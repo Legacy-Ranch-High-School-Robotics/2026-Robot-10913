@@ -187,6 +187,19 @@ public class RobotContainer {
     var launchCommand =
         new RunCommand(
             () -> {
+              m_shooter.setVelocity(
+                  ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM));
+              if (m_shooter.atTargetVelocity()) {
+                m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
+              } else {
+                m_hopper.stop();
+              }
+            },
+            m_shooter,
+            m_hopper);
+    var distanceBasedLaunchCommand =
+        new RunCommand(
+            () -> {
               m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
               // if (m_shooter.atTargetVelocity()) {
               m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
@@ -196,6 +209,7 @@ public class RobotContainer {
             },
             m_shooter,
             m_hopper);
+
     var stopLaunchCommand =
         new InstantCommand(
             () -> {
@@ -250,6 +264,12 @@ public class RobotContainer {
 
     // Shooter only (right bumper / R key)
     var shooterOnlyCommand =
+        new RunCommand(
+            () ->
+                m_shooter.setVelocity(
+                    ElasticTelemetry.getNumber("Shooter/Target RPM", ShooterConstants.shooterRPM)),
+            m_shooter);
+    var distanceBasedShooterOnlyCommand =
         new RunCommand(
             () ->
                 m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub())),

@@ -130,6 +130,8 @@ public class Shooter extends SubsystemBase {
    * @param distance Distance to the hub (in meters)
    * @return The interpolated target RPM based on measured values
    */
+  double lastKnownRPM = 0.0;
+
   public double getRPMForDistance(double distance) {
     return targetRPM = distanceToRpmMap.get(distance);
   }
