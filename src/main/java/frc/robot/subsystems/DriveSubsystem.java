@@ -270,7 +270,8 @@ public class DriveSubsystem extends SubsystemBase {
         isRed
             ? frc.robot.Constants.FieldConstants.kRedHub
             : frc.robot.Constants.FieldConstants.kBlueHub;
-    return targetHub.minus(getPose().getTranslation()).getAngle();
+    // +180° so the shooter (back of robot) faces the hub, not the front
+    return targetHub.minus(getPose().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(180));
   }
 
   /**
