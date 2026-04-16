@@ -127,6 +127,27 @@ public class DriveSubsystem extends SubsystemBase {
     // Publish odometry pose to the field widget
     m_field.setRobotPose(getPose());
 
+    // Pose telemetry
+    Pose2d pose = getPose();
+    ElasticTelemetry.setNumber("Drive/PoseX", pose.getX());
+    ElasticTelemetry.setNumber("Drive/PoseY", pose.getY());
+    ElasticTelemetry.setNumber("Drive/Heading", pose.getRotation().getDegrees());
+
+    // Velocity telemetry
+    ChassisSpeeds speeds = getChassisSpeeds();
+    ElasticTelemetry.setNumber("Drive/VelocityX", speeds.vxMetersPerSecond);
+    ElasticTelemetry.setNumber("Drive/VelocityY", speeds.vyMetersPerSecond);
+    ElasticTelemetry.setNumber(
+        "Drive/AngularVelocityDegPerSec", Math.toDegrees(speeds.omegaRadiansPerSecond));
+    ElasticTelemetry.setNumber(
+        "Drive/SpeedMPS", Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+
+    // Hub targeting telemetry
+    ElasticTelemetry.setBoolean("Drive/HubTracking", m_isTrackingHub);
+    ElasticTelemetry.setNumber("Drive/DistanceToHub", getDistanceToHub());
+    ElasticTelemetry.setNumber("Drive/AngleErrorToHub", getAngleErrorToHub().getDegrees());
+    ElasticTelemetry.setBoolean("Drive/IsAimedAtHub", isAimedAtHub());
+
     // Publish Pigeon2 gyro telemetry
     ElasticTelemetry.setNumber("Gyro/Yaw", m_gyro.getYaw().getValueAsDouble());
     ElasticTelemetry.setNumber("Gyro/Pitch", m_gyro.getPitch().getValueAsDouble());
@@ -196,10 +217,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeedDelivered,
-                    ySpeedDelivered,
-                    rotDelivered,
-                    Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()))
+                    xSpeedDelivered, ySpeedDelivered, rotDelivered, getPose().getRotation())
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -237,7 +255,6 @@ public class DriveSubsystem extends SubsystemBase {
       rotSpeed = 0;
     }
 
-    // Negate: PID output sign is opposite to drive() rotation convention
     return -rotSpeed / DriveConstants.kMaxAngularSpeed;
   }
 
@@ -281,6 +298,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Rotation2d getAngleErrorToHub() {
     return getTargetAngleToHub().minus(getPose().getRotation());
+  }
+
+  public boolean isAimedAtHub() {
+    return m_turnToPointController.atSetpoint();
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
