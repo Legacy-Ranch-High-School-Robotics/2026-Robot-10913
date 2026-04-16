@@ -65,6 +65,7 @@ public class ShooterConstants {
       new InterpolatingDoubleTreeMap();
 
   static {
+    distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(1.0), 2950.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(2.5), 3250.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.0), 3400.0);
     distanceToRpmMap.put(edu.wpi.first.math.util.Units.feetToMeters(3.5), 3500.0);
