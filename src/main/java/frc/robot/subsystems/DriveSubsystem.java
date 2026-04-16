@@ -237,8 +237,8 @@ public class DriveSubsystem extends SubsystemBase {
       rotSpeed = 0;
     }
 
-    // Convert from radians/sec to [-1, 1] range expected by the drive() method
-    return rotSpeed / DriveConstants.kMaxAngularSpeed;
+    // Negate: PID output sign is opposite to drive() rotation convention
+    return -rotSpeed / DriveConstants.kMaxAngularSpeed;
   }
 
   /**
@@ -270,8 +270,7 @@ public class DriveSubsystem extends SubsystemBase {
         isRed
             ? frc.robot.Constants.FieldConstants.kRedHub
             : frc.robot.Constants.FieldConstants.kBlueHub;
-    // +180° so the shooter (back of robot) faces the hub, not the front
-    return targetHub.minus(getPose().getTranslation()).getAngle().plus(Rotation2d.fromDegrees(180));
+    return targetHub.minus(getPose().getTranslation()).getAngle();
   }
 
   /**
