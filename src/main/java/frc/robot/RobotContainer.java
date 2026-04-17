@@ -196,8 +196,7 @@ public class RobotContainer {
               m_shooter.setVelocity(rpm);
               ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
               ElasticTelemetry.setString(
-                  "Shooter/ActivePreset",
-                  m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
+                  "Shooter/ActivePreset", m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
               // if (m_shooter.atTargetVelocity()) {
               m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
               // } else {
@@ -269,8 +268,7 @@ public class RobotContainer {
               m_shooter.setVelocity(rpm);
               ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
               ElasticTelemetry.setString(
-                  "Shooter/ActivePreset",
-                  m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
+                  "Shooter/ActivePreset", m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
             },
             m_shooter);
     var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);

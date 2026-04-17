@@ -328,8 +328,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-    // resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+    boolean isRed =
+        alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+    m_gyro.setYaw(isRed ? 180.0 : 0.0);
+
     m_gyro.setYaw(0);
+
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
