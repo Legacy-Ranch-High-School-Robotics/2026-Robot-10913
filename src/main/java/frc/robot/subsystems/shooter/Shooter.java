@@ -40,8 +40,7 @@ public class Shooter extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(shooterCurrentLimit)
         .voltageCompensation(12.0);
-    // Gear ratio: 3:2 (motor shaft @ 4000 RPM → flywheel @ 2000 RPM)
-    // Conversion factor = flywheel RPM / motor RPM = 2000 / 4000 = 0.5
+    // Gear ratio: 3:2 (motor RPM × 0.667 = flywheel RPM)
     motorOneConfig.encoder.velocityConversionFactor(0.667);
     motorOneConfig.closedLoop.pid(shooterKp, shooterKi, shooterKd);
     motorOneConfig.closedLoop.feedForward.kV(shooterKv);
@@ -131,6 +130,6 @@ public class Shooter extends SubsystemBase {
    * @return The interpolated target RPM based on measured values
    */
   public double getRPMForDistance(double distance) {
-    return targetRPM = distanceToRpmMap.get(distance);
+    return distanceToRpmMap.get(distance);
   }
 }

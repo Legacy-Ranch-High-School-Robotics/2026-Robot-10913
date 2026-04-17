@@ -60,6 +60,8 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final SendableChooser<Command> m_autoChooser;
 
+  private double m_shooterPresetRPM = -1.0;
+
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
@@ -187,7 +189,15 @@ public class RobotContainer {
     var launchCommand =
         new RunCommand(
             () -> {
-              m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub()));
+              double rpm =
+                  m_shooterPresetRPM > 0
+                      ? m_shooterPresetRPM
+                      : m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub());
+              m_shooter.setVelocity(rpm);
+              ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
+              ElasticTelemetry.setString(
+                  "Shooter/ActivePreset",
+                  m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
               // if (m_shooter.atTargetVelocity()) {
               m_hopper.setVelocity(HopperConstants.hopperFeedRPM);
               // } else {
@@ -209,7 +219,7 @@ public class RobotContainer {
     var ejectCommand =
         new RunCommand(
             () -> {
-              m_intake.intake();
+              m_intake.outtake();
               m_hopper.eject();
               m_shooter.eject();
             },
@@ -251,8 +261,17 @@ public class RobotContainer {
     // Shooter only (right bumper / R key)
     var shooterOnlyCommand =
         new RunCommand(
-            () ->
-                m_shooter.setVelocity(m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub())),
+            () -> {
+              double rpm =
+                  m_shooterPresetRPM > 0
+                      ? m_shooterPresetRPM
+                      : m_shooter.getRPMForDistance(m_robotDrive.getDistanceToHub());
+              m_shooter.setVelocity(rpm);
+              ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
+              ElasticTelemetry.setString(
+                  "Shooter/ActivePreset",
+                  m_shooterPresetRPM > 0 ? "Preset" : "Distance Based");
+            },
             m_shooter);
     var stopShooterCommand = new InstantCommand(() -> m_shooter.stop(), m_shooter);
     new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
@@ -272,6 +291,14 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
+
+    new POVButton(m_operatorController, 180)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_shooterPresetRPM = -1.0;
+                  ElasticTelemetry.setString("Shooter/ActivePreset", "Distance Based");
+                }));
 
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whileTrue(launchCommand)
@@ -295,8 +322,9 @@ public class RobotContainer {
   }
 
   private void setShooterPreset(String presetName, double rpm) {
+    m_shooterPresetRPM = rpm;
     ElasticTelemetry.setNumber("Shooter/Target RPM", rpm);
-    ElasticTelemetry.setString("Shooter/ActivePreset", presetName);
+    ElasticTelemetry.setString("Shooter/ActivePreset", presetName + " (" + (int) rpm + " RPM)");
   }
 
   private void configureAutoBuilder() {

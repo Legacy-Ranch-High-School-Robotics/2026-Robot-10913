@@ -45,8 +45,7 @@ public class Intake extends SubsystemBase {
 
     liftConfig
         .inverted(intakeLiftMotorInverted)
-        // idleMode(IdleMode.kBrake)
-        // dleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(intakeCurrentLimit)
         .voltageCompensation(12.0);
 
@@ -66,12 +65,12 @@ public class Intake extends SubsystemBase {
 
   public void intake() {
 
-    motor.setVoltage(intakeVoltage);
+    motor.setVoltage(outtakeVoltage);
   }
 
   public void liftRetract() {
 
-    if (getLiftPosition() > retractedPosition - liftPositionTolerance) {
+    if (getLiftPosition() > retractedPosition + liftPositionTolerance) {
 
       liftMotor.setVoltage(-liftVoltage);
 
@@ -95,7 +94,7 @@ public class Intake extends SubsystemBase {
 
   public void outtake() {
 
-    motor.setVoltage(outtakeVoltage);
+    motor.setVoltage(intakeVoltage);
   }
 
   public void feed() {

@@ -107,7 +107,7 @@ public final class Constants {
     public static final int kKeyboardPort =
         2; // DEBUG:KEYBOARD_PORT - Keyboard USB port (not currently used)
     public static final double kDriveDeadband =
-        0.5; // DEBUG:DRIVE_DEADBAND - Joystick deadband (0.0-1.0)
+        0.15; // DEBUG:DRIVE_DEADBAND - Joystick deadband (0.0-1.0)
   }
 
   public static final class AutoConstants {
