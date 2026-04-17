@@ -275,6 +275,11 @@ public class RobotContainer {
             new InstantCommand(
                 () -> setShooterPreset("At Distance", ShooterConstants.atDistancePresetRPM)));
 
+    new POVButton(m_operatorController, 180)
+        .onTrue(
+            new InstantCommand(
+                () -> setShooterPreset("AirMail", ShooterConstants.airMailPresetRPM)));
+
     new JoystickButton(m_operatorController, XboxController.Button.kA.value)
         .whileTrue(launchCommand)
         .onFalse(stopLaunchCommand);

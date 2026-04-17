@@ -41,17 +41,17 @@ public class ShooterConstants {
   public static final double shooterKp = 0.0001; // DEBUG:SHOOTER_KP
   public static final double shooterKi = 0.0; // DEBUG:SHOOTER_KI
   public static final double shooterKd = 0.0; // DEBUG:SHOOTER_KD
-  public static final double shooterKv = 0.0021; // DEBUG:SHOOTER_KV
+  public static final double shooterKv = 0.00317; // DEBUG:SHOOTER_KV
 
-  public static final double shooterRPM = 3800.0; // DEBUG:SHOOTER_DEFAULT_RPM
+  public static final double shooterRPM = 2350.0; // DEBUG:SHOOTER_DEFAULT_RPM
   public static final double shooterRPMInverted = -2000.0; // DEBUG:SHOOTER_EJECT_RPM
 
   // THESE PRESETS ARE NOT FULLY TESTED //NOTE SOMETHING IS CAUSING A REDUCTION IN RPM SO I
   // INCREASED RPM
-  public static final double closePresetRPM = 3150.0; // DEBUG:SHOOTER_CLOSE_PRESET
-  public static final double atMediumPresetRPM = 3800.0; // DEBUG: SHOOTER_MEDIUM_PRESET
-  public static final double atDistancePresetRPM = 4750.0; // DEBUG:SHOOTER_DISTANCE_PRESET
-
+  public static final double closePresetRPM = 2350.0; // DEBUG:SHOOTER_CLOSE_PRESET
+  public static final double atMediumPresetRPM = 2950.0; // DEBUG: SHOOTER_MEDIUM_PRESET
+  public static final double atDistancePresetRPM = 3500.0; // DEBUG:SHOOTER_DISTANCE_PRESET
+  public static final double airMailPresetRPM = 4350;
   // Tolerance: Maximum RPM error to consider the shooter "at target velocity".
   // If abs(actualRPM - targetRPM) < tolerance, the shooter is ready to launch.
   // Tighter tolerance = more consistent shots but longer spin-up wait time.
